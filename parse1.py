@@ -20,6 +20,27 @@ def hub_name(s):
     return s
 
 
+seen_long_fams = {}
+seen_short_fams = {}
+seen_complex = {}
+
+
+def normalize(name, fam_id):
+    if name not in seen_complex:
+        seen_complex[name] = {fam_id: 1}
+
+    if fam_id not in seen_complex[name]:
+        idx = max(seen_complex[name].values()) + 1
+        seen_complex[name][fam_id] = idx
+
+    idx = seen_complex[name][fam_id]
+    if idx == 1:
+        long_name = name
+    else:
+        long_name = f"{name}#{idx}"
+    return long_name
+
+
 def main(fn=None):
 
     if fn is None:
@@ -52,6 +73,8 @@ def main(fn=None):
         header = [x.strip() for x in infh.readline().rstrip().split("\t")]
         next_fam_id = 123
         seen_fam = {}
+        seen_fam_name = {}
+        seen_fam_name_rev = {}
 
         grade_teachers = {}
 
@@ -59,6 +82,14 @@ def main(fn=None):
             fam_id = None
             parts = [x.strip() for x in line.rstrip().split("\t")]
             row = dict(zip(header, parts))
+
+            student_lastname, student_firstname = [
+                x.strip() for x in row["Student"].split(",", 2)
+            ]
+            parent_lastname, parent_firstname = [
+                x.strip() for x in row["Name"].split(",", 2)
+            ]
+
             fam_key = "Address1"
             fam_val = row[fam_key]
             if fam_val in seen_fam:
@@ -68,13 +99,9 @@ def main(fn=None):
                 next_fam_id += 1
                 seen_fam[fam_val] = fam_id
 
+            # fam_id2fam_name(fam_id, fam_val, name=student_lastname)
+
             # print(f"##{fam_id}\t{row}##")
-            student_lastname, student_firstname = [
-                x.strip() for x in row["Student"].split(",", 2)
-            ]
-            parent_lastname, parent_firstname = [
-                x.strip() for x in row["Name"].split(",", 2)
-            ]
 
             grade = row["Grade"]
             teacher = row["Homeroom Teacher"]
@@ -134,11 +161,16 @@ def main(fn=None):
 
                 afam = fam[fam_id]
 
+                afam_name = None
+
                 fam_grades = set()
                 fam_teachers = set()
 
                 for astudent in afam["student"]:
                     fam_grades.add(astudent["grade"])
+
+                    if afam_name is None:
+                        afam_name = astudent["lastname"]
 
                     if not astudent["teacher"]:
                         errors = True
@@ -162,6 +194,10 @@ def main(fn=None):
                     acontact = {}
                     # RoleName = 'parent_guardian'
                     RoleName = "Contact"
+
+                    if afam_name is None:
+                        afam_name = aparent["lastname"]
+
                     # RoleName = 'Parent/Guardian'
                     ##'RoleName:Year' where:
                     ##* 'RoleName' is the name of the system defined Role ie 'admin', 'parent_guardian', 'contact'
@@ -213,9 +249,10 @@ def main(fn=None):
                     acontact["City"] = city
                     acontact["State"] = state
                     acontact["Zip"] = zipcode
-                    acontact["Family Name"] = str(fam_id)
-                    # acontact['Family Role'] = 'Parent/Guardian'
-                    acontact["Family Role"] = "Contact"
+
+                    acontact["Family Name"] = normalize(afam_name, fam_id)
+                    acontact["Family Role"] = "Parent/Guardian"
+                    # acontact["Family Role"] = "Contact"
 
                     if aparent.get("email") in extra_org_roles:
                         acontact["Organization Role"] = "Admin"
@@ -270,7 +307,8 @@ def main(fn=None):
                     acontact["City"] = city
                     acontact["State"] = state
                     acontact["Zip"] = zipcode
-                    acontact["Family Name"] = str(fam_id)
+                    # acontact["Family Name"] = str(fam_id)
+                    acontact["Family Name"] = normalize(afam_name, fam_id)
 
                     acontact["Organization Role"] = "Student"
                     acontact["Family Role"] = "Child"
@@ -278,10 +316,23 @@ def main(fn=None):
                     contacts.append(acontact)
 
         if True:
-            contact_keys = set()
+            contact_keys = [
+                "Family Name",
+                "Family Role",
+                "Address",
+                "First Name",
+                "Last Name",
+                "City",
+                "State",
+                "Zip",
+                "Email",
+                #
+                #'Phone Number','Organization Role','Hubs',
+            ]
             for contact in contacts:
                 for k in contact:
-                    contact_keys.add(k)
+                    if k not in contact_keys:
+                        contact_keys.append(k)
 
             seen_emails = set()
             for contact in contacts:
