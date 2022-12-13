@@ -91,7 +91,14 @@ def main(fn=None):
             ]
 
             fam_key = "Address1"
+            fam_alt_key = "Phone"
             fam_val = row[fam_key]
+            if not fam_val.strip():
+                fam_val = row[fam_alt_key]
+                if not fam_val.strip():
+                    print(f"no {fam_key} for {line.rstrip()}")
+                    breakpoint()
+
             if fam_val in seen_fam:
                 fam_id = seen_fam[fam_val]
             else:
