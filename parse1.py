@@ -1,7 +1,7 @@
 import re
 import sys
 
-END_YEAR = 2023
+END_YEAR = 2024
 
 
 all_hubs = set()
@@ -47,20 +47,19 @@ def main(fn=None):
         fn = "StudentDirRaw.tsv"
 
     extra_org_roles = {
-        "gillianedick@gmail.com": "Admin, Contact, Member, Customer, Officer",
-        "sarahsandelius@gmail.com": "Admin, Officer",
+        "victoria.levitas@gmail.com": "Admin, Contact, Member, Customer, Officer",
         "cariaso@gmail.com": "Admin, Officer",
-        "ckeeling83@gmail.com": "Officer",
-        "jacquelyn_quan@yahoo.com": "Officer",
-        "cherinacyborski@hotmail.com": "Officer",
-        "cariaso@gmail.com": "Officer",
-        "meghan.holohan@gmail.com": "Officer",
-        "babytrekie@yahoo.com": "Officer",
-        "victoria.levitas@gmail.com": "Officer",
-        "tajpowell10@gmail.com": "Officer",
         "chris.press@gmail.com": "Officer",
-        "wanujarie@gmail.com": "Officer",
-        "katejulian@yahoo.com": "Officer",  # Kate Julian
+        # "gillianedick@gmail.com": "Admin, Contact, Member, Customer, Officer",
+        # "sarahsandelius@gmail.com": "Admin, Officer",
+        # "ckeeling83@gmail.com": "Officer",
+        # "jacquelyn_quan@yahoo.com": "Officer",
+        # "cherinacyborski@hotmail.com": "Officer",
+        # "meghan.holohan@gmail.com": "Officer",
+        # "babytrekie@yahoo.com": "Officer",
+        # "tajpowell10@gmail.com": "Officer",
+        # "wanujarie@gmail.com": "Officer",
+        # "katejulian@yahoo.com": "Officer",  # Kate Julian
         # "merritt.m.crowder@mcpsmd.org" :"false",
         # "gabrielle@enrichment-academies.com" :"false",
         # "cynthia_a_houston@mcpsmd.org" :"false",
@@ -134,22 +133,25 @@ def main(fn=None):
                 "address1": row["Address1"],
                 "address2": row["Address2"],
             }
+            parent_errors = False
             if not parent_info["email"]:
                 errors = True
-                print(f"*** no email*** for {parent_info}")
+                parent_errors = True
+                print(f"*** no parent email *** {parent_info}")
 
             row_info = {
                 "student": [
                     student_info,
                 ],
-                "parent": [
-                    parent_info,
-                ],
+                "parent": [],
             }
+            if not parent_errors:
+                row_info["parent"].append(parent_info)
+
             if fam_id not in fam:
                 fam[fam_id] = row_info
             else:
-                if parent_info not in fam[fam_id]["parent"]:
+                if parent_info not in fam[fam_id].get("parent", []):
                     fam[fam_id]["parent"].append(parent_info)
                 if student_info not in fam[fam_id]["student"]:
                     fam[fam_id]["student"].append(student_info)
@@ -266,7 +268,7 @@ def main(fn=None):
                     else:
                         acontact["Organization Role"] = "Contact"
 
-                    # if not acontact['Email']:
+                    # if not acontact['Email'])
                     #    print(f"*** WILL NOT LOAD contact with no Email {acontact}")
 
                     contacts.append(acontact)
@@ -324,15 +326,29 @@ def main(fn=None):
 
         if True:
             contact_keys = [
-                "Family Name",
-                "Family Role",
-                "Address",
                 "First Name",
                 "Last Name",
+                "Email",
+                "Phone Number",
+                "Organization Role",
+                "Address",
                 "City",
                 "State",
                 "Zip",
-                "Email",
+                "Family Name",
+                "Family Role",
+                "Hubs",
+                "Contact Property 1",
+                "Contact Property 2",
+                # "Family Name",
+                # "Family Role",
+                # "Address",
+                # "First Name",
+                # "Last Name",
+                # "City",
+                # "State",
+                # "Zip",
+                # "Email",
                 #
                 #'Phone Number','Organization Role','Hubs',
             ]
