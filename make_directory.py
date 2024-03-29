@@ -64,13 +64,9 @@ def pool_to_teacher_grade_student_uids(pool):
         for teacher in tg[grade]:
             student_uids = []
             for entry in tg[grade][teacher]:
-                # student = entry.get("Student")
                 astudent_uid = student_uid(entry)
-
                 if astudent_uid not in student_uids:
                     student_uids.append(astudent_uid)
-                # students[student].append(entry)
-            # out[grade][teacher] = sorted(students)
             out[grade][teacher] = student_uids
     return out
 
@@ -137,7 +133,6 @@ def pool_to_student_relations(pool):
 
 def pool_to_pdf1(pool):
 
-    from hashlib import sha1
     import datetime
     import html
     import collections
@@ -199,7 +194,7 @@ def pool_to_pdf1(pool):
 
     def linkedHeading(story, text, style):
         # create bookmarkname
-        bn = sha1((text + style.name).encode("utf-8")).hexdigest()
+        bn = hashlib.sha1((text + style.name).encode("utf-8")).hexdigest()
         # modify paragraph text to include an anchor point with name bn
         h = Paragraph(text + '<a name="%s"/>' % bn, style)
         # store the bookmark name on the flowable so afterFlowable can see this
@@ -236,10 +231,17 @@ def pool_to_pdf1(pool):
 
     psr = pool_to_student_relations(pool)
     num_students = 0
-    for uid in psr:
-        student = psr[uid]
+
+    by_firstname = {}
+    for student_uid in psr:
+        student = psr[student_uid]
         num_students += 1
-        student_anchor = f"<a name='{uid}'/>{student['Student']}"
+        student_name = student["Student"]
+
+        lastname, firstname = student_name.split(", ")
+        by_firstname.setdefault(firstname, []).append(student_uid)
+
+        student_anchor = f"<a name='{student_uid}'/>{student_name}"
         Story.append(Paragraph(student_anchor, student_name_style))
 
         if phone := student.get("Phone"):
@@ -293,11 +295,32 @@ def pool_to_pdf1(pool):
             Story.append(Paragraph(class_text, drug_h))
             for student_uid in tgs[grade][teacher]:
                 student = psr[student_uid]
-                student_anchor = (
+                student_link = (
                     f"<link href='#{student_uid}'>{student.get('Student')}</link>"
                 )
-                p = Paragraph(student_anchor, styleSheet["BodyText"])
+                p = Paragraph(student_link, styleSheet["BodyText"])
                 Story.append(p)
+
+    Story.append(Spacer(1, 12))
+    Story.append(HRFlowable(thickness=4))
+    Story.append(Spacer(1, 12))
+    Story.append(PageBreak())
+
+    ptext = "By First Name"
+    linkedHeading(Story, ptext, h1)
+    Story.append(Spacer(1, 12))
+
+    for firstname in sorted(by_firstname):
+        for student_uid in by_firstname[firstname]:
+            student = psr[student_uid]
+            student_name = student.get("Student")
+            alastname, afirstname = student_name.split(", ")
+
+            student_link = (
+                f"<link href='#{student_uid}'>{afirstname} {alastname}</link>"
+            )
+            p = Paragraph(student_link, styleSheet["BodyText"])
+            Story.append(p)
 
     Story.append(Spacer(1, 12))
     Story.append(HRFlowable(thickness=4))
