@@ -6,6 +6,7 @@ import sys
 import hashlib
 import tempfile
 
+
 @click.group()
 def cli():
     pass
@@ -55,19 +56,22 @@ def pool_to_teacher_grade(pool):
     return sorted_out
 
 
-def pool_to_teacher_grade_student(pool):
+def pool_to_teacher_grade_student_uids(pool):
     out = {}
     tg = pool_to_teacher_grade(pool)
     for grade in tg:
         out[grade] = {}
         for teacher in tg[grade]:
-            students = []
+            student_uids = []
             for entry in tg[grade][teacher]:
-                student = entry.get("Student")
-                if student not in students:
-                    students.append(student)
+                # student = entry.get("Student")
+                astudent_uid = student_uid(entry)
+
+                if astudent_uid not in student_uids:
+                    student_uids.append(astudent_uid)
                 # students[student].append(entry)
-            out[grade][teacher] = sorted(students)
+            # out[grade][teacher] = sorted(students)
+            out[grade][teacher] = student_uids
     return out
 
 
@@ -77,6 +81,15 @@ def student_uid(entry):
     # grade = entry.get("Grade")
     # teacher = entry.get("Homeroom Teacher")
     uid = hashlib.sha1((student_name + str(dob)).encode("utf-8")).hexdigest()
+    return uid
+
+
+def class_uid(grade=None, teacher=None, entry=None):
+    if grade is None:
+        grade = entry.get("Grade")
+    if teacher is None:
+        teacher = entry.get("Homeroom Teacher")
+    uid = hashlib.sha1((f"{grade}_{teacher}").encode("utf-8")).hexdigest()
     return uid
 
 
@@ -193,23 +206,17 @@ def pool_to_pdf1(pool):
         h._bookmarkName = bn
         story.append(h)
 
-    # from reportlab.pdfgen import canvas
-
-    #pdffn = "afile1.pdf"
-    tmppdf = tempfile.NamedTemporaryFile(
-        #prefix=f"variant-pdf-{now}",
-        suffix=".pdf")
-
+    tmppdf = tempfile.NamedTemporaryFile(suffix=".pdf")
     doc = MyDocTemplate(tmppdf.name)
     Story = []
 
     ptext = "Somerset ES 2023-2024"
     linkedHeading(Story, ptext, h1)
 
-    #formatted_time = datetime.datetime.utcnow().strftime("%Y-%m-%d at %H:%M")
-    #ptext = "<font size=12>This report was generated on %s UTC</font>" % formatted_time
-    #Story.append(Paragraph(html.unescape(ptext), styles["Normal"]))
-    #Story.append(Spacer(1, 12))
+    # formatted_time = datetime.datetime.utcnow().strftime("%Y-%m-%d at %H:%M")
+    # ptext = "<font size=12>This report was generated on %s UTC</font>" % formatted_time
+    # Story.append(Paragraph(html.unescape(ptext), styles["Normal"]))
+    # Story.append(Spacer(1, 12))
 
     # number of genotypes
     story_meta_position = len(Story)
@@ -219,31 +226,33 @@ def pool_to_pdf1(pool):
     Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
-
     styleSheet = getSampleStyleSheet()
 
     drug_h = ParagraphStyle(name="drugHeading1", fontSize=12, leading=14, leftIndent=10)
     ext_link = ParagraphStyle(name="extLink", fontSize=10, leading=12, leftIndent=25)
-    student_name = ParagraphStyle(name="studentName", fontSize=16, leading=12, leftIndent=0)
-
-
+    student_name_style = ParagraphStyle(
+        name="studentName", fontSize=16, leading=12, leftIndent=0
+    )
 
     psr = pool_to_student_relations(pool)
     num_students = 0
     for uid in psr:
         student = psr[uid]
         num_students += 1
-        
-        address = f"{student.get('Address1','')} {student.get('Address2','')} {student.get('Phone','')}"
-        Story.append(Paragraph(student['Student'], student_name))
+        student_anchor = f"<a name='{uid}'/>{student['Student']}"
+        Story.append(Paragraph(student_anchor, student_name_style))
 
-        if phone := student.get('Phone'):
+        if phone := student.get("Phone"):
             Story.append(Paragraph(f"Phone: {phone}", styleSheet["BodyText"]))
-        if student.get('Address1') or student.get('Address2'):
+        if student.get("Address1") or student.get("Address2"):
             address = f"{student.get('Address1','')}<br/>{student.get('Address2','')}"
             Story.append(Paragraph(address, styleSheet["BodyText"]))
-        body = f"{student['Grade']} {student['Homeroom Teacher']}"
-        Story.append(Paragraph(body, styleSheet["BodyText"]))
+
+        grade = student.get("Grade")
+        teacher = student.get("Homeroom Teacher")
+        aclass_uid = class_uid(grade=grade, teacher=teacher)
+        class_anchor = f"<link href='#{aclass_uid}'>{grade} {teacher}</link>"
+        Story.append(Paragraph(class_anchor, styleSheet["BodyText"]))
 
         for relation in student["Relations"]:
 
@@ -272,27 +281,28 @@ def pool_to_pdf1(pool):
                     Story.append(t)
         Story.append(Spacer(1, 12))
 
-
     ptext = "By Grade & Teacher"
     linkedHeading(Story, ptext, h1)
     Story.append(Spacer(1, 12))
-    
-    tgs = pool_to_teacher_grade_student(pool)
+
+    tgs = pool_to_teacher_grade_student_uids(pool)
     for grade in tgs:
         for teacher in tgs[grade]:
-            # dnbn = sha1((grade_teacher).encode("utf-8")).hexdigest()
-            dnbn = ""
-            Story.append(Paragraph(f"{grade} {teacher}", drug_h))
-            for student in tgs[grade][teacher]:
-                # print(grade, teacher, student)
-                p = Paragraph(student, ext_link)
+            aclass_uid = class_uid(grade=grade, teacher=teacher)
+            class_text = f"<a name='{aclass_uid}'/>{grade} {teacher}"
+            Story.append(Paragraph(class_text, drug_h))
+            for student_uid in tgs[grade][teacher]:
+                student = psr[student_uid]
+                student_anchor = (
+                    f"<link href='#{student_uid}'>{student.get('Student')}</link>"
+                )
+                p = Paragraph(student_anchor, styleSheet["BodyText"])
                 Story.append(p)
 
     Story.append(Spacer(1, 12))
     Story.append(HRFlowable(thickness=4))
     Story.append(Spacer(1, 12))
     Story.append(PageBreak())
-
 
     # grade_teacherStory = collections.defaultdict(list)
 
@@ -343,7 +353,7 @@ def pool_to_pdf1(pool):
     #     {relation_name}
     #     {relation_cell}
     #     {relation_email}
-        
+
     #     """
     #     # p = Paragraph(body, ext_link)
     #     # grade_teacherStory[dn].append(p)
