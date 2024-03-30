@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import re
 import click
 import sys
 import hashlib
@@ -68,6 +69,32 @@ def pool_to_teacher_grade_student_uids(pool):
                 if astudent_uid not in student_uids:
                     student_uids.append(astudent_uid)
             out[grade][teacher] = student_uids
+    return out
+
+
+def get_street(address1):
+    if address1 is None:
+        out = None
+    else:
+        out = "unknown"
+    src = address1
+
+    if src:
+        src = re.sub(r" Unit.*$", "", src)
+        src = re.sub(r" Apt.*$", "", src)
+        src = re.sub(r" Floor.*$", "", src)
+        src = re.sub(r" Ste.*$", "", src)
+        src = re.sub(r" Suite.*$", "", src)
+        src = re.sub(r" #.*$", "", src)
+        src = re.sub(r" Unit.*$", "", src)
+    if src:
+        m = re.search(r"^\d{1,} ([a-zA-Z0-9\s]+)", src)
+        if m:
+            out = m.group(1)
+        else:
+            pass
+
+    # print(f"address1: [{address1}] street: [{out}]")
     return out
 
 
@@ -307,6 +334,7 @@ def pool_to_pdf1(pool):
 
     linkedHeading(Story, "By Last Name", h1)
     by_firstname = {}
+    by_street = {}
     for student_uid in psr:
         student = psr[student_uid]
         num_students += 1
@@ -320,9 +348,15 @@ def pool_to_pdf1(pool):
 
         if phone := student.get("Phone"):
             Story.append(Paragraph(f"Phone: {phone}", phone_style))
-        if student.get("Address1") or student.get("Address2"):
+        address1 = student.get("Address1")
+        address2 = student.get("Address2")
+        if address1 or address2:
             address = f"{student.get('Address1','')}<br/>{student.get('Address2','')}"
             Story.append(Paragraph(address, address_style))
+
+        street_name = get_street(address1)
+        if street_name:
+            by_street.setdefault(street_name, []).append(student_uid)
 
         grade = student.get("Grade")
         teacher = student.get("Homeroom Teacher")
@@ -405,6 +439,29 @@ def pool_to_pdf1(pool):
 
             student_link = (
                 f"<link href='#{student_uid}'>{afirstname} {alastname}</link>"
+            )
+            p = Paragraph(student_link, styleSheet["BodyText"])
+            Story.append(p)
+
+    Story.append(Spacer(1, 12))
+    Story.append(HRFlowable(thickness=4))
+    Story.append(Spacer(1, 12))
+    Story.append(PageBreak())
+
+    ptext = "By Street"
+    linkedHeading(Story, ptext, h1)
+    Story.append(Spacer(1, 12))
+
+    for street_name in sorted(by_street):
+        p = Paragraph(street_name, styleSheet["BodyText"])
+        Story.append(p)
+        for student_uid in by_street[street_name]:
+            student = psr[student_uid]
+            student_name = student.get("Student")
+            alastname, afirstname = student_name.split(", ")
+
+            student_link = (
+                f"\u2022 <link href='#{student_uid}'>{afirstname} {alastname}</link>"
             )
             p = Paragraph(student_link, styleSheet["BodyText"])
             Story.append(p)
