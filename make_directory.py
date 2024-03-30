@@ -34,7 +34,24 @@ def make_all_pdfs(ctx, src):
 
     pool = xlsx_to_pool(src)
     story = pool_to_story(pool)
-    story_to_pdf(story)
+    story_to_pdf(
+        story,
+        filename="master.pdf",
+    )
+
+    story = pool_to_story(pool)
+    story_to_pdf(
+        story,
+        owner="chris.press@gmail.com",
+        filename="for_chris.pdf",
+    )
+
+    story = pool_to_story(pool)
+    story_to_pdf(
+        story,
+        owner="victoria.levitas@gmail.com",
+        filename="for_victoria.pdf",
+    )
 
 
 def partition(v):
@@ -194,21 +211,45 @@ def AllPageSetup(canvas, doc):
 
     canvas.setAuthor("Somerset ES PTA")
     canvas.setTitle("Somerset ES 2023-2024 Directory")
-    if hasattr(doc, "owner"):
-        canvas.setSubject(doc.owner)
-        canvas.drawString(0.5 * inch, 0.5 * inch, doc.owner)
 
-    # header
-    # canvas.drawString(0.5 * inch, 8 * inch, doc.fund)
-    # canvas.drawRightString(10.5 * inch, 8 * inch, doc.report_info)
+    if doc.page == 1:
+        canvas.drawImage(
+            "somerset_es_directory_cover.jpg", 1.25 * inch, 3 * inch
+        )  # , *pagesize)
 
-    # footers
-    canvas.drawRightString(8.2 * inch, 0.1 * inch, "Page %d" % (doc.page))
+        c = canvas
 
-    # canvas.setFont("Helvetica", 240)
-    # canvas.setStrokeGray(0.90)
-    # canvas.setFillGray(0.90)
-    # canvas.drawCentredString(5.5 * inch, 3.25 * inch, doc.watermark)
+        # First Example
+        c.setFillColorRGB(0, 1, 0)  # choose your font colour
+        c.setFont("Helvetica", 60)  # choose your font type and font size
+        c.drawString(1.25 * inch, 9.25 * inch, "Somerset ES")  # write your text
+        c.drawString(1.25 * inch, 8.25 * inch, "Directory")  # write your text
+        c.drawString(1.25 * inch, 7.25 * inch, "2023-2024")  # write your text
+
+        ##Second Example
+        # c.setStrokeColorRGB(0,1,0.3) #choose your line color
+        # c.line(2,2,2*inch,2*inch)
+
+        ##Third Example
+        # c.setFillColorRGB(1,1,0) #choose fill colour
+        # c.rect(4*inch,4*inch,2*inch,3*inch, fill=1) #draw rectangle
+
+    else:
+        canvas.drawRightString(8.2 * inch, 0.1 * inch, "Page %d" % (doc.page))
+        if hasattr(doc, "owner"):
+            canvas.setSubject(doc.owner)
+            # canvas.drawString(0.5 * inch, 0.5 * inch, doc.owner)
+
+            canvas.rotate(90)
+            fs = canvas._fontsize
+            canvas.translate(1, -fs / 1.2)  # canvas._leading?
+            canvas.drawString(5.25 * inch, -0.18 * inch, doc.owner)
+
+        # header
+        # canvas.drawString(0.5 * inch, 8 * inch, doc.fund)
+        # canvas.drawRightString(10.5 * inch, 8 * inch, doc.report_info)
+
+        # footers
 
     canvas.restoreState()
 
@@ -299,6 +340,7 @@ def pool_to_story(pool):
     toc = TableOfContents()
     toc.levelStyles = [h1, h2]
 
+    Story.append(PageBreak())
     Story.append(toc)
     Story.append(PageBreak())
 
@@ -307,6 +349,12 @@ def pool_to_story(pool):
 
     Story.append(Spacer(1, 12))
     style = styles["Normal"]
+
+    p = Paragraph(
+        "There are many hyperlinks in the electronic version of this directory", style
+    )
+    Story.append(p)
+    Story.append(Spacer(1, 12))
 
     bogustext = ""
     for i in range(2, 8):
@@ -489,10 +537,11 @@ def pool_to_story(pool):
     return Story
 
 
-def story_to_pdf(Story):
+def story_to_pdf(Story, owner=None, filename="mypdf1.pdf"):
     tmppdf = tempfile.NamedTemporaryFile(suffix=".pdf")
     doc = MyDocTemplate(tmppdf.name)
-    # doc.owner = "you2@you.com"
+    if owner:
+        doc.owner = owner
 
     success = False
     try:
@@ -516,9 +565,9 @@ def story_to_pdf(Story):
     if success:
         from shutil import copyfile
 
-        copyfile(tmppdf.name, "mypdf1.pdf")
+        copyfile(tmppdf.name, filename)
     else:
-        print("failed to make the pdf")
+        print(f"failed to make {filename}")
 
     return
 
