@@ -7,6 +7,19 @@ import hashlib
 import tempfile
 import traceback
 
+import reportlab.platypus
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_JUSTIFY
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.platypus import PageBreak, Paragraph, Spacer, Table
+from reportlab.platypus.doctemplate import BaseDocTemplate, PageTemplate
+from reportlab.platypus.flowables import HRFlowable
+from reportlab.platypus.frames import Frame
+
+from reportlab.platypus.tableofcontents import TableOfContents
+
 
 @click.group()
 def cli():
@@ -20,7 +33,8 @@ def make_all_pdfs(ctx, src):
     """setup whatever is needed"""
 
     pool = xlsx_to_pool(src)
-    pool_to_pdf1(pool)
+    story = pool_to_story(pool)
+    story_to_pdf(story)
 
 
 def partition(v):
@@ -175,75 +189,86 @@ def pool_to_student_relations(pool):
     return out
 
 
-def pool_to_pdf1(pool):
+def AllPageSetup(canvas, doc):
 
-    # import datetime
-    # import html
-    # import collections
+    canvas.saveState()
 
-    import reportlab.platypus
-    from reportlab.lib import colors
-    from reportlab.lib.enums import TA_JUSTIFY
-    from reportlab.lib.pagesizes import letter
-    from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-    from reportlab.lib.units import inch
-    from reportlab.platypus import PageBreak, Paragraph, Spacer, Table
-    from reportlab.platypus.doctemplate import BaseDocTemplate, PageTemplate
-    from reportlab.platypus.flowables import HRFlowable
-    from reportlab.platypus.frames import Frame
+    canvas.setAuthor("Somerset ES PTA")
+    canvas.setTitle("Somerset ES 2023-2024 Directory")
+    if hasattr(doc, "owner"):
+        canvas.setSubject(doc.owner)
+        canvas.drawString(0.5 * inch, 0.5 * inch, doc.owner)
 
-    from reportlab.platypus.tableofcontents import TableOfContents
+    # header
+    # canvas.drawString(0.5 * inch, 8 * inch, doc.fund)
+    # canvas.drawRightString(10.5 * inch, 8 * inch, doc.report_info)
+
+    # footers
+    canvas.drawRightString(8.2 * inch, 0.1 * inch, "Page %d" % (doc.page))
+
+    # canvas.setFont("Helvetica", 240)
+    # canvas.setStrokeGray(0.90)
+    # canvas.setFillGray(0.90)
+    # canvas.drawCentredString(5.5 * inch, 3.25 * inch, doc.watermark)
+
+    canvas.restoreState()
+
+
+class MyDocTemplate(BaseDocTemplate):
+    def __init__(self, filename, **kw):
+        self.allowSplitting = 0
+        BaseDocTemplate.__init__(
+            self,
+            filename,
+            pagesize=letter,
+            rightMargin=72,
+            leftMargin=72,
+            topMargin=72,
+            bottomMargin=18,
+            **kw,
+        )
+        template = PageTemplate(
+            "normal",
+            [Frame(0.5 * inch, 0.1 * inch, 7.5 * inch, 10.5 * inch, id="F1")],
+            onPage=AllPageSetup,
+        )
+        self.addPageTemplates(template)
+
+    def afterFlowable(self, flowable):
+        "Registers TOC entries."
+        if flowable.__class__.__name__ == "Paragraph":
+            text = flowable.getPlainText()
+            style = flowable.style.name
+
+            if style == "Heading1":
+                level = 0
+            elif style == "Heading2":
+                level = 1
+            else:
+                return
+
+            E = [level, text, self.page]
+            # if we have a bookmark name append that to our notify data
+            bn = getattr(flowable, "_bookmarkName", None)
+            if bn is not None:
+                E.append(bn)
+            self.notify("TOCEntry", tuple(E))
+
+
+def linkedHeading(story, text, style):
+    # create bookmarkname
+    bn = hashlib.sha1((text + style.name).encode("utf-8")).hexdigest()
+    # modify paragraph text to include an anchor point with name bn
+    h = Paragraph(text + '<a name="%s"/>' % bn, style)
+    # store the bookmark name on the flowable so afterFlowable can see this
+    h._bookmarkName = bn
+    story.append(h)
+
+
+def pool_to_story(pool):
 
     styles = getSampleStyleSheet()
     styles.add(ParagraphStyle(name="Justify", alignment=TA_JUSTIFY))
-
-    class MyDocTemplate(BaseDocTemplate):
-        def __init__(self, filename, **kw):
-            self.allowSplitting = 0
-            BaseDocTemplate.__init__(
-                self,
-                filename,
-                pagesize=letter,
-                rightMargin=72,
-                leftMargin=72,
-                topMargin=72,
-                bottomMargin=18,
-                **kw,
-            )
-            template = PageTemplate(
-                "normal",
-                [Frame(0.5 * inch, 0.1 * inch, 7.5 * inch, 10.5 * inch, id="F1")],
-            )
-            self.addPageTemplates(template)
-
-        def afterFlowable(self, flowable):
-            "Registers TOC entries."
-            if flowable.__class__.__name__ == "Paragraph":
-                text = flowable.getPlainText()
-                style = flowable.style.name
-
-                if style == "Heading1":
-                    level = 0
-                elif style == "Heading2":
-                    level = 1
-                else:
-                    return
-
-                E = [level, text, self.page]
-                # if we have a bookmark name append that to our notify data
-                bn = getattr(flowable, "_bookmarkName", None)
-                if bn is not None:
-                    E.append(bn)
-                self.notify("TOCEntry", tuple(E))
-
-    def linkedHeading(story, text, style):
-        # create bookmarkname
-        bn = hashlib.sha1((text + style.name).encode("utf-8")).hexdigest()
-        # modify paragraph text to include an anchor point with name bn
-        h = Paragraph(text + '<a name="%s"/>' % bn, style)
-        # store the bookmark name on the flowable so afterFlowable can see this
-        h._bookmarkName = bn
-        story.append(h)
 
     h1 = ParagraphStyle(name="Heading1", fontSize=14, leading=16)
     h2 = ParagraphStyle(name="Heading2", fontSize=12, leading=18)
@@ -271,8 +296,6 @@ def pool_to_pdf1(pool):
     address_style = body_style
     teacher_style = body_style
 
-    tmppdf = tempfile.NamedTemporaryFile(suffix=".pdf")
-    doc = MyDocTemplate(tmppdf.name)
     Story = []
     toc = TableOfContents()
     toc.levelStyles = [h1, h2]
@@ -316,14 +339,6 @@ def pool_to_pdf1(pool):
         Story.append(p)
         Story.append(Spacer(1, 12))
 
-    # formatted_time = datetime.datetime.utcnow().strftime("%Y-%m-%d at %H:%M")
-    # ptext = "<font size=12>This report was generated on %s UTC</font>" % formatted_time
-    # Story.append(Paragraph(html.unescape(ptext), styles["Normal"]))
-    # Story.append(Spacer(1, 12))
-
-    # number of genotypes
-    # story_meta_position = len(Story)
-
     Story.append(Spacer(1, 12))
     Story.append(HRFlowable(thickness=4))
     Story.append(Spacer(1, 12))
@@ -333,6 +348,7 @@ def pool_to_pdf1(pool):
     num_students = 0
 
     linkedHeading(Story, "By Last Name", h1)
+
     by_firstname = {}
     by_street = {}
     for student_uid in psr:
@@ -471,9 +487,13 @@ def pool_to_pdf1(pool):
     Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
-    # Story[story_meta_position] = Paragraph(
-    #    f"Number of students: {num_students}", styles["Normal"]
-    # )
+    return Story
+
+
+def story_to_pdf(Story):
+    tmppdf = tempfile.NamedTemporaryFile(suffix=".pdf")
+    doc = MyDocTemplate(tmppdf.name)
+    # doc.owner = "you2@you.com"
 
     success = False
     try:
