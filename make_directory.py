@@ -66,7 +66,6 @@ def pool_to_teacher_grade(pool):
     for grade in sorted(out):
         sorted_out[grade] = {}
         for teacher in sorted(out[grade]):
-            # sorted_out[grade][teacher] = sorted(out[grade][teacher], key=lambda x: x.get("Student"))
             sorted_out[grade][teacher] = out[grade][teacher]
     return sorted_out
 
