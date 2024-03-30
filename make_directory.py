@@ -209,9 +209,6 @@ def pool_to_pdf1(pool):
                     E.append(bn)
                 self.notify("TOCEntry", tuple(E))
 
-    h1 = ParagraphStyle(name="Heading1", fontSize=14, leading=16)
-    h2 = ParagraphStyle(name="Heading2", fontSize=12, leading=18)
-
     def linkedHeading(story, text, style):
         # create bookmarkname
         bn = hashlib.sha1((text + style.name).encode("utf-8")).hexdigest()
@@ -221,11 +218,38 @@ def pool_to_pdf1(pool):
         h._bookmarkName = bn
         story.append(h)
 
+    h1 = ParagraphStyle(name="Heading1", fontSize=14, leading=16)
+    h2 = ParagraphStyle(name="Heading2", fontSize=12, leading=18)
+
+    styleSheet = getSampleStyleSheet()
+
+    body_style = styleSheet["BodyText"]
+
+    teacher_style = ParagraphStyle(
+        name="teacher", fontSize=12, leading=14, leftIndent=10
+    )
+    student_name_style = ParagraphStyle(
+        name="studentName", fontSize=16, leading=12, leftIndent=0
+    )
+
+    phone_style = ParagraphStyle(name="phone", fontSize=12, leading=12, leftIndent=10)
+    address_style = ParagraphStyle(
+        name="address", fontSize=12, leading=12, leftIndent=20
+    )
+    teacher_style = ParagraphStyle(
+        name="teacher", fontSize=12, leading=12, leftIndent=15
+    )
+
+    phone_style = body_style
+    address_style = body_style
+    teacher_style = body_style
+
     tmppdf = tempfile.NamedTemporaryFile(suffix=".pdf")
     doc = MyDocTemplate(tmppdf.name)
     Story = []
     toc = TableOfContents()
     toc.levelStyles = [h1, h2]
+
     Story.append(toc)
     Story.append(PageBreak())
 
@@ -233,11 +257,37 @@ def pool_to_pdf1(pool):
     linkedHeading(Story, ptext, h1)
 
     Story.append(Spacer(1, 12))
+    style = styles["Normal"]
+
+    bogustext = ""
+    for i in range(2, 8):
+        bogustext += f"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua {i}. "
+        p = Paragraph(bogustext, style)
+        Story.append(p)
+        Story.append(Spacer(1, 12))
+
+    for i in range(5):
+        bogustext = (
+            f"Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat {i}. "
+            * 10
+        )
+        p = Paragraph(bogustext, style)
+        Story.append(p)
+        Story.append(Spacer(1, 12))
+
+    Story.append(Spacer(1, 12))
     Story.append(HRFlowable(thickness=4))
     Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
     linkedHeading(Story, "FAQ", h1)
+
+    bogustext = ""
+    for i in range(5, 10):
+        bogustext = f"Bacon ipsum dolor amet burgdoggen buffalo pig tenderloin cow meatloaf andouille frankfurter ribeye. Landjaeger t-bone bacon, picanha cow ground round turducken kevin short loin jerky jowl. Short loin jowl chicken pig shoulder flank pork pork loin, boudin salami capicola swine tenderloin picanha. Rump sausage pork loin tongue hamburger shank jowl spare ribs boudin cow ball tip brisket. Ball tip shoulder pork belly leberkas. Jowl bresaola beef ribs strip steak turkey meatball capicola. Prosciutto bacon pork belly salami pork loin jowl, chuck cow. {i}"
+        p = Paragraph(bogustext, style)
+        Story.append(p)
+        Story.append(Spacer(1, 12))
 
     # formatted_time = datetime.datetime.utcnow().strftime("%Y-%m-%d at %H:%M")
     # ptext = "<font size=12>This report was generated on %s UTC</font>" % formatted_time
@@ -251,28 +301,6 @@ def pool_to_pdf1(pool):
     Story.append(HRFlowable(thickness=4))
     Story.append(Spacer(1, 12))
     Story.append(PageBreak())
-
-    styleSheet = getSampleStyleSheet()
-
-    teacher_style = ParagraphStyle(
-        name="teacher", fontSize=12, leading=14, leftIndent=10
-    )
-    # ext_link = ParagraphStyle(name="extLink", fontSize=10, leading=12, leftIndent=25)
-    student_name_style = ParagraphStyle(
-        name="studentName", fontSize=16, leading=12, leftIndent=0
-    )
-
-    phone_style = ParagraphStyle(name="phone", fontSize=12, leading=12, leftIndent=10)
-    address_style = ParagraphStyle(
-        name="address", fontSize=12, leading=12, leftIndent=20
-    )
-    teacher_style = ParagraphStyle(
-        name="teacher", fontSize=12, leading=12, leftIndent=15
-    )
-
-    phone_style = styleSheet["BodyText"]
-    address_style = styleSheet["BodyText"]
-    teacher_style = styleSheet["BodyText"]
 
     psr = pool_to_student_relations(pool)
     num_students = 0
