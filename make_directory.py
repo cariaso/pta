@@ -343,6 +343,10 @@ def pool_to_story(pool):
         name="studentName", fontSize=16, leading=12, leftIndent=0
     )
 
+    student_street_style = ParagraphStyle(
+        name="studentStreet", fontSize=12, leading=14, leftIndent=20
+    )
+
     phone_style = ParagraphStyle(name="phone", fontSize=12, leading=12, leftIndent=10)
     address_style = ParagraphStyle(
         name="address", fontSize=12, leading=12, leftIndent=20
@@ -824,7 +828,7 @@ def pool_to_story(pool):
     Story.append(Paragraph("Discipline", h2))
     Story.append(
         Paragraph(
-            """Copies of Somerset's discipline policy are available in the school office or the Somerset Elementary website.""",
+            """Copies of Somerset's discipline policy are available in the school office or https://www.montgomeryschoolsmd.org/schools/somersetes/about/""",
             normal,
         )
     )
@@ -1611,7 +1615,7 @@ def pool_to_story(pool):
     Story.append(Spacer(1, 12))
 
     for street_name in sorted(by_street):
-        p = Paragraph(street_name, styleSheet["BodyText"])
+        p = Paragraph(street_name, h2)
         Story.append(p)
         for student_uid in by_street[street_name]:
             student = psr[student_uid]
@@ -1621,7 +1625,7 @@ def pool_to_story(pool):
             student_link = (
                 f"\u2022 <link href='#{student_uid}'>{afirstname} {alastname}</link>"
             )
-            p = Paragraph(student_link, styleSheet["BodyText"])
+            p = Paragraph(student_link, student_street_style)
             Story.append(p)
 
     Story.append(Spacer(1, 12))
