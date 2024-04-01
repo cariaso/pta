@@ -724,7 +724,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Arrival at School", h2),
                 Paragraph(
-                    """Students arriving by bus generally arrive at school between 8:40-8:55 am. Students not riding buses should arrive between 8:40-8:50 am. The school day begins when the first bell rings at 8:54 am with instruction beginning at 9:00 am. If your student needs supervision prior to 8:40 am, please contact Bar-T Kids Club at 240-364-4196 for information about enrollment in its Before School program.""",
+                    """Students arriving by bus generally arrive at school between 8:40-8:55 am. Students not riding buses should arrive between 8:40-8:50 am. The school day begins when the first bell rings at 8:54 am with instruction beginning at 9:00 am. If your student needs supervision prior to 8:40 am, please contact Bar-T Kids Club at 240-364-4196 for information about enrollment in its Before School program. https://www.bar-t.com/program/kids-club/ """,
                     normal,
                 ),
             ]
@@ -761,7 +761,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Bar-T Kids Club", h2),
                 Paragraph(
-                    """Before and after school programs offers a place for students to learn, play and enjoy the supportive Bar-T community. For information regarding before and after school child care ChildCare please call: Bar-T Kids Club at 240-364-4196""",
+                    """Before and after school programs offers a place for students to learn, play and enjoy the supportive Bar-T community. For information regarding before and after school child care ChildCare please call: Bar-T Kids Club at 240-364-4196 or vist https://www.bar-t.com/program/kids-club/""",
                     normal,
                 ),
             ]
@@ -863,7 +863,7 @@ def pool_to_story(pool):
                     normal,
                 ),
                 Paragraph(
-                    """You may also sign up for SMS text and email messages with AlertMCPS. Twitter updates can be accessed at twitter.com/mcps. The school will also post information on somerset-net listserv. For delayed opening or emergency closing information for Bar-T at Somerset, call Bar-T Kids Club at 240-364-4196.""",
+                    """You may also sign up for SMS text and email messages with AlertMCPS. Twitter updates can be accessed at twitter.com/mcps. The school will also post information on somerset-net listserv. For delayed opening or emergency closing information for Bar-T at Somerset, call Bar-T Kids Club at 240-364-4196 or visit https://www.bar-t.com/program/kids-club/ .""",
                     normal,
                 ),
             ]
@@ -1527,7 +1527,7 @@ def pool_to_story(pool):
     )
     Story.append(
         Paragraph(
-            """A: Bar-T provides before and/or aftercare for a fee. Bar-T Kids Club at 240-364-4196""",
+            """A: Bar-T provides before and/or aftercare for a fee. Bar-T Kids Club at 240-364-4196 https://www.bar-t.com/program/kids-club/""",
             normal,
         )
     )
