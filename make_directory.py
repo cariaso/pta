@@ -30,11 +30,6 @@ class MyDocTemplate(BaseDocTemplate):
             self,
             filename,
             pagesize=(5.5 * inch, 8.5 * inch),
-            # pagesize=A6,
-            # rightMargin=72,
-            # leftMargin=72,
-            # topMargin=72,
-            # bottomMargin=18,
             **kw,
         )
         template = PageTemplate(
@@ -330,17 +325,19 @@ def pool_to_story(pool):
     tcoh2 = ParagraphStyle(name="TOCHeading2", fontSize=12, leading=18)
 
     h1 = ParagraphStyle(name="Heading1", fontSize=14, leading=16)
-    h2 = ParagraphStyle(name="Heading2", fontSize=12, leading=18)
+    h2 = ParagraphStyle(
+        name="Heading2", fontSize=12, leading=18, fontName="Helvetica-Bold"
+    )
 
     styleSheet = getSampleStyleSheet()
 
     body_style = styleSheet["BodyText"]
 
-    # teacher_style = ParagraphStyle(
-    #    name="teacher", fontSize=12, leading=14, leftIndent=10
-    # )
     teacher_style = ParagraphStyle(
-        name="teacher", fontSize=14  # , leading=12, leftIndent=15
+        name="teacher",
+        fontSize=14,
+        leading=20,  # leftIndent=15
+        fontName="Helvetica-Bold",
     )
 
     details_student_name_style = ParagraphStyle(
@@ -368,10 +365,6 @@ def pool_to_story(pool):
     student_teacher_style = ParagraphStyle(
         name="studentTeacher", fontSize=12, leading=14, leftIndent=20
     )
-
-    # phone_style = body_style
-    # address_style = body_style
-
     style = styles["Normal"]
     normal = styles["Normal"]
 
@@ -667,10 +660,8 @@ def pool_to_story(pool):
             ]
         )
 
-    #    Story.append(Paragraph(f"{staff_name} {staff_title} {staff_email}", body_style))
     t = Table(
         staff_table,
-        # colWidths=[2.4 * inch, 2.5 * inch, 2.5 * inch],
         style=[
             ("LINEABOVE", (0, 1), (-1, -1), 0.25, colors.black),
             # ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
@@ -688,108 +679,147 @@ def pool_to_story(pool):
     Story.append(Spacer(1, 12))
 
     # SOMERSET A to Z
-    Story.append(Paragraph("Absences", h2))
 
     Story.append(
-        Paragraph(
-            """"If a student is going to be absent for any reason, parents are asked to telephone the school office prior to 9 am at 301-657-4985. After missing five consecutive days of school, it's requested that you submit a doctor's note.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Absences", h2),
+                Paragraph(
+                    """"If a student is going to be absent for any reason, parents are asked to telephone the school office prior to 9 am at 301-657-4985. After missing five consecutive days of school, it's requested that you submit a doctor's note.""",
+                    normal,
+                ),
+                Paragraph(
+                    """Maryland State Department of Education rules for attendance: A student is counted present for a full day if a student is in school for four hours or more of the school day. A student is counted as absent for a half day if he or she arrives more than two hours after the start of the school day, leaves more than two hours before the end of the school day or leaves school for more than two hours during the day. A student is considered tardy if he or she arrives after the last bell and within the first two hours of the school day.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     Story.append(
-        Paragraph(
-            """Maryland State Department of Education rules for attendance: A student is counted present for a full day if a student is in school for four hours or more of the school day. A student is counted as absent for a half day if he or she arrives more than two hours after the start of the school day, leaves more than two hours before the end of the school day or leaves school for more than two hours during the day. A student is considered tardy if he or she arrives after the last bell and within the first two hours of the school day.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph(
+                    "Advertising",
+                    h2,
+                ),
+                Paragraph(
+                    """Permission to distribute advertising material of any kind, in the school or on the grounds, must follow the guidelines set forth by the Board of Education. Please consult the school office staff before distributing materials.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     Story.append(
-        Paragraph(
-            "Advertising",
-            h2,
-        )
-    )
-    Story.append(
-        Paragraph(
-            """Permission to distribute advertising material of any kind, in the school or on the grounds, must follow the guidelines set forth by the Board of Education. Please consult the school office staff before distributing materials.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Arrival at School", h2))
-    Story.append(
-        Paragraph(
-            """Students arriving by bus generally arrive at school between 8:40-8:55 am. Students not riding buses should arrive between 8:40-8:50 am. The school day begins when the first bell rings at 8:54 am with instruction beginning at 9:00 am. If your student needs supervision prior to 8:40 am, please contact Bar-T Kids Club at 240-364-4196 for information about enrollment in its Before School program.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Arrival at School", h2),
+                Paragraph(
+                    """Students arriving by bus generally arrive at school between 8:40-8:55 am. Students not riding buses should arrive between 8:40-8:50 am. The school day begins when the first bell rings at 8:54 am with instruction beginning at 9:00 am. If your student needs supervision prior to 8:40 am, please contact Bar-T Kids Club at 240-364-4196 for information about enrollment in its Before School program.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     # (see also Departure from School)
-    Story.append(Paragraph("Back-to-School Classic 8k/2k", h2))
     Story.append(
-        Paragraph(
-            """The Back-to-School Classic has been run for over 30 years. Somerset parents and students work together to host a certified 8K road race, a 2K run/walk, as well as special student fun runs. This event attracts hundreds of runners from the metro area and is one of the PTA's largest fundraising activities.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Back-to-School Classic 8k/2k", h2),
+                Paragraph(
+                    """The Back-to-School Classic has been run for over 30 years. Somerset parents and students work together to host a certified 8K road race, a 2K run/walk, as well as special student fun runs. This event attracts hundreds of runners from the metro area and is one of the PTA's largest fundraising activities.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Back-to-School Night", h2))
     Story.append(
-        Paragraph(
-            """In September, parents are invited to meet the teachers and visit their student's classrooms for an explanation of the school year curriculum and classroom policies and practices. There are separate nights for grades K-2 and 3-5.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Back-to-School Night", h2),
+                Paragraph(
+                    """In September, parents are invited to meet the teachers and visit their student's classrooms for an explanation of the school year curriculum and classroom policies and practices. There are separate nights for grades K-2 and 3-5.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Bar-T Kids Club", h2))
     Story.append(
-        Paragraph(
-            """Before and after school programs offers a place for students to learn, play and enjoy the supportive Bar-T community. For information regarding before and after school child care ChildCare please call: Bar-T Kids Club at 240-364-4196""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Bar-T Kids Club", h2),
+                Paragraph(
+                    """Before and after school programs offers a place for students to learn, play and enjoy the supportive Bar-T community. For information regarding before and after school child care ChildCare please call: Bar-T Kids Club at 240-364-4196""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Bicycles and Scooters", h2))
     Story.append(
-        Paragraph(
-            """Students are permitted to ride bikes and scooters to school and are required to wear bike helmets. All bikes and scooters must be parked and locked at the bike rack located on the south side of the building. Bikes and scooters are not permitted anywhere else on school grounds. MCPS and Somerset Elementary does not assume responsibility for bicycles and scooters brought to school.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Bicycles and Scooters", h2),
+                Paragraph(
+                    """Students are permitted to ride bikes and scooters to school and are required to wear bike helmets. All bikes and scooters must be parked and locked at the bike rack located on the south side of the building. Bikes and scooters are not permitted anywhere else on school grounds. MCPS and Somerset Elementary does not assume responsibility for bicycles and scooters brought to school.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     # "Birthday or Other Personal Celebrations"
     # """Party invitations for celebrations must be sent to students at their home addresses and may not be distributed at school. With the approval of classroom teachers, limited school celebration, such as store bought cookies or cupcakes to share with classmates, is usually permitted. Please contact the classroom teacher directly to discuss his/her policy."""
 
-    Story.append(Paragraph("Bus Transportation", h2))
     Story.append(
-        Paragraph(
-            """MCPS provides bus service for Somerset students who live outside of the walking boundaries. For questions about the bus service, please call William Stapleton at 301-469-1068. For route stops and schedules, visit the MCPS website and choose Students, then Bus Transportation. Select Bus Routes by School, then Somerset ES.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Bus Transportation", h2),
+                Paragraph(
+                    """MCPS provides bus service for Somerset students who live outside of the walking boundaries. For questions about the bus service, please call William Stapleton at 301-469-1068. For route stops and schedules, visit the MCPS website and choose Students, then Bus Transportation. Select Bus Routes by School, then Somerset ES.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Camp Summerset", h2))
     Story.append(
-        Paragraph(
-            """The PTA runs a summer camp designed for pre-K (age 4) - 5th grade (rising 6th graders) that offers an array of activities including arts, sports, yoga, games, swimming, and trips into the city. Camp starts the week after school is out and is staffed by Somerset teachers and other professionals. Information and registration are available in January at www.campsummerset.com.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Camp Summerset", h2),
+                Paragraph(
+                    """The PTA runs a summer camp designed for pre-K (age 4) - 5th grade (rising 6th graders) that offers an array of activities including arts, sports, yoga, games, swimming, and trips into the city. Camp starts the week after school is out and is staffed by Somerset teachers and other professionals. Information and registration are available in January at www.campsummerset.com.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Career Day", h2))
     Story.append(
-        Paragraph(
-            """Individuals, many of them Somerset parents, representing a variety of professions and skills, visit Somerset to talk the about different career paths. This event is usually held in early April.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Career Day", h2),
+                Paragraph(
+                    """Individuals, many of them Somerset parents, representing a variety of professions and skills, visit Somerset to talk the about different career paths. This event is usually held in early April.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Change of Address and Telephone Numbers", h2))
     Story.append(
-        Paragraph(
-            """The school must have current addresses and phone numbers (home, cell and work) for all parents and guardians. Please remember to let the school office know immediately of any changes to contact information on your emergency cards.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Change of Address and Telephone Numbers", h2),
+                Paragraph(
+                    """The school must have current addresses and phone numbers (home, cell and work) for all parents and guardians. Please remember to let the school office know immediately of any changes to contact information on your emergency cards.""",
+                    normal,
+                ),
+            ]
         )
     )
 
@@ -800,488 +830,675 @@ def pool_to_story(pool):
     # Most bulletins and notices go home on Tuesdays or Fridays.
     # Each grade also has a page or series of pages on the school website where teachers communicate with parents and families through class or grade newsletters, as well as share learning resources and photos of activities at school. The PTA sends out a weekly email (the TIN) on Sundays.
 
-    Story.append(Paragraph("Cultural Arts", h2))
     Story.append(
-        Paragraph(
-            """As part of the school program, Somerset students have many opportunities to extend their appreciation for the cultural arts. With support from PTA funds, professional drama, dance, and music groups entertain Somersets students at many in-school performances. Artist-in-residence programs help integrate the arts into the curriculum in individual grades. The school organizes many field trips to support the instructional program. Students may attend performances at the Kennedy Center, Strathmore, and also visit theaters, museums, and other cultural centers.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Delayed Opening and Emergency Closing", h2))
-    Story.append(
-        Paragraph(
-            """In the event of severe weather, Somerset may delay opening by 2 hours, close 2-1/2 hours early, or close for the day. If school is closed early due to weather conditions, all students will be sent home according to the emergency instructions provided by parents/guardians. In addition, any after school and evening activities scheduled at the school will be canceled.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Cultural Arts", h2),
+                Paragraph(
+                    """As part of the school program, Somerset students have many opportunities to extend their appreciation for the cultural arts. With support from PTA funds, professional drama, dance, and music groups entertain Somersets students at many in-school performances. Artist-in-residence programs help integrate the arts into the curriculum in individual grades. The school organizes many field trips to support the instructional program. Students may attend performances at the Kennedy Center, Strathmore, and also visit theaters, museums, and other cultural centers.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     Story.append(
-        Paragraph(
-            """PLEASE NOTE: If severe weather conditions exist anywhere in the general area, please stay informed. MCPS covers a large and diverse weather region, and may declare a school closure even if severe conditions do not exist in Somerset. Call the MCPS Emergency Hot-Line at 301-279-3673 for recorded emergency information, or check the MCPS website at www.montgomeryschoolsmd.org. Subscribe to MCPS QuickNotes for weather-related email messages.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Delayed Opening and Emergency Closing", h2),
+                Paragraph(
+                    """In the event of severe weather, Somerset may delay opening by 2 hours, close 2-1/2 hours early, or close for the day. If school is closed early due to weather conditions, all students will be sent home according to the emergency instructions provided by parents/guardians. In addition, any after school and evening activities scheduled at the school will be canceled.""",
+                    normal,
+                ),
+                Paragraph(
+                    """PLEASE NOTE: If severe weather conditions exist anywhere in the general area, please stay informed. MCPS covers a large and diverse weather region, and may declare a school closure even if severe conditions do not exist in Somerset. Call the MCPS Emergency Hot-Line at 301-279-3673 for recorded emergency information, or check the MCPS website at www.montgomeryschoolsmd.org. Subscribe to MCPS QuickNotes for weather-related email messages.""",
+                    normal,
+                ),
+                Paragraph(
+                    """You may also sign up for SMS text and email messages with AlertMCPS. Twitter updates can be accessed at twitter.com/mcps. The school will also post information on somerset-net listserv. For delayed opening or emergency closing information for Bar-T at Somerset, call Bar-T Kids Club at 240-364-4196.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     Story.append(
-        Paragraph(
-            """You may also sign up for SMS text and email messages with AlertMCPS. Twitter updates can be accessed at twitter.com/mcps. The school will also post information on somerset-net listserv. For delayed opening or emergency closing information for Bar-T at Somerset, call Bar-T Kids Club at 240-364-4196.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Departure from School", h2),
+                Paragraph(
+                    """Students are dismissed at 3:22 pm, and should leave school promptly at that time. Students enrolled in the Bar-T Before or After School programs, or attending a Somerset academic club or activity, will meet at their designated locations. If a student is to be picked up by someone other than their parent or guardian, the school must have wriften authorization from the parent or guardian.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Departure from School", h2))
     Story.append(
-        Paragraph(
-            """Students are dismissed at 3:22 pm, and should leave school promptly at that time. Students enrolled in the Bar-T Before or After School programs, or attending a Somerset academic club or activity, will meet at their designated locations. If a student is to be picked up by someone other than their parent or guardian, the school must have wriften authorization from the parent or guardian.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Discipline", h2),
+                Paragraph(
+                    """Copies of Somerset's discipline policy are available in the school office or https://www.montgomeryschoolsmd.org/schools/somersetes/about/""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Discipline", h2))
     Story.append(
-        Paragraph(
-            """Copies of Somerset's discipline policy are available in the school office or https://www.montgomeryschoolsmd.org/schools/somersetes/about/""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Dogs", h2),
+                Paragraph(
+                    """A county ordinance prohibits dogs from being on school grounds while school is open. If you walk to school with your dog, please do not bring him or her on school grounds. If you decide to walk your dog on school grounds outside of school hours, please be courteous and pick up after your pet at all times. Dogs are never permitted to be on the turf field, even outside of school hours.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Dogs", h2))
     Story.append(
-        Paragraph(
-            """A county ordinance prohibits dogs from being on school grounds while school is open. If you walk to school with your dog, please do not bring him or her on school grounds. If you decide to walk your dog on school grounds outside of school hours, please be courteous and pick up after your pet at all times. Dogs are never permitted to be on the turf field, even outside of school hours.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Early Dismissal", h2),
+                Paragraph(
+                    """A student who needs to be dismissed early for any reason must bring an explanatory note. No student will be dismissed during school hours to anyone other than his or her parent (s) without written permission. Students are to be picked up at the office. A parent or guardian must provide requested information on the sign-out log located on the office counter.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Early Dismissal", h2))
     Story.append(
-        Paragraph(
-            """A student who needs to be dismissed early for any reason must bring an explanatory note. No student will be dismissed during school hours to anyone other than his or her parent (s) without written permission. Students are to be picked up at the office. A parent or guardian must provide requested information on the sign-out log located on the office counter.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Early Release Day: Half Days for All Students", h2),
+                Paragraph(
+                    """There are several half-days during the year when all students are dismissed at 12:55 pm (see School Calendar). Many are Teacher Professional Days, when the Board of Education holds workshops for teachers. Teacher conferences with parents are also scheduled on half-days. Bar-T Kids Club is open to students enrolled in the After-School program.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Early Release Day: Half Days for All Students", h2))
     Story.append(
-        Paragraph(
-            """There are several half-days during the year when all students are dismissed at 12:55 pm (see School Calendar). Many are Teacher Professional Days, when the Board of Education holds workshops for teachers. Teacher conferences with parents are also scheduled on half-days. Bar-T Kids Club is open to students enrolled in the After-School program.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Enrollment Entrance Requirements", h2),
+                Paragraph(
+                    """Students who are five years old before September 1st are eligible to attend kindergarten that year. In order to register your student, you must present a completed registration form, birth certificate or passport, current rental lease, property tax bill or utility bill, and a completed immunization and health inventory. Detailed information can be found on the MCPS website under Getting Started in the Parents section.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Enrollment Entrance Requirements", h2))
     Story.append(
-        Paragraph(
-            """Students who are five years old before September 1st are eligible to attend kindergarten that year. In order to register your student, you must present a completed registration form, birth certificate or passport, current rental lease, property tax bill or utility bill, and a completed immunization and health inventory. Detailed information can be found on the MCPS website under Getting Started in the Parents section.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("ESOL (English for Speakers of Other Languages)", h2),
+                Paragraph(
+                    """Somerset holds special classes during the school day for students who cannot understand, speak, read or write English well enough to follow regular classroom instruction. This special help continues until the student knows enough of the language to learn within the regular classroom.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("ESOL (English for Speakers of Other Languages)", h2))
     Story.append(
-        Paragraph(
-            """Somerset holds special classes during the school day for students who cannot understand, speak, read or write English well enough to follow regular classroom instruction. This special help continues until the student knows enough of the language to learn within the regular classroom.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Field", h2),
+                Paragraph(
+                    """The field at Somerset Elementary is artificial turf with an organic infill. It is used by Somerset students only during school hours and is open to the public after school hours. Please do not take/use food, sunflower seeds, tobacco products, or gum on the field. No metal cleats are allowed or any other devices that might rip or puncture the turf. No dogs or pets are allowed on at any time.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Field", h2))
     Story.append(
-        Paragraph(
-            """The field at Somerset Elementary is artificial turf with an organic infill. It is used by Somerset students only during school hours and is open to the public after school hours. Please do not take/use food, sunflower seeds, tobacco products, or gum on the field. No metal cleats are allowed or any other devices that might rip or puncture the turf. No dogs or pets are allowed on at any time.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Field Day", h2),
+                Paragraph(
+                    """In late spring, grades K-5 have a full day or half day (depending on grade level) of games and sports organized by the physical education teacher with the help of other staff members and parent volunteers. This yearly event is usually held at Norwood Park for grades 1-5. A Field Day for Kindergarteners is held on the school grounds.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Field Day", h2))
     Story.append(
-        Paragraph(
-            """In late spring, grades K-5 have a full day or half day (depending on grade level) of games and sports organized by the physical education teacher with the help of other staff members and parent volunteers. This yearly event is usually held at Norwood Park for grades 1-5. A Field Day for Kindergarteners is held on the school grounds.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Financial Help", h2),
+                Paragraph(
+                    """Families with limited incomes may apply to the Board of Education for free or reduced cost breakfasts and lunches. An application form is sent home with all students at the start of each year. You also can apply in confidence to the Principal for help towards the cost of field trips. Limited scholarships also are available for After School Program classes. No student need miss class outings because of a limited family budget.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Financial Help", h2))
     Story.append(
-        Paragraph(
-            """Families with limited incomes may apply to the Board of Education for free or reduced cost breakfasts and lunches. An application form is sent home with all students at the start of each year. You also can apply in confidence to the Principal for help towards the cost of field trips. Limited scholarships also are available for After School Program classes. No student need miss class outings because of a limited family budget.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Foundation", h2),
+                Paragraph(
+                    """The Somerset Elementary School Educational Foundation is a non-profit, charitable organization created by committed parents, staff and community leaders to enrich the learning experience of our children at Somerset, and to reach out to the wider community. The Foundation solicits funds from Somerset ES families to support initiatives that improve the educational resources available to students in a way that is consistent with the policies of Montgomery County Public Schools. The Foundation works closely with the school's administration and the PTA to identify priorities. To learn more about the foundation or to get involved, please visit somerset-foundation.org.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Foundation", h2))
     Story.append(
-        Paragraph(
-            """The Somerset Elementary School Educational Foundation is a non-profit, charitable organization created by committed parents, staff and community leaders to enrich the learning experience of our children at Somerset, and to reach out to the wider community. The Foundation solicits funds from Somerset ES families to support initiatives that improve the educational resources available to students in a way that is consistent with the policies of Montgomery County Public Schools. The Foundation works closely with the school's administration and the PTA to identify priorities. To learn more about the foundation or to get involved, please visit somerset-foundation.org.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Guidance Counselor", h2))
-    Story.append(
-        Paragraph(
-            """Somerset's counselor works with school staff, helping students resolve problems or concerns that may affect their school performance. Students may refer themselves or be referred by teachers or parents. They see the counselor individually or in small groups. The counselor also works with an entire class to address problems such as teasing, fighting, and other social difficulties.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Guidance Counselor", h2),
+                Paragraph(
+                    """Somerset's counselor works with school staff, helping students resolve problems or concerns that may affect their school performance. Students may refer themselves or be referred by teachers or parents. They see the counselor individually or in small groups. The counselor also works with an entire class to address problems such as teasing, fighting, and other social difficulties.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     # "Halloween Parade"
     # """Halloween is celebrated with gusto at Somerset, at the end of October. On this occasion the students (and some teachers and parents) don costumes at school and hold a grand march around the neighborhood in the afternoon. Each classroom then holds a Halloween-themed celebration."""
 
-    Story.append(Paragraph("Highly Gifted", h2))
     Story.append(
-        Paragraph(
-            """Also known as The Elementary Center Programs for the Highly Gifted program. Through testing, observation, and other methods, the school identifies gifted students and provides appropriate alternative school programs. Teachers may challenge students by presenting work at higher grade levels or by creating ability groupings. The school also screens students to determine their eligibility for special countywide programs. Countywide testing for gifted/talented designation occurs in 2nd grade. Visit the MCPS website under Students, and Special Programs.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Illness and Medication", h2))
-    Story.append(
-        Paragraph(
-            """A school nurse or health technician works in Somerset's Health Room five days a week. Should a student be injured or become ill during the school day, the office will notify the parents at once. The student will rest until parents arrive. If neither parent can be reached, the school will call the alternate person specified on the students enrollment card.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Highly Gifted", h2),
+                Paragraph(
+                    """Also known as The Elementary Center Programs for the Highly Gifted program. Through testing, observation, and other methods, the school identifies gifted students and provides appropriate alternative school programs. Teachers may challenge students by presenting work at higher grade levels or by creating ability groupings. The school also screens students to determine their eligibility for special countywide programs. Countywide testing for gifted/talented designation occurs in 2nd grade. Visit the MCPS website under Students, and Special Programs.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     Story.append(
-        Paragraph(
-            """The school is not authorized to give any medicine without a form signed by a doctor. These forms are available in the school office. MCPS policy requires all medication must be delivered to school by an adult and in the original container. School-held medicines are only available during regular school hours of 9:00 am - 3:00 pm.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Illness and Medication", h2),
+                Paragraph(
+                    """A school nurse or health technician works in Somerset's Health Room five days a week. Should a student be injured or become ill during the school day, the office will notify the parents at once. The student will rest until parents arrive. If neither parent can be reached, the school will call the alternate person specified on the students enrollment card.""",
+                    normal,
+                ),
+                Paragraph(
+                    """The school is not authorized to give any medicine without a form signed by a doctor. These forms are available in the school office. MCPS policy requires all medication must be delivered to school by an adult and in the original container. School-held medicines are only available during regular school hours of 9:00 am - 3:00 pm.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Instrumental Music", h2))
     Story.append(
-        Paragraph(
-            """Students in grades 4 and 5 are eligible to learn and perform instrumental music during the school day. Instruction is free, but students must provide instruments. Rentals are available from local music stores. Limited scholarships are available for rentals for qualified students.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Instrumental Music", h2),
+                Paragraph(
+                    """Students in grades 4 and 5 are eligible to learn and perform instrumental music during the school day. Instruction is free, but students must provide instruments. Rentals are available from local music stores. Limited scholarships are available for rentals for qualified students.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     # "Internet - also see Web Sites"
     # """The Montgomery County Public School system website is www.montgomeryschoolsmd.org the Somerset Elementary School website is www.montgomeryschoolsmd.org/schools/somersetes and the Somerset PTA website is located at www.somersetpta.org."""
 
-    Story.append(Paragraph("Kindergarten Orientation", h2))
     Story.append(
-        Paragraph(
-            """An open house for prospective kindergarten students is held in early spring. Parents may register their students for school and learn more about the school and curriculum while the students visit kindergarten classes and meet their prospective teachers.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Lice", h2))
-    Story.append(
-        Paragraph(
-            """MCPS has adopted a No-Nit policy. This means that a student will be sent home from school if lice or lice eggs (nits) are detected on the hair or scalp. The student will be re-admitted to school only after treatment has been administered visible eggs have been removed. The PTA is committed to educating parents about the lice policy and helping families whose students have lice.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Lost and Found", h2))
-    Story.append(
-        Paragraph(
-            """All items found in the building and on the grounds are placed in the Lost and Found. Lost and found is located on the ground floor outside the All Purpose Room. Please reclaim any lost items as soon as possible. Any unclaimed items are given to charitable organizations at the end of each term. Identification is easier if all personal items are clearly marked. Contact the school office for the Lost and Found location. Valuables such as jewelry or watches are kept in the office.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Meals", h2))
-    Story.append(
-        Paragraph(
-            """Students can bring lunch from home or purchase meals at the cafeteria. Payment is made in exact change or through a lunch account plan. To set up a lunch account, students can bring a check for any amount, made payable to the 'Somerset Cafeteria', to the Cafeteria Manager at any time. The Cafeteria Manager will deposit the funds into the student's individual account. Each student is given a PIN (Personal Identification Number), which is keyed in each time the student purchases food from the cafeteria. Notices are sent home when a student's account balance is low. Any funds in a student's account at the end of the school year are carried over to the next school year. No refunds are given. You can also use www.myschoolbucks.com, an online service to make prepayments to your child's cafeteria account via the Internet with a credit or debit card. myschoolbucks.com also allows you to monitor the purchases your child makes and allows you to block specified items from being purchased.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Media Center", h2))
-    Story.append(
-        Paragraph(
-            """Somerset's Media Center supports the instructional needs of the students and staff and provides an environment that promotes an appreciation for literature and reading. The Media Center has more than 8,500 print and non-print resources including books, magazines, CD-ROMs, and videos. It operates on an open and flexible schedule. Students may come individually with a pass, in small groups to do research, or in whole classes for research and instruction in information seeking strategies. Students learn how to use the Research Learning Hub (seven networked PCs) to search the Patron's catalog and use electronic encyclopedias, atlases, almanacs, and a full-text periodical index (SIRS Discoverer).""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("NAACP Parents' Council Representative", h2))
-    Story.append(
-        Paragraph(
-            """The Parents' Council of the National Association for the Advancement of Colored People seeks to empower parents and guardians of African-American and other minority students enrolled in MCPS who share the goal of equal education for all students. The Parents' Council is composed of representatives from each school. The Council meets monthly throughout the calendar year to share information that parents can use to enhance their student's chances of success. The phone number for the Council's office is 301-657-2062. Somerset's NAACP Rep also serves as a member of the PTA's Board of Directors.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("New and International Families", h2))
-    Story.append(
-        Paragraph(
-            """The PTA hosts a number of events for New and International families. Please see the PTA Web site for a list of events.www.somersetpta.com . Open House Held on Columbus Day every year, this event gives parents a chance to visit classes from 9:00 am to 11:30 pm to see their student's classroom in action.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Parent Teacher Association (PTA)", h2))
-    Story.append(
-        Paragraph(
-            """The PTA is composed of parent volunteers. All families are welcome at any PTA event or meeting, but only individuals who have joined the PTA and paid annual dues may vote on PTA proposals, budgets, and elect officers. The PTA welcomes all volunteers and any interested board candidates or committee chairs. Elections for officers and board members are generally held in late May or early June. The PTA's mission is to support kids and teachers in their classrooms. With rapidly growing enrollments and shrinking budgets, we fill an important gap, providing teacher stipends for much-needed school materials, books for classrooms and libraries, tools like microscopes, calculators, and even Promethian boards, as well as hosting before and afterschool activities and enrichment options, and providing help for kids in need, from field trip scholarships to snacks for kids who arrive hungry.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Kindergarten Orientation", h2),
+                Paragraph(
+                    """An open house for prospective kindergarten students is held in early spring. Parents may register their students for school and learn more about the school and curriculum while the students visit kindergarten classes and meet their prospective teachers.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     Story.append(
-        Paragraph(
-            """The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Rock 'N Roll Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds a playwright in residence for the fifth grade. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit www.somersetpta.org.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Lice", h2),
+                Paragraph(
+                    """MCPS has adopted a No-Nit policy. This means that a student will be sent home from school if lice or lice eggs (nits) are detected on the hair or scalp. The student will be re-admitted to school only after treatment has been administered visible eggs have been removed. The PTA is committed to educating parents about the lice policy and helping families whose students have lice.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Playdates", h2))
     Story.append(
-        Paragraph(
-            """Arrangements for play dates must be made at home. If your student rides a school bus, a note should be given to their teacher indicating the change in dismissal arrangements.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Lost and Found", h2),
+                Paragraph(
+                    """All items found in the building and on the grounds are placed in the Lost and Found. Lost and found is located on the ground floor outside the All Purpose Room. Please reclaim any lost items as soon as possible. Any unclaimed items are given to charitable organizations at the end of each term. Identification is easier if all personal items are clearly marked. Contact the school office for the Lost and Found location. Valuables such as jewelry or watches are kept in the office.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Playground", h2))
     Story.append(
-        Paragraph(
-            """Students may play on school grounds only with adult supervision. There is no supervision on the playground prior to 8:40 am or after 3:05 pm, unless your student is enrolled in Bar-T Kids Club or After School Program.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Meals", h2),
+                Paragraph(
+                    """Students can bring lunch from home or purchase meals at the cafeteria. Payment is made in exact change or through a lunch account plan. To set up a lunch account, students can bring a check for any amount, made payable to the 'Somerset Cafeteria', to the Cafeteria Manager at any time. The Cafeteria Manager will deposit the funds into the student's individual account. Each student is given a PIN (Personal Identification Number), which is keyed in each time the student purchases food from the cafeteria. Notices are sent home when a student's account balance is low. Any funds in a student's account at the end of the school year are carried over to the next school year. No refunds are given. You can also use www.myschoolbucks.com, an online service to make prepayments to your child's cafeteria account via the Internet with a credit or debit card. myschoolbucks.com also allows you to monitor the purchases your child makes and allows you to block specified items from being purchased.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Report Cards", h2))
     Story.append(
-        Paragraph(
-            """Kindergartners receive a checklist report in January and June.""", normal
-        )
-    )
-    Story.append(
-        Paragraph(
-            """Grades 1 - 5 receive report cards in November, February, April and June. Teachers may send written notices or make calls regarding possible low scores to parents by the end of the sixth week in each nine-week grading period.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Retention", h2))
-    Story.append(
-        Paragraph(
-            """A parent conference will be scheduled at least a month before the end of the school year if there is a possibility that a student cannot be promoted.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Media Center", h2),
+                Paragraph(
+                    """Somerset's Media Center supports the instructional needs of the students and staff and provides an environment that promotes an appreciation for literature and reading. The Media Center has more than 8,500 print and non-print resources including books, magazines, CD-ROMs, and videos. It operates on an open and flexible schedule. Students may come individually with a pass, in small groups to do research, or in whole classes for research and instruction in information seeking strategies. Students learn how to use the Research Learning Hub (seven networked PCs) to search the Patron's catalog and use electronic encyclopedias, atlases, almanacs, and a full-text periodical index (SIRS Discoverer).""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Room Parents", h2))
     Story.append(
-        Paragraph(
-            """Room parents work with the teacher to identify specific tasks that need to be performed throughout the year and then recruit other parents to help with these tasks. Examples include arranging class parties, chaperoning field trips, and helping with classroom and PTA projects. They also provide email communication for parents in the classroom. In addition to providing classroom help, room parents act as Community of Caring representatives and first contacts for new families. To volunteer, contact the Room Parent Coordinator.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("NAACP Parents' Council Representative", h2),
+                Paragraph(
+                    """The Parents' Council of the National Association for the Advancement of Colored People seeks to empower parents and guardians of African-American and other minority students enrolled in MCPS who share the goal of equal education for all students. The Parents' Council is composed of representatives from each school. The Council meets monthly throughout the calendar year to share information that parents can use to enhance their student's chances of success. The phone number for the Council's office is 301-657-2062. Somerset's NAACP Rep also serves as a member of the PTA's Board of Directors.""",
+                    normal,
+                ),
+            ]
+        )
+    )
+
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("New and International Families", h2),
+                Paragraph(
+                    """The PTA hosts a number of events for New and International families. Please see the PTA Web site for a list of events.www.somersetpta.com . Open House Held on Columbus Day every year, this event gives parents a chance to visit classes from 9:00 am to 11:30 pm to see their student's classroom in action.""",
+                    normal,
+                ),
+            ]
+        )
+    )
+
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("Parent Teacher Association (PTA)", h2),
+                Paragraph(
+                    """The PTA is composed of parent volunteers. All families are welcome at any PTA event or meeting, but only individuals who have joined the PTA and paid annual dues may vote on PTA proposals, budgets, and elect officers. The PTA welcomes all volunteers and any interested board candidates or committee chairs. Elections for officers and board members are generally held in late May or early June. The PTA's mission is to support kids and teachers in their classrooms. With rapidly growing enrollments and shrinking budgets, we fill an important gap, providing teacher stipends for much-needed school materials, books for classrooms and libraries, tools like microscopes, calculators, and even Promethian boards, as well as hosting before and afterschool activities and enrichment options, and providing help for kids in need, from field trip scholarships to snacks for kids who arrive hungry.""",
+                    normal,
+                ),
+                Paragraph(
+                    """The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Rock 'N Roll Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds a playwright in residence for the fifth grade. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit www.somersetpta.org.""",
+                    normal,
+                ),
+            ]
+        )
+    )
+
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("Playdates", h2),
+                Paragraph(
+                    """Arrangements for play dates must be made at home. If your student rides a school bus, a note should be given to their teacher indicating the change in dismissal arrangements.""",
+                    normal,
+                ),
+            ]
+        )
+    )
+
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("Playground", h2),
+                Paragraph(
+                    """Students may play on school grounds only with adult supervision. There is no supervision on the playground prior to 8:40 am or after 3:05 pm, unless your student is enrolled in Bar-T Kids Club or After School Program.""",
+                    normal,
+                ),
+            ]
+        )
+    )
+
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("Report Cards", h2),
+                Paragraph(
+                    """Kindergartners receive a checklist report in January and June.""",
+                    normal,
+                ),
+                Paragraph(
+                    """Grades 1 - 5 receive report cards in November, February, April and June. Teachers may send written notices or make calls regarding possible low scores to parents by the end of the sixth week in each nine-week grading period.""",
+                    normal,
+                ),
+            ]
+        )
+    )
+
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("Retention", h2),
+                Paragraph(
+                    """A parent conference will be scheduled at least a month before the end of the school year if there is a possibility that a student cannot be promoted.""",
+                    normal,
+                ),
+            ]
+        )
+    )
+
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("Room Parents", h2),
+                Paragraph(
+                    """Room parents work with the teacher to identify specific tasks that need to be performed throughout the year and then recruit other parents to help with these tasks. Examples include arranging class parties, chaperoning field trips, and helping with classroom and PTA projects. They also provide email communication for parents in the classroom. In addition to providing classroom help, room parents act as Community of Caring representatives and first contacts for new families. To volunteer, contact the Room Parent Coordinator.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     # "School Closing: Emergency - see Delayed Opening and Emergency Closing"
 
-    Story.append(Paragraph("School Picnic", h2))
     Story.append(
-        Paragraph(
-            """The school picnic is held in September. Families may bring a picnic dinner or enjoy pizza or other offerings from several community vendors. Teachers, students, siblings and families all enjoy the relaxed time together to celebrate the kick-off of the school year.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("School Picnic", h2),
+                Paragraph(
+                    """The school picnic is held in September. Families may bring a picnic dinner or enjoy pizza or other offerings from several community vendors. Teachers, students, siblings and families all enjoy the relaxed time together to celebrate the kick-off of the school year.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Student Portraits/School Photographs", h2))
     Story.append(
-        Paragraph(
-            """A professional photographer takes individual photos of students in the Fall. Class and individual photos are taken in the Spring.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Student Portraits/School Photographs", h2),
+                Paragraph(
+                    """A professional photographer takes individual photos of students in the Fall. Class and individual photos are taken in the Spring.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Share Our Diversity Night", h2))
     Story.append(
-        Paragraph(
-            """This evening is a chance to share the wealth of cultural diversity that our students and their families bring to Somerset.""",
-            normal,
-        )
-    )
-    Story.append(
-        Paragraph(
-            """There are numerous exhibits displaying the homelands of or places of interest to Somerset students, international foods to sample, and a musical performance of songs from around the world that is directed by Somerset's music teacher.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Sneak Peek", h2))
-    Story.append(
-        Paragraph(
-            "Traditionally held the weekday preceding the start of school, this event allows students to visit their classrooms and meet their new teachers."
-            "",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Share Our Diversity Night", h2),
+                Paragraph(
+                    """This evening is a chance to share the wealth of cultural diversity that our students and their families bring to Somerset.""",
+                    normal,
+                ),
+                Paragraph(
+                    """There are numerous exhibits displaying the homelands of or places of interest to Somerset students, international foods to sample, and a musical performance of songs from around the world that is directed by Somerset's music teacher.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Somerset Organized Service (S.O.S.)", h2))
     Story.append(
-        Paragraph(
-            """The Somerset Organized Service or S.O.S. is a service program for 5th graders. At the end of 4th grade, students are offered an opportunity to fill out an application listing their top priorities for service positions. The choices include announcers, greeters/assembly assistants, honor guard, kindergarten patrols, office assistants, safety patrols, and ambassadors. The students are selected for one of their priority choices. Through the program, 5th graders enhance their leadership and responsibility skills.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Sneak Peek", h2),
+                Paragraph(
+                    "Traditionally held the weekday preceding the start of school, this event allows students to visit their classrooms and meet their new teachers."
+                    "",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Special Needs", h2))
     Story.append(
-        Paragraph(
-            """Parents with questions regarding special education issues should contact Special Education Teachers, or the chair of the PTA Special Needs Committee.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Somerset Organized Service (S.O.S.)", h2),
+                Paragraph(
+                    """The Somerset Organized Service or S.O.S. is a service program for 5th graders. At the end of 4th grade, students are offered an opportunity to fill out an application listing their top priorities for service positions. The choices include announcers, greeters/assembly assistants, honor guard, kindergarten patrols, office assistants, safety patrols, and ambassadors. The students are selected for one of their priority choices. Through the program, 5th graders enhance their leadership and responsibility skills.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Staff Appreciation", h2))
     Story.append(
-        Paragraph(
-            """The commitment and excellence of our teachers and staff is the key to making Somerset an outstanding school. The PTA recognizes the wonderful and important jobs of these professionals in several ways during the course of the year.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Special Needs", h2),
+                Paragraph(
+                    """Parents with questions regarding special education issues should contact Special Education Teachers, or the chair of the PTA Special Needs Committee.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Student Government Association (SGA)", h2))
     Story.append(
-        Paragraph(
-            """Somerset's student council consists of an elected president, vice-president, secretary, treasurer, and two representatives (one boy, one girl) from each class in grades 2 to 5. Students in those grades vote in the Fall after a lively election campaign that lasts for a week. The SGA council meets during school hours to discuss student concerns and ideas. The SGA also organizes school activities and collection drives to benefit student's charities.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Staff Appreciation", h2),
+                Paragraph(
+                    """The commitment and excellence of our teachers and staff is the key to making Somerset an outstanding school. The PTA recognizes the wonderful and important jobs of these professionals in several ways during the course of the year.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Suspension", h2))
     Story.append(
-        Paragraph(
-            """As a last resort, the principal may suspend a student for up to ten days in cases of extreme misbehavior. A student with any kind of weapon must be suspended. This is a mandatory MCPS policy.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Student Government Association (SGA)", h2),
+                Paragraph(
+                    """Somerset's student council consists of an elected president, vice-president, secretary, treasurer, and two representatives (one boy, one girl) from each class in grades 2 to 5. Students in those grades vote in the Fall after a lively election campaign that lasts for a week. The SGA council meets during school hours to discuss student concerns and ideas. The SGA also organizes school activities and collection drives to benefit student's charities.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Tardiness", h2))
     Story.append(
-        Paragraph(
-            """School begins at 9 am. All students arriving after 9 am will be considered tardy. A note of explanation and an adult should accompany the student when he or she arrives. All students who arrive after the 9 am bell rings must sign in at the office and receive an admit-to-class slip.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Suspension", h2),
+                Paragraph(
+                    """As a last resort, the principal may suspend a student for up to ten days in cases of extreme misbehavior. A student with any kind of weapon must be suspended. This is a mandatory MCPS policy.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Teacher Conferences", h2))
     Story.append(
-        Paragraph(
-            """Conferences to discuss each student's progress are held every year in November. Sign up usually after Back-to-School night through email and the Signup Genius program. Teachers may also send home a letter suggesting a time and day. Conferences are with the teacher, but the principal can be present if requested. Additionally, the school emphasizes that you may arrange a meeting with the teacher or principal at any time about anything that concerns your students wellbeing and education.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Tardiness", h2),
+                Paragraph(
+                    """School begins at 9 am. All students arriving after 9 am will be considered tardy. A note of explanation and an adult should accompany the student when he or she arrives. All students who arrive after the 9 am bell rings must sign in at the office and receive an admit-to-class slip.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Telephones", h2))
     Story.append(
-        Paragraph(
-            """Each classroom has a telephone, and a telephone for essential calls is available for students in the lobby, on the first floor. Students may use the office telephone in an emergency. Social arrangements should be made at home. Voice mail messages may be left for staff during the school day.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Teacher Conferences", h2),
+                Paragraph(
+                    """Conferences to discuss each student's progress are held every year in November. Sign up usually after Back-to-School night through email and the Signup Genius program. Teachers may also send home a letter suggesting a time and day. Conferences are with the teacher, but the principal can be present if requested. Additionally, the school emphasizes that you may arrange a meeting with the teacher or principal at any time about anything that concerns your students wellbeing and education.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Testing", h2))
     Story.append(
-        Paragraph(
-            """Students in 2nd grade are screened for "giftedness". In addition, Maryland tests its students using the PARCC (Partnership for Assessment for Readiness for College and Careers). Testing protocols and frequency are being changed, please visit Testing Information in the Parents section at the MCPS website for the most recent information.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Telephones", h2),
+                Paragraph(
+                    """Each classroom has a telephone, and a telephone for essential calls is available for students in the lobby, on the first floor. Students may use the office telephone in an emergency. Social arrangements should be made at home. Voice mail messages may be left for staff during the school day.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Transfers and Withdrawals", h2))
     Story.append(
-        Paragraph(
-            """In certain circumstances, parents may request the transfer of a student from one school to another. Forms are available in the office. The school should be notified promptly if a student must be withdrawn or transferred to another school. This policy applies for withdrawal during a school year, as well as at the end of the school year.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Testing", h2),
+                Paragraph(
+                    """Students in 2nd grade are screened for "giftedness". In addition, Maryland tests its students using the PARCC (Partnership for Assessment for Readiness for College and Careers). Testing protocols and frequency are being changed, please visit Testing Information in the Parents section at the MCPS website for the most recent information.""",
+                    normal,
+                ),
+            ]
+        )
+    )
+
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("Transfers and Withdrawals", h2),
+                Paragraph(
+                    """In certain circumstances, parents may request the transfer of a student from one school to another. Forms are available in the office. The school should be notified promptly if a student must be withdrawn or transferred to another school. This policy applies for withdrawal during a school year, as well as at the end of the school year.""",
+                    normal,
+                ),
+            ]
         )
     )
 
     # "Today is Newsday (The TIN) - PTA e-news letter"
     # The PTA publishes a weekly news bulletin called Today is Newsday (TIN). Distributed by email via the listserv on sundays, the TIN contains important a ouncements and user reminders of upcoming events. News and information for publication may be submitted by email to: tin@somersetpta.org. Sign up to receive the TIN electronically sendingUbscribe@yahoogroups.com. your email address to somerset-net-
 
-    Story.append(Paragraph("Used Book Sale and Bake Sale", h2))
     Story.append(
-        Paragraph(
-            """Somerset students colar rods from their homes and community to be she Spring. Prin prices during this annual tvo-day event in the summer izes are given to the classes Collecting the largest nither of books. The Bake Sale, which is held in conjunction with the Used Book Sale, features a wide variety of homemade foods to sustain the book buyers. browsers and sellers.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Used Book Sale and Bake Sale", h2),
+                Paragraph(
+                    """Somerset students colar rods from their homes and community to be she Spring. Prin prices during this annual tvo-day event in the summer izes are given to the classes Collecting the largest nither of books. The Bake Sale, which is held in conjunction with the Used Book Sale, features a wide variety of homemade foods to sustain the book buyers. browsers and sellers.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Valentine's Day", h2))
     Story.append(
-        Paragraph(
-            """On February 14 (or the school day before if this date falls on weekend), students may bring Valentine cards to exchange with all of their classmates, and a class celebration may follow. Contact your room parents for details.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Valentine's Day", h2),
+                Paragraph(
+                    """On February 14 (or the school day before if this date falls on weekend), students may bring Valentine cards to exchange with all of their classmates, and a class celebration may follow. Contact your room parents for details.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Volunteering", h2))
     Story.append(
-        Paragraph(
-            """To volunteer at the school or in your classroom please, contact your teacher or specials teachers. There are many PTA events throughout the year that can use your help from the Fall Picnic, the Back to School Classic Race to our book fairs and other events. The PTA also has opportunities for parents to help at recess and/or lunch.""",
-            normal,
-        )
-    )  #  These events are posted on the listserv and in the TIN."
-
-    Story.append(
-        Paragraph(
-            """Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/""",
-            normal,
-        )
-    )
-    Story.append(
-        Paragraph(
-            """Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at:http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuse-Volunteer-FAQs.pdf""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("Weapons and Pocketknives", h2))
-    Story.append(
-        Paragraph(
-            """Students must not bring anything to school that may cause injury, or can be construed as a weapon, such as Swiss Army knives or small pocketknives, toy weapons or dangerous liquids. (Disciplinary action may be taken, including Suspension.)""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Volunteering", h2),
+                Paragraph(
+                    """To volunteer at the school or in your classroom please, contact your teacher or specials teachers. There are many PTA events throughout the year that can use your help from the Fall Picnic, the Back to School Classic Race to our book fairs and other events. The PTA also has opportunities for parents to help at recess and/or lunch.""",
+                    normal,
+                ),
+                Paragraph(
+                    """Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/""",
+                    normal,
+                ),
+                Paragraph(
+                    """Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at:http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuse-Volunteer-FAQs.pdf""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Weather Contingency Plan", h2))
     Story.append(
-        Paragraph(
-            """If school is closed for more than five days during the school year due to weather emergencies, the Weather Contingency Plan may be implemented and additional student instructional days may be added to the school year. Visit the MCPS website for schedule changes due to weather.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Weapons and Pocketknives", h2),
+                Paragraph(
+                    """Students must not bring anything to school that may cause injury, or can be construed as a weapon, such as Swiss Army knives or small pocketknives, toy weapons or dangerous liquids. (Disciplinary action may be taken, including Suspension.)""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Websites for Somerset and the PTA", h2))
     Story.append(
-        Paragraph(
-            """The PTA website is www.somersetpta.com. The Somerset Elementary MCPS website iswww.montgomeryschoolsmd.org/schools/somersetes """,
-            normal,
-        )
-    )
-    Story.append(
-        Paragraph(
-            """Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Weather Contingency Plan", h2),
+                Paragraph(
+                    """If school is closed for more than five days during the school year due to weather emergencies, the Weather Contingency Plan may be implemented and additional student instructional days may be added to the school year. Visit the MCPS website for schedule changes due to weather.""",
+                    normal,
+                ),
+            ]
         )
     )
 
-    Story.append(Paragraph("Yearbook", h2))
     Story.append(
-        Paragraph(
-            """Somersets yearbook is published and available for purchase near the end of ictures of, with photos of all students and staff along with pictures of major school events.""",
-            normal,
+        KeepTogether(
+            [
+                Paragraph("Websites for Somerset and the PTA", h2),
+                Paragraph(
+                    """The PTA website is www.somersetpta.com. The Somerset Elementary MCPS website iswww.montgomeryschoolsmd.org/schools/somersetes """,
+                    normal,
+                ),
+                Paragraph(
+                    """Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
+                    normal,
+                ),
+            ]
         )
     )
+
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("Yearbook", h2),
+                Paragraph(
+                    """Somersets yearbook is published and available for purchase near the end of ictures of, with photos of all students and staff along with pictures of major school events.""",
+                    normal,
+                ),
+            ]
+        )
+    )
+
+    # Story.append(Spacer(1, 12))
+    # Story.append(HRFlowable(thickness=4))
+    # Story.append(Spacer(1, 12))
+    Story.append(PageBreak())
 
     linkedHeading(Story, "Q & A", toch1)
 
     # Somerset FAQ — questions asked and answered!
-    Story.append(Paragraph("""Q: What should I do when my child is sick?""", normal))
+    Story.append(Paragraph("""Q: What should I do when my child is sick?""", h2))
     Story.append(
         Paragraph(
             """A: Somerset loves seeing your kids, but please keep them home when they are sick: they must be fever-free for 24 hours to return. For strep throat and other infections requiring antibiotics, please check with your healthcare provider about when it is safe to return to school. If a communicable disease has been diagnosed or lice nits have been found, please notify our health room by calling 240-740-1102.""",
@@ -1289,9 +1506,7 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(
-        Paragraph("""Q: When does school start? When does school end?""", normal)
-    )
+    Story.append(Paragraph("""Q: When does school start? When does school end?""", h2))
     Story.append(
         Paragraph(
             """A: Before 8:40 am, there is no supervision available for children, and children will not be permitted to enter the building, even during inclement weather. THE ONLY EXCEPTIONS ARE children enrolled in Bar-T before care or children who are registered for a morning club with Enrichment Academies. Students are dismissed starting at 3:22. Walkers and car riders go first, then bus riders. Kindergarteners not riding the bus must be picked up at their classroom door in the rear.""",
@@ -1300,7 +1515,7 @@ def pool_to_story(pool):
     )
 
     Story.append(
-        Paragraph("""Q: What if I need childcare before or after school?""", normal)
+        Paragraph("""Q: What if I need childcare before or after school?""", h2)
     )
     Story.append(
         Paragraph(
@@ -1309,7 +1524,7 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(Paragraph("""Q: What should I do when my child is late?""", normal))
+    Story.append(Paragraph("""Q: What should I do when my child is late?""", h2))
     Story.append(
         Paragraph(
             """A: The first bell is at 8:54. The second bell is at 9:00 am. By 9:00, students are expected to be in their classrooms. If your child arrives at school at 9:00 or after, please accompany him or her into the main office and sign them in on the sign in sheet. Students need a tardy slip to go to class.""",
@@ -1320,7 +1535,7 @@ def pool_to_story(pool):
     Story.append(
         Paragraph(
             """Q: What should I do if my child has a medical appointment during the school day?""",
-            normal,
+            h2,
         )
     )
     Story.append(
@@ -1333,7 +1548,7 @@ def pool_to_story(pool):
     Story.append(
         Paragraph(
             """Q: What should I do if my child forgets his/her lunch or homework or musical instrument, etc.?""",
-            normal,
+            h2,
         )
     )
     Story.append(
@@ -1346,7 +1561,7 @@ def pool_to_story(pool):
     Story.append(
         Paragraph(
             """Q: What should I do if my child is going to go home with a friend?""",
-            normal,
+            h2,
         )
     )
     Story.append(
@@ -1359,7 +1574,7 @@ def pool_to_story(pool):
     # """Q: How do I know if school is closed or delayed when the weather is bad?"""
     # """A: Mrs. Morris will send out a message over the email system and somerset-net listserv. There is also a county email system that you can access at www.montgomeryschoolsmd.org . Subscribe to MCPS QuickNotes for weather-related email messages. closing information for Bar-T Kids Club call 240-364 4196"""
 
-    Story.append(Paragraph("""Q: What if my child gets sick in school?""", normal))
+    Story.append(Paragraph("""Q: What if my child gets sick in school?""", h2))
     Story.append(
         Paragraph(
             """A: Your child will be sent to the health room. In the event of tever or vomiting, you will be called. Please make sure it your child has allergies or asia and requires any emergency medications that you have a medication administration form completed by your doctor and the appropriate medicatom stored in the health room.""",
@@ -1367,7 +1582,7 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(Paragraph("""Q: What if my child is being bullied?""", normal))
+    Story.append(Paragraph("""Q: What if my child is being bullied?""", h2))
     Story.append(
         Paragraph(
             """A: Please contact Mrs. Morris, the principal, or Ms. McGrady, the school counselor, to discuss any bullying situation. Most can be resolved with simple intervention. If it is happening at recess, the para-educators who monitor recess can be asked to assist.""",
@@ -1381,7 +1596,7 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(Paragraph("""Q: What is the policy for recess?""", normal))
+    Story.append(Paragraph("""Q: What is the policy for recess?""", h2))
     Story.append(
         Paragraph(
             """A: Recess is held every day, except for half days. In weather above 32 degrees, the children generally play outside. On inclement weather days, recess is held indoors in the classroom. Due to supervision constraints, two classes are usually combined for recess. The PTA has provided board games for indoor recess and equipment for outdoor recess.""",
@@ -1389,7 +1604,7 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(Paragraph("""Q: What is the policy for snack?""", normal))
+    Story.append(Paragraph("""Q: What is the policy for snacks?""", h2))
     Story.append(
         Paragraph(
             """A: Students in all grades have a designated snack time. Please send foods that a healthy and have a minimum of noise and mess. Please remember that we are a nut free school — no peanut butter or peanut products or tree nuts.""",
@@ -1397,9 +1612,7 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(
-        Paragraph("""Q: Does Somerset offer after school activities?""", normal)
-    )
+    Story.append(Paragraph("""Q: Does Somerset offer after school activities?""", h2))
     Story.append(
         Paragraph(
             """A: Yes. We have a wide variety of before and after school programs offered through Enrichment Academies. Clubs are offered for three "semesters" each year, fall, winter, and spring. There is a registration period. Please visit https://somerset.enrichment-academies.com/ to learn more. Scholarships are offered based on specific need.""",
@@ -1407,7 +1620,7 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(Paragraph("""Q: How does discipline work at Somerset?""", normal))
+    Story.append(Paragraph("""Q: How does discipline work at Somerset?""", h2))
     Story.append(
         Paragraph(
             """A: Each teacher has his or her own classroom method for handling disruptive behavior, involving warnings and consequences, as well as opportunities to earn preferred activity points and other perks for good behavior. The lunchroom uses a table points system. The school also has a program to promote "peaceful days" school wide. Students can earn good behavior rewards, such as crazy hair and crazy sock days, for accumulating school-wide good behavior or peaceful days. Copies of Somerset's discipline policy are available in the school office or the Somerset Elementary website.""",
@@ -1416,9 +1629,7 @@ def pool_to_story(pool):
     )
 
     Story.append(
-        Paragraph(
-            """Q: How will I know what my child is working on in class?""", normal
-        )
+        Paragraph("""Q: How will I know what my child is working on in class?""", h2)
     )
     Story.append(
         Paragraph(
@@ -1428,7 +1639,7 @@ def pool_to_story(pool):
     )
 
     Story.append(
-        Paragraph("""Q: How are drop off and dismissal run and supervised?""", normal)
+        Paragraph("""Q: How are drop off and dismissal run and supervised?""", h2)
     )
     Story.append(
         Paragraph(
@@ -1437,7 +1648,7 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(Paragraph("""Q: How do class parties work?""", normal))
+    Story.append(Paragraph("""Q: How do class parties work?""", h2))
     Story.append(
         Paragraph(
             """A: Room parents are in charge of organizing the parties for Halloween, Valentine's Day, and end of the year. Parties usually involve games, crafts, and snacks. In addition, birthdays are celebrated in class, although many grades hold only one birthday celebration each month for all the children with birthdays that month. Birthday celebrations are generally short - around ten minutes.""",
@@ -1446,7 +1657,7 @@ def pool_to_story(pool):
     )
 
     Story.append(
-        Paragraph("""Q: What are the opportunities to volunteer in school?""", normal)
+        Paragraph("""Q: What are the opportunities to volunteer in school?""", h2)
     )
     Story.append(
         Paragraph(
@@ -1465,7 +1676,7 @@ def pool_to_story(pool):
 
     Story.append(
         Paragraph(
-            """Q: What is the difference between the PTA and the Foundation?""", normal
+            """Q: What is the difference between the PTA and the Foundation?""", h2
         )
     )
     Story.append(
@@ -1481,9 +1692,9 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(Spacer(1, 12))
-    Story.append(HRFlowable(thickness=4))
-    Story.append(Spacer(1, 12))
+    # Story.append(Spacer(1, 12))
+    # Story.append(HRFlowable(thickness=4))
+    # Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
     psr = pool_to_student_relations(pool)
@@ -1596,19 +1807,14 @@ def pool_to_story(pool):
                     # ('FONTSIZE', (0, 0), (-1, -1), 16),
                     # ('leftIndent', (0, 0), (1, -1), 10)
                 ],
-                # leftIndent=10,
-                # colWidths=.25*inch
             )
-            # t._argW[0] = 150
 
             kt.append(t)
         Story.append(KeepTogether(kt))
-        # Story.append("table2")
-        # Story.append(Spacer(1, 12))
 
-    Story.append(Spacer(1, 12))
-    Story.append(HRFlowable(thickness=4))
-    Story.append(Spacer(1, 12))
+    # Story.append(Spacer(1, 12))
+    # Story.append(HRFlowable(thickness=4))
+    # Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
     ptext = "By Grade & Teacher"
@@ -1627,15 +1833,16 @@ def pool_to_story(pool):
                 p = Paragraph(student_link, student_teacher_style)
                 Story.append(p)
 
-    Story.append(Spacer(1, 12))
-    Story.append(HRFlowable(thickness=4))
-    Story.append(Spacer(1, 12))
+    # Story.append(Spacer(1, 12))
+    # Story.append(HRFlowable(thickness=4))
+    # Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
     ptext = "By First Name"
     linkedHeading(Story, ptext, toch1)
-    Story.append(Spacer(1, 12))
+    # Story.append(Spacer(1, 12))
 
+    name_flow = []
     for firstname in sorted(by_firstname):
         for student_uid in by_firstname[firstname]:
             student = psr[student_uid]
@@ -1646,10 +1853,9 @@ def pool_to_story(pool):
                 f"<link href='#{student_uid}'>{afirstname} {alastname}</link>"
             )
             p = Paragraph(student_link, styleSheet["BodyText"])
-            Story.append(p)
+            name_flow.append(p)
+    Story.append(BalancedColumns(name_flow))
 
-    Story.append(Spacer(1, 12))
-    Story.append(HRFlowable(thickness=4))
     Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
@@ -1671,10 +1877,10 @@ def pool_to_story(pool):
             p = Paragraph(student_link, student_street_style)
             Story.append(p)
 
-    Story.append(Spacer(1, 12))
-    Story.append(HRFlowable(thickness=4))
-    Story.append(Spacer(1, 12))
-    Story.append(PageBreak())
+    # Story.append(Spacer(1, 12))
+    # Story.append(HRFlowable(thickness=4))
+    # Story.append(Spacer(1, 12))
+    # Story.append(PageBreak())
 
     return Story
 
