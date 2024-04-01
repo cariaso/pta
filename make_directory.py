@@ -336,9 +336,13 @@ def pool_to_story(pool):
 
     body_style = styleSheet["BodyText"]
 
+    #teacher_style = ParagraphStyle(
+    #    name="teacher", fontSize=12, leading=14, leftIndent=10
+    #)
     teacher_style = ParagraphStyle(
-        name="teacher", fontSize=12, leading=14, leftIndent=10
+        name="teacher", fontSize=14#, leading=12, leftIndent=15
     )
+
     student_name_style = ParagraphStyle(
         name="studentName", fontSize=16, leading=12, leftIndent=0
     )
@@ -346,18 +350,17 @@ def pool_to_story(pool):
     student_street_style = ParagraphStyle(
         name="studentStreet", fontSize=12, leading=14, leftIndent=20
     )
+    student_teacher_style = ParagraphStyle(
+        name="studentTeacher", fontSize=12, leading=14, leftIndent=20
+    )
 
     phone_style = ParagraphStyle(name="phone", fontSize=12, leading=12, leftIndent=10)
     address_style = ParagraphStyle(
         name="address", fontSize=12, leading=12, leftIndent=20
     )
-    teacher_style = ParagraphStyle(
-        name="teacher", fontSize=12, leading=12, leftIndent=15
-    )
-
     phone_style = body_style
     address_style = body_style
-    teacher_style = body_style
+    class_teacher_style = body_style
 
     style = styles["Normal"]
     normal = styles["Normal"]
@@ -1525,7 +1528,7 @@ def pool_to_story(pool):
         teacher = student.get("Homeroom Teacher")
         aclass_uid = class_uid(grade=grade, teacher=teacher)
         class_anchor = f"<link href='#{aclass_uid}'>{grade} {teacher}</link>"
-        Story.append(Paragraph(class_anchor, teacher_style))
+        Story.append(Paragraph(class_anchor, class_teacher_style))
 
         data = []
 
@@ -1581,7 +1584,7 @@ def pool_to_story(pool):
             for student_uid in tgs[grade][teacher]:
                 student = psr[student_uid]
                 student_link = f"\u2022 <link href='#{student_uid}'>{student.get('Student')}</link>"
-                p = Paragraph(student_link, styleSheet["BodyText"])
+                p = Paragraph(student_link, student_teacher_style)
                 Story.append(p)
 
     Story.append(Spacer(1, 12))
