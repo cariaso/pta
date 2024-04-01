@@ -47,7 +47,8 @@ class MyDocTemplate(BaseDocTemplate):
                     height=8 * inch,
                     id="Frame1",
                     # leftPadding=0.1 * inch,
-                    showBoundary=1,
+                    # showBoundary=1,
+                    showBoundary=0,
                 )
             ],
             onPage=AllPageSetup,
@@ -117,7 +118,7 @@ def AllPageSetup(canvas, doc):
         # c.rect(4*inch,4*inch,2*inch,3*inch, fill=1) #draw rectangle
 
     else:
-        canvas.drawRightString(8.2 * inch, 0.1 * inch, "Page %d" % (doc.page))
+        canvas.drawCentredString(2.75 * inch, 0.1 * inch, "Page %d" % (doc.page))
         if hasattr(doc, "owner"):
             canvas.setSubject(doc.owner)
             # canvas.drawString(0.5 * inch, 0.5 * inch, doc.owner)
@@ -373,7 +374,7 @@ def pool_to_story(pool):
         Paragraph("Somerset Elementary School Directory", centered_title_style)
     )
 
-    Story.append(Paragraph("2023x4-2024", centered_subtitle_style))
+    Story.append(Paragraph("2023-2024", centered_subtitle_style))
     Story.append(Spacer(1, 12))
 
     url1 = "https://www.montgomeryschoolsmd.org/schools/somersetes"
@@ -644,7 +645,7 @@ def pool_to_story(pool):
     for staff_name, staff_title, staff_email in staff:
         staff_table.append(
             [
-                Paragraph(f"{staff_name}\n{staff_title}"),
+                Paragraph(f"{staff_name}<br/>{staff_title}"),
                 Paragraph(staff_email, style_right),
             ]
         )
@@ -1471,18 +1472,38 @@ def pool_to_story(pool):
     psr = pool_to_student_relations(pool)
     num_students = 0
 
-    linkedHeading(Story, "By Class & Last Name", toch1)
-
+    by_lastname = {}
     by_firstname = {}
     by_street = {}
+    by_homeroom = {}
+
+    for student_uid, student in psr.items():
+        num_students += 1
+        student_name = student["Student"]
+
+        lastname, firstname = student_name.split(", ")
+        by_lastname.setdefault(lastname, []).append(student_uid)
+        by_firstname.setdefault(firstname, []).append(student_uid)
+
+        address1 = student.get("Address1")
+        street_name = get_street(address1)
+        if street_name:
+            by_street.setdefault(street_name, []).append(student_uid)
+            # I would prefer perfect sorting of addresses, but too many records have 1 child withheld, while the other is given an address
+
+        grade = student.get("Grade")
+        teacher = student.get("Homeroom Teacher")
+        homeroom_key = f"{grade} {teacher}"
+        by_homeroom.setdefault(homeroom_key, []).append(student_uid)
+
+    linkedHeading(Story, "Full Details by Last Name", toch1)
+
     for student_uid in psr:
         student = psr[student_uid]
         num_students += 1
         student_name = student["Student"]
 
         lastname, firstname = student_name.split(", ")
-        by_firstname.setdefault(firstname, []).append(student_uid)
-
         student_anchor = f"<a name='{student_uid}'/>{student_name}"
         Story.append(Paragraph(student_anchor, student_name_style))
 
@@ -1495,8 +1516,6 @@ def pool_to_story(pool):
             Story.append(Paragraph(address, address_style))
 
         street_name = get_street(address1)
-        if street_name:
-            by_street.setdefault(street_name, []).append(student_uid)
 
         grade = student.get("Grade")
         teacher = student.get("Homeroom Teacher")
@@ -1537,6 +1556,7 @@ def pool_to_story(pool):
             )
 
             Story.append(t)
+            # Story.append("table2")
         # Story.append(Spacer(1, 12))
 
     Story.append(Spacer(1, 12))
@@ -1556,9 +1576,7 @@ def pool_to_story(pool):
             Story.append(Paragraph(class_text, teacher_style))
             for student_uid in tgs[grade][teacher]:
                 student = psr[student_uid]
-                student_link = (
-                    f"<link href='#{student_uid}'>{student.get('Student')}</link>"
-                )
+                student_link = f"\u2022 <link href='#{student_uid}'>{student.get('Student')}</link>"
                 p = Paragraph(student_link, styleSheet["BodyText"])
                 Story.append(p)
 
@@ -1719,7 +1737,16 @@ def xlsx_to_pool(src):
         pool.append(adict)
         # print(row)
     print(f"{num_withheld=} {num_accepted=}")
-    return pool
+
+    # reminder the 'lower' is necessary for names like "de Bruin" with an initial lowercase
+    ordered_pool = [
+        k
+        for k in sorted(
+            pool, reverse=False, key=lambda item: item.get("Student").lower()
+        )
+    ]
+
+    return ordered_pool
 
 
 if __name__ == "__main__":
