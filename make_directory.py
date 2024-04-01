@@ -15,7 +15,7 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import PageBreak, Paragraph, Spacer, Table
 from reportlab.platypus.doctemplate import BaseDocTemplate, PageTemplate
-from reportlab.platypus.flowables import HRFlowable
+from reportlab.platypus.flowables import HRFlowable, KeepTogether, BalancedColumns
 from reportlab.platypus.frames import Frame
 
 from reportlab.platypus.tableofcontents import TableOfContents
@@ -281,8 +281,8 @@ def pool_to_student_relations(pool):
         relation_info = {
             "Relation": relation,
             "Name": relation_name,
-            "Cell Phone": relation_cell,
             "Email": relation_email,
+            "Cell Phone": format_phone(relation_cell),
         }
 
         if address1 != withheld_marker:
@@ -336,15 +336,30 @@ def pool_to_story(pool):
 
     body_style = styleSheet["BodyText"]
 
-    #teacher_style = ParagraphStyle(
+    # teacher_style = ParagraphStyle(
     #    name="teacher", fontSize=12, leading=14, leftIndent=10
-    #)
+    # )
     teacher_style = ParagraphStyle(
-        name="teacher", fontSize=14#, leading=12, leftIndent=15
+        name="teacher", fontSize=14  # , leading=12, leftIndent=15
     )
 
-    student_name_style = ParagraphStyle(
-        name="studentName", fontSize=16, leading=12, leftIndent=0
+    details_student_name_style = ParagraphStyle(
+        name="studentName", fontSize=12, leading=15, leftIndent=0
+    )
+    details_class_teacher_style = ParagraphStyle(
+        name="details_teacher", fontSize=10, leftIndent=10  # leading=12,
+    )
+    details_phone_style = ParagraphStyle(
+        name="phone",
+        fontSize=10,
+        # leading=12,
+        leftIndent=10,
+    )
+    details_address_style = ParagraphStyle(
+        name="address",
+        fontSize=10,
+        # leading=12,
+        leftIndent=10,
     )
 
     student_street_style = ParagraphStyle(
@@ -354,13 +369,8 @@ def pool_to_story(pool):
         name="studentTeacher", fontSize=12, leading=14, leftIndent=20
     )
 
-    phone_style = ParagraphStyle(name="phone", fontSize=12, leading=12, leftIndent=10)
-    address_style = ParagraphStyle(
-        name="address", fontSize=12, leading=12, leftIndent=20
-    )
-    phone_style = body_style
-    address_style = body_style
-    class_teacher_style = body_style
+    # phone_style = body_style
+    # address_style = body_style
 
     style = styles["Normal"]
     normal = styles["Normal"]
@@ -1510,25 +1520,29 @@ def pool_to_story(pool):
         num_students += 1
         student_name = student["Student"]
 
+        kt = []
+
         lastname, firstname = student_name.split(", ")
         student_anchor = f"<a name='{student_uid}'/>{student_name}"
-        Story.append(Paragraph(student_anchor, student_name_style))
-
-        if phone := student.get("Phone"):
-            Story.append(Paragraph(f"Phone: {phone}", phone_style))
-        address1 = student.get("Address1")
-        address2 = student.get("Address2")
-        if address1 or address2:
-            address = f"{student.get('Address1','')}<br/>{student.get('Address2','')}"
-            Story.append(Paragraph(address, address_style))
-
-        street_name = get_street(address1)
+        kt.append(Paragraph(student_anchor, details_student_name_style))
 
         grade = student.get("Grade")
         teacher = student.get("Homeroom Teacher")
         aclass_uid = class_uid(grade=grade, teacher=teacher)
-        class_anchor = f"<link href='#{aclass_uid}'>{grade} {teacher}</link>"
-        Story.append(Paragraph(class_anchor, class_teacher_style))
+        class_anchor = (
+            f"<link href='#{aclass_uid}'>Grade: {grade} Teacher: {teacher}</link>"
+        )
+        kt.append(Paragraph(class_anchor, details_class_teacher_style))
+
+        if phone := student.get("Phone"):
+            kt.append(Paragraph(f"Phone: {format_phone(phone)}", details_phone_style))
+        address1 = student.get("Address1")
+        address2 = student.get("Address2")
+        if address1 or address2:
+            address = f"{student.get('Address1','')}<br/>{student.get('Address2','')}"
+            kt.append(Paragraph(address, details_address_style))
+
+        street_name = get_street(address1)
 
         data = []
 
@@ -1539,6 +1553,8 @@ def pool_to_story(pool):
                     if key not in data_keys:
                         data_keys.append(key)
 
+        offset_width = 10
+        # relationship_width = 0.65
         for relation in student["Relations"]:
             data_row = []
             any_values = [x for x in relation.values() if x != withheld_marker]
@@ -1552,18 +1568,42 @@ def pool_to_story(pool):
                     else:
                         data_row.append(None)
             if data_row:
-                data.append(data_row)
+                ready = [None]
+                ready.extend(data_row)
+                data.append(ready)
         if data:
+            num_cols = len(data[0])
+            col_width = (5 * inch - offset_width) / (num_cols - 1)
+            # col_widths = [.75*inch] + [col_width] * (num_cols-1)
+            col_widths = [offset_width] + [None] * (num_cols - 2)
             t = Table(
                 data,
+                hAlign="RIGHT",
                 # colWidths=[2.4 * inch, 2.5 * inch, 2.5 * inch],
+                colWidths=col_widths,
                 style=[
-                    ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+                    ("LINEABOVE", (1, 0), (-1, -1), 0.25, colors.black),
+                    ("LINEBELOW", (1, 0), (-1, -1), 0.25, colors.black),
+                    ("LINEBEFORE", (2, 0), (-1, -1), 0.25, colors.black),
+                    # ("GRID", (0,0), (-1, -1), 0.5, colors.black),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("LEFTPADDING", (0, 0), (0, -1), 0),
+                    ("LEFTPADDING", (1, 0), (-1, -1), 1),
+                    # ('LEFTPADDING', (-1,0), (-1, -1), 1),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 1),
+                    ("TOPPADDING", (0, 0), (-1, -1), 0),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+                    # ('FONTSIZE', (0, 0), (-1, -1), 16),
+                    # ('leftIndent', (0, 0), (1, -1), 10)
                 ],
+                # leftIndent=10,
+                # colWidths=.25*inch
             )
+            # t._argW[0] = 150
 
-            Story.append(t)
-            # Story.append("table2")
+            kt.append(t)
+        Story.append(KeepTogether(kt))
+        # Story.append("table2")
         # Story.append(Spacer(1, 12))
 
     Story.append(Spacer(1, 12))
@@ -1754,6 +1794,15 @@ def xlsx_to_pool(src):
     ]
 
     return ordered_pool
+
+
+def format_phone(phone):
+    if phone:
+        if m := re.search(r"^(\d{3})(\d{3})(\d{4})$", phone):
+            out = m.group(1) + "-" + m.group(2) + "-" + m.group(3)
+            return out
+
+    return phone
 
 
 if __name__ == "__main__":
