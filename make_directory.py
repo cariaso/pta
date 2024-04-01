@@ -147,23 +147,31 @@ def make_all_pdfs(ctx, src):
     story = pool_to_story(pool)
     story_to_pdf(
         story,
-        owner="chris.press@gmail.com",
-        filename="for_chris.pdf",
+        # owner="chris.press@gmail.com",
+        # filename="for_chris.pdf",
     )
 
-    if False:
-        story = pool_to_story(pool)
-        story_to_pdf(
-            story,
-            filename="master.pdf",
-        )
+    if True:
+        for owner in [
+            "victoria.levitas@gmail.com",
+            "chris.press@gmail.com",
+            "sharee.lawler@gmail.com",
+        ]:
 
-        story = pool_to_story(pool)
-        story_to_pdf(
-            story,
-            owner="victoria.levitas@gmail.com",
-            filename="for_victoria.pdf",
-        )
+            story = pool_to_story(pool)
+            safe_owner = make_filename_safe(owner)
+            story_to_pdf(
+                story,
+                owner=owner,
+                filename=f"somerset_directory_{safe_owner}.pdf",
+            )
+
+
+def make_filename_safe(filename):
+    out = "".join(
+        c for c in filename if c.isalpha() or c.isdigit() or c == " "
+    ).rstrip()
+    return out
 
 
 def pool_to_teacher_grade(pool):
@@ -1483,7 +1491,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Yearbook", h2),
                 Paragraph(
-                    """Somersets yearbook is published and available for purchase near the end of ictures of, with photos of all students and staff along with pictures of major school events.""",
+                    """Somersets yearbook is published and available for purchase near the end of each year, with photos of all students and staff along with pictures of major school events.""",
                     normal,
                 ),
             ]
