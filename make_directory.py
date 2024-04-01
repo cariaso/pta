@@ -151,7 +151,7 @@ def make_all_pdfs(ctx, src):
         # filename="for_chris.pdf",
     )
 
-    if True:
+    if False:
         for owner in [
             "victoria.levitas@gmail.com",
             "chris.press@gmail.com",
