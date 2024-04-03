@@ -148,8 +148,51 @@ def make_all_pdfs(ctx, src):
     story_to_pdf(story)
 
     do_filter = False
-    if True:
+
+    pta_board = [
+        "victoria.levitas@gmail.com",
+        "gillianedick@gmail.com",
+        "chris.press@gmail.com",
+        "katejulian@yahoo.com",
+        "jaclynchernak23@gmail.com",
+        "babytrekie@yahoo.com",
+        "cariaso@gmail.com",
+        "dafna.hochman@gmail.com",
+        "sharee.lawler@gmail.com",
+        "sarahsandelius@gmail.com",
+        "dianaximenav@gmail.com",
+        "Katherine_G_Musser@mcpsmd.org",
+        "radhavreddy@yahoo.com",
+        "Travis_J_Wiebe@mcpsmd.org",
+        "tanya.alan.correa@gmail.com",
+    ]
+
+    if False:
         emails = xlsx_to_emails(src)
+
+        for owner in pta_board:
+            story = pool_to_story(pool)
+            safe_owner = make_filename_safe(owner)
+            filename = f"unfiltered/somerset_directory_for_{safe_owner}.pdf"
+            print(owner, filename)
+            story_to_pdf(
+                story,
+                owner=owner,
+                filename=filename,
+            )
+
+        for staff_member in staff_order:
+            owner = staff_member.get("email")
+            if owner:
+                story = pool_to_story(pool)
+                safe_owner = make_filename_safe(owner)
+                filename = f"unfiltered/somerset_directory_for_{safe_owner}.pdf"
+                print(owner, filename)
+                story_to_pdf(
+                    story,
+                    owner=owner,
+                    filename=filename,
+                )
 
         for owner, students in emails.items():
             if "cariaso" not in owner:
@@ -162,7 +205,7 @@ def make_all_pdfs(ctx, src):
 
                 story = pool_to_story(filtered_pool)
                 safe_owner = make_filename_safe(owner)
-                filename = f"filtered/filtered_somerset_directory_{safe_owner}.pdf"
+                filename = f"filtered/filtered_somerset_directory_for_{safe_owner}.pdf"
                 print(owner, filename)
                 story_to_pdf(
                     story,
@@ -170,9 +213,6 @@ def make_all_pdfs(ctx, src):
                     filename=filename,
                 )
 
-        for staff_member in staff_order:
-            owner = staff_member.get("email")
-            if owner:
                 story = pool_to_story(pool)
                 safe_owner = make_filename_safe(owner)
                 filename = f"unfiltered/somerset_directory_for_{safe_owner}.pdf"
@@ -432,12 +472,12 @@ def pool_to_story(pool):
 
     Story.append(Spacer(1, 12))
     Story.append(Paragraph("Mr. Travis J Wiebe, Principal", centered_style))
-    Story.append(Paragraph("Travis_J_Wiebe@mcpsmd.org", centered_style))
+    Story.append(Paragraph(format_email("Travis_J_Wiebe@mcpsmd.org"), centered_style))
     Story.append(Spacer(1, 12))
 
     Story.append(Paragraph("Mrs. Bess W Treat", centered_style))
     Story.append(Paragraph("Assistant School Administrator", centered_style))
-    Story.append(Paragraph("Bess_W_Treat@mcpsmd.org", centered_style))
+    Story.append(Paragraph(format_email("Bess_W_Treat@mcpsmd.org"), centered_style))
     Story.append(Spacer(1, 12))
 
     Story.append(Spacer(1, 12))
@@ -452,16 +492,16 @@ def pool_to_story(pool):
 
     Story.append(Paragraph("Mrs. Nancy L Conway", centered_style))
     Story.append(Paragraph("School Secretary", centered_style))
-    Story.append(Paragraph("Nancy_L_Conway@mcpsmd.org", centered_style))
+    Story.append(Paragraph(format_email("Nancy_L_Conway@mcpsmd.org"), centered_style))
     Story.append(Spacer(1, 12))
 
     Story.append(Paragraph("Ms. Susan E Stringham", centered_style))
     Story.append(Paragraph("School Admin Secretary", centered_style))
-    Story.append(Paragraph("Susan_Stringham@mcpsmd.org", centered_style))
+    Story.append(Paragraph(format_email("Susan_Stringham@mcpsmd.org"), centered_style))
     Story.append(Spacer(1, 12))
 
     Story.append(Paragraph("PTA", centered_subtitle_style))
-    Story.append(Paragraph("info@somersetpta.org", centered_style))
+    Story.append(Paragraph(format_email("info@somersetpta.org"), centered_style))
 
     Story.append(PageBreak())
 
@@ -492,7 +532,7 @@ def pool_to_story(pool):
         staff_table.append(
             [
                 Paragraph(staff_title),
-                Paragraph(staff_email, style_right),
+                Paragraph(format_email(staff_email), style_right),
             ]
         )
         t = Table(
@@ -1928,6 +1968,10 @@ def format_address(student):
     else:
         address = f"{student.get('Address1','')}<br/>{student.get('Address2','')}"
     return address
+
+
+def format_email(email):
+    return f'<a href="mailto:{email}">{email}</a>'
 
 
 def get_teacher_email(teacher):
