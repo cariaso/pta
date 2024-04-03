@@ -170,6 +170,19 @@ def make_all_pdfs(ctx, src):
                     filename=filename,
                 )
 
+        for staff_member in staff_order:
+            owner = staff_member.get("email")
+            if owner:
+                story = pool_to_story(pool)
+                safe_owner = make_filename_safe(owner)
+                filename = f"unfiltered/somerset_directory_for_{safe_owner}.pdf"
+                print(owner, filename)
+                story_to_pdf(
+                    story,
+                    owner=owner,
+                    filename=filename,
+                )
+
 
 def make_filename_safe(filename):
     out = "".join(
@@ -352,6 +365,14 @@ def pool_to_story(pool):
         fontName="Helvetica-Bold",
     )
 
+    teacher_email_style = ParagraphStyle(
+        name="teacher_email",
+        fontSize=14,
+        leading=20,
+        leftIndent=15
+        # fontName="Helvetica-Bold",
+    )
+
     details_student_name_style = ParagraphStyle(
         name="studentName", fontSize=12, leading=15, leftIndent=0
     )
@@ -449,237 +470,40 @@ def pool_to_story(pool):
     Story.append(toc)
     Story.append(PageBreak())
 
-    staff = [
-        (
-            "Mr. Travis J Wiebe",
-            "Principal",
-            "Travis_J_Wiebe@mcpsmd.org",
-        ),
-        (
-            "Mrs. Bess W Treat",
-            "Assistant School Administrator",
-            "Bess_W_Treat@mcpsmd.org",
-        ),
-        (
-            "Mrs. Nancy L Conway",
-            "School Secretary",
-            "Nancy_L_Conway@mcpsmd.org",
-        ),
-        (
-            "Ms. Susan E Stringham",
-            "School Admin Secretary",
-            "Susan_Stringham@mcpsmd.org",
-        ),
-        (
-            "Mrs. Beth G Andreassi",
-            "Paraeducator",
-            "Beth_G_Andreassi@mcpsmd.org",
-        ),
-        (
-            "Ms. Megan C Appleton (Meg)",
-            "Teacher, Grade 2",
-            "Megan_C_Appleton@mcpsmd.org",
-        ),
-        (
-            "Ms. Ehlam Aslam",
-            "Teacher, Grade 1",
-            "Ehlam_Aslam@mcpsmd.org",
-        ),
-        (
-            "Mrs. Elissa M Bean",
-            "Teacher, ELD",
-            "Elissa_M_Bean@mcpsmd.org",
-        ),
-        (
-            "Mr. Andrew Beiglarbeigie (Mr. B)",
-            "Teacher, Grade 4",
-            "Andrew_Beiglarbeigie@mcpsmd.org",
-        ),
-        (
-            "Ms. Barbara A Berlin",
-            "Teacher, Grade 4",
-            "Barbara_A_Berlin@mcpsmd.org",
-        ),
-        (
-            "Ms. Linda J Bryant",
-            "Teacher, General Music",
-            "Linda_J_Bryant@mcpsmd.org",
-        ),
-        (
-            "Mrs. HeeJung Burns",
-            "Teacher, ELD",
-            "HeeJung_Burns@mcpsmd.org",
-        ),
-        (
-            "Ms. Merritt M Crowder",
-            "Media Specialist",
-            "Merritt_M_Crowder@mcpsmd.org",
-        ),
-        (
-            "Ms. Marynell A Curtis",
-            "Teacher, Art",
-            "Marynell_A_Curtis@mcpsmd.org",
-        ),
-        (
-            "Mrs. Antoinette D Davidov (Annie)",
-            "Teacher, Kindergarten",
-            "Antoinette_D_Davidov@mcpsmd.org",
-        ),
-        (
-            "Mrs. Danielle B Ellis",
-            "Reading Specialist",
-            "Danielle_B_Ellis@mcpsmd.org",
-        ),
-        (
-            "Mr. Todd G Ellis Jr (TJ)",
-            "Teacher, Physical Education",
-            "Todd_G_EllisJr@mcpsmd.org",
-        ),
-        (
-            "Mrs. Anne E Flores (Brooke)",
-            "Teacher, Staff Development",
-            "Anne_E_Flores@mcpsmd.org",
-        ),
-        (
-            "Miss Emily Freilich",
-            "Speech Pathologist",
-            "Emily_Freilich@mcpsmd.org",
-        ),
-        (
-            "Ms. Karen L Hansel",
-            "Teacher, Grade 1",
-            "Karen_L_Hansel@mcpsmd.org",
-        ),
-        (
-            "Ms. Shana M Joyce",
-            "Teacher, Kindergarten",
-            "Shana_M_Joyce@mcpsmd.org",
-        ),
-        (
-            "Mrs. Amanda M Kim",
-            "Teacher, Instrumental Music",
-            "Amanda_Kim@mcpsmd.org",
-        ),
-        (
-            "Mr. Gregory P Matwey (Greg)",
-            "Teacher, Grade 5",
-            "Gregory_P_Matwey@mcpsmd.org",
-        ),
-        (
-            "Ms. Tiffany A Mclean",
-            "Media Assistant",
-            "Tiffany_A_Mclean@mcpsmd.org",
-        ),
-        (
-            "Mrs. Katherine G Musser (Kate)",
-            "Counselor",
-            "Katherine_G_Musser@mcpsmd.org",
-        ),
-        (
-            "Mr. Daniel J Oddo (Dan)",
-            "Teacher, Resource",
-            "Daniel_Oddo@mcpsmd.org",
-        ),
-        (
-            "Ms. Mayra Perez Olivier",
-            "Teacher, Resource",
-            "Mayra_PerezOlivier@mcpsmd.org",
-        ),
-        (
-            "Dr. Tiffany E Proctor",
-            "Teacher, Grade 4",
-            "Tiffany_E_Proctor@mcpsmd.org",
-        ),
-        (
-            "Mrs. Meghan M Rivera",
-            "Teacher, Grade 1",
-            "Meghan_M_Rivera@mcpsmd.org",
-        ),
-        (
-            "Mrs. Regina M Sakaria",
-            "Teacher, Grade 3",
-            "Regina_Sakaria@mcpsmd.org",
-        ),
-        (
-            "Ms. Mary Agnes S Sisti (Maggie)",
-            "Teacher, Grade 3",
-            "MaryAgnes_S_Sisti@mcpsmd.org",
-        ),
-        (
-            "Mr. Eric D Stevens",
-            "Paraeducator",
-            "Eric_D_Stevens@mcpsmd.org",
-        ),
-        (
-            "Mr. William A Thompson Jr (Billy)",
-            "Teacher, Grade 5",
-            "William_A_ThompsonJr@mcpsmd.org",
-        ),
-        (
-            "Mrs. Kathryn L Truppner",
-            "Paraeducator",
-            "Kathryn_L_Truppner@mcpsmd.org",
-        ),
-        (
-            "Ms. Dana Ward",
-            "Teacher, Grade 2",
-            "Dana_Ward@mcpsmd.org",
-        ),
-        (
-            "Mrs. Elahe Yazdantalab",
-            "Paraeducator",
-            "Elahe_Yazdantalab@mcpsmd.org",
-        ),
-        (
-            "Ms. Danielle C McIntyre-Still",
-            "Building Services Manager",
-            "Danielle_C_McIntyre-Still@mcpsmd.org",
-        ),
-        (
-            "Mr. Harry G Callum",
-            "Building Service Worker",
-            "Harry_G_Callum@mcpsmd.org",
-        ),
-        (
-            "Mr. Michael D Johnson",
-            "Building Services Worker",
-            "Michael_D_Johnson@mcpsmd.org",
-        ),
-        (
-            "Mrs. Maria M Portillo-Coreas",
-            "Building Service Worker Sh 1",
-            "Maria_M_Portillo-coreas@mcpsmd.org",
-        ),
-        (
-            "Mrs. Wan Li Hsu Chen",
-            "Food Svc Satellite Mgr I",
-            "WanLi_HsuChen@mcpsmd.org",
-        ),
-    ]
-
-    staff_table = []
     style_right = ParagraphStyle(
         name="right", parent=styles["Normal"], alignment=TA_RIGHT
     )
 
-    for staff_name, staff_title, staff_email in staff:
+    linkedHeading(Story, "Staff Directory", toch1)
+
+    for staff_member in staff_order:
+        staff_table = []
+        staff_name = staff_member.get("formal")
+        staff_nickname = staff_member.get("nickname")
+        staff_title = staff_member.get("title")
+        staff_email = staff_member.get("email")
+        name_row = [
+            Paragraph(staff_name),
+        ]
+        if staff_nickname:
+            name_row.append(Paragraph(f"({staff_nickname})", style_right))
+        staff_table.append(name_row)
+
         staff_table.append(
             [
-                Paragraph(f"{staff_name}<br/>{staff_title}"),
+                Paragraph(staff_title),
                 Paragraph(staff_email, style_right),
             ]
         )
+        t = Table(
+            staff_table,
+            style=[
+                ("LINEBELOW", (-2, -1), (-1, -1), 0.25, colors.black),
+                # ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+            ],
+        )
 
-    t = Table(
-        staff_table,
-        style=[
-            ("LINEABOVE", (0, 1), (-1, -1), 0.25, colors.black),
-            # ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-        ],
-    )
-
-    linkedHeading(Story, "Staff Directory", toch1)
-    Story.append(t)
+        Story.append(t)
 
     Story.append(PageBreak())
 
@@ -889,7 +713,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Directory", h2),
                 Paragraph(
-                    """This directory is available in both printed and electronic forms. The electronic form is a PDF with hyperlinks between sections, with several helpful features. When looking at a student's details, clicking on the street name, will take you to all other students on that street, or clicking on the teacher's name will take you to all other students in that class. Contact info@somersetpta.org for more information or to request an up to date PDF. """,
+                    """This directory is available in both printed and electronic forms. The electronic form is a PDF with hyperlinks between sections, with several helpful features. When looking at a student's details, clicking on the street name, will take you to all other students on that street, or clicking on the teacher's name will take you to all other students in that class. Contact info@somersetpta.org for more information or to request an up to date PDF.""",
                     normal,
                 ),
             ]
@@ -900,7 +724,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Discipline", h2),
                 Paragraph(
-                    """Copies of Somerset's discipline policy are available in the school office or https://www.montgomeryschoolsmd.org/schools/somersetes/about/""",
+                    """Copies of Somerset's discipline policy are available in the school office or at https://www.montgomeryschoolsmd.org/schools/somersetes/about/""",
                     normal,
                 ),
             ]
@@ -1840,6 +1664,13 @@ def pool_to_story(pool):
             aclass_uid = class_uid(grade=grade, teacher=teacher)
             class_text = f"<a name='{aclass_uid}'/>{grade} {teacher}"
             Story.append(Paragraph(class_text, teacher_style))
+
+            teacher_email = get_teacher_email(teacher)
+            if teacher_email:
+                Story.append(Paragraph(teacher_email, teacher_email_style))
+            else:
+                print("no email known for ", teacher)
+
             for student_uid in tgs[grade][teacher]:
                 student = psr[student_uid]
                 student_link = f"\u2022 <link href='#{student_uid}'>{student.get('Student')}</link>"
@@ -2097,6 +1928,247 @@ def format_address(student):
     else:
         address = f"{student.get('Address1','')}<br/>{student.get('Address2','')}"
     return address
+
+
+def get_teacher_email(teacher):
+    for staff_member in staff_order:
+        if staff_member.get("directory_key") == teacher:
+            return staff_member.get("email")
+    return None
+
+
+staff_order = [
+    {
+        "formal": "Mr. Travis J Wiebe",
+        "title": "Principal",
+        "email": "Travis_J_Wiebe@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Bess W Treat",
+        "title": "Assistant School Administrator",
+        "email": "Bess_W_Treat@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Nancy L Conway",
+        "title": "School Secretary",
+        "email": "Nancy_L_Conway@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Susan E Stringham",
+        "title": "School Admin Secretary",
+        "email": "Susan_Stringham@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Beth G Andreassi",
+        "title": "Paraeducator",
+        "email": "Beth_G_Andreassi@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Megan C Appleton",
+        "directory_key": "Appleton, Megan",
+        "nickname": "Meg",
+        "title": "Teacher, Grade 2",
+        "email": "Megan_C_Appleton@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Ehlam Aslam",
+        "directory_key": "Aslam, Ehlam",
+        "title": "Teacher, Grade 1",
+        "email": "Ehlam_Aslam@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Elissa M Bean",
+        "title": "Teacher, ELD",
+        "email": "Elissa_M_Bean@mcpsmd.org",
+    },
+    {
+        "formal": "Mr. Andrew Beiglarbeigie",
+        "directory_key": "Beiglarbeigie, Andrew",
+        "nickname": "Mr. B",
+        "title": "Teacher, Grade 4",
+        "email": "Andrew_Beiglarbeigie@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Barbara A Berlin",
+        "directory_key": "Berlin, Barbara",
+        "title": "Teacher, Grade 4",
+        "email": "Barbara_A_Berlin@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Linda J Bryant",
+        "title": "Teacher, General Music",
+        "email": "Linda_J_Bryant@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. HeeJung Burns",
+        "title": "Teacher, ELD",
+        "email": "HeeJung_Burns@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Merritt M Crowder",
+        "title": "Media Specialist",
+        "email": "Merritt_M_Crowder@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Marynell A Curtis",
+        "title": "Teacher, Art",
+        "email": "Marynell_A_Curtis@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Antoinette D Davidov",
+        "directory_key": "Davidov, Antoinette",
+        "nickname": "Annie",
+        "title": "Teacher, Kindergarten",
+        "email": "Antoinette_D_Davidov@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Danielle B Ellis",
+        "title": "Reading Specialist",
+        "email": "Danielle_B_Ellis@mcpsmd.org",
+    },
+    {
+        "formal": "Mr. Todd G Ellis Jr",
+        "nickname": "TJ",
+        "title": "Teacher, Physical Education",
+        "email": "Todd_G_EllisJr@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Anne E Flores",
+        "nickname": "Brooke",
+        "title": "Teacher, Staff Development",
+        "email": "Anne_E_Flores@mcpsmd.org",
+    },
+    {
+        "formal": "Miss Emily Freilich",
+        "directory_key": "Freilich, Emily",
+        "title": "Speech Pathologist",
+        "email": "Emily_Freilich@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Karen L Hansel",
+        "directory_key": "Hansel, Karen",
+        "title": "Teacher, Grade 1",
+        "email": "Karen_L_Hansel@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Shana M Joyce",
+        "directory_key": "Joyce, Shana",
+        "title": "Teacher, Kindergarten",
+        "email": "Shana_M_Joyce@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Amanda M Kim",
+        "title": "Teacher, Instrumental Music",
+        "email": "Amanda_Kim@mcpsmd.org",
+    },
+    {
+        "formal": "Mr. Gregory P Matwey",
+        "directory_key": "Matwey, Gregory",
+        "nickname": "Greg",
+        "title": "Teacher, Grade 5",
+        "email": "Gregory_P_Matwey@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Tiffany A Mclean",
+        "title": "Media Assistant",
+        "email": "Tiffany_A_Mclean@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Katherine G Musser",
+        "nickname": "Kate",
+        "title": "Counselor",
+        "email": "Katherine_G_Musser@mcpsmd.org",
+    },
+    {
+        "formal": "Mr. Daniel J Oddo",
+        "nickname": "Dan",
+        "title": "Teacher, Resource",
+        "email": "Daniel_Oddo@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Mayra Perez Olivier",
+        "title": "Teacher, Resource",
+        "email": "Mayra_PerezOlivier@mcpsmd.org",
+    },
+    {
+        "formal": "Dr. Tiffany E Proctor",
+        "directory_key": "Proctor, Tiffany",
+        "title": "Teacher, Grade 4",
+        "email": "Tiffany_E_Proctor@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Meghan M Rivera",
+        "directory_key": "Rivera, Meghan",
+        "title": "Teacher, Grade 1",
+        "email": "Meghan_M_Rivera@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Regina M Sakaria",
+        "directory_key": "Sakaria, Regina",
+        "title": "Teacher, Grade 3",
+        "email": "Regina_Sakaria@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Mary Agnes S Sisti",
+        "directory_key": "Sisti, Mary Agnes",
+        "nickname": "Maggie",
+        "title": "Teacher, Grade 3",
+        "email": "MaryAgnes_S_Sisti@mcpsmd.org",
+    },
+    {
+        "formal": "Mr. Eric D Stevens",
+        "title": "Paraeducator",
+        "email": "Eric_D_Stevens@mcpsmd.org",
+    },
+    {
+        "formal": "Mr. William A Thompson Jr",
+        "directory_key": "Thompson Jr, William",
+        "nickname": "Billy",
+        "title": "Teacher, Grade 5",
+        "email": "William_A_ThompsonJr@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Kathryn L Truppner",
+        "title": "Paraeducator",
+        "email": "Kathryn_L_Truppner@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Dana Ward",
+        "directory_key": "Ward, Dana",
+        "title": "Teacher, Grade 2",
+        "email": "Dana_Ward@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Elahe Yazdantalab",
+        "title": "Paraeducator",
+        "email": "Elahe_Yazdantalab@mcpsmd.org",
+    },
+    {
+        "formal": "Ms. Danielle C McIntyre-Still",
+        "title": "Building Services Manager",
+        "email": "Danielle_C_McIntyre-Still@mcpsmd.org",
+    },
+    {
+        "formal": "Mr. Harry G Callum",
+        "title": "Building Service Worker",
+        "email": "Harry_G_Callum@mcpsmd.org",
+    },
+    {
+        "formal": "Mr. Michael D Johnson",
+        "title": "Building Services Worker",
+        "email": "Michael_D_Johnson@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Maria M Portillo-Coreas",
+        "title": "Building Service Worker Sh 1",
+        "email": "Maria_M_Portillo-coreas@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Wan Li Hsu Chen",
+        "title": "Food Svc Satellite Mgr I",
+        "email": "WanLi_HsuChen@mcpsmd.org",
+    },
+]
 
 
 if __name__ == "__main__":
