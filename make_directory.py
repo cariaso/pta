@@ -145,26 +145,22 @@ def make_all_pdfs(ctx, src):
 
     pool = xlsx_to_pool(src)
     story = pool_to_story(pool)
-    story_to_pdf(
-        story,
-        # owner="chris.press@gmail.com",
-        # filename="for_chris.pdf",
-    )
+    story_to_pdf(story)
 
     if False:
-        for owner in [
-            "victoria.levitas@gmail.com",
-            "chris.press@gmail.com",
-            "sharee.lawler@gmail.com",
-        ]:
-
-            story = pool_to_story(pool)
-            safe_owner = make_filename_safe(owner)
-            story_to_pdf(
-                story,
-                owner=owner,
-                filename=f"somerset_directory_{safe_owner}.pdf",
-            )
+        emails = xlsx_to_emails(src)
+        for owner, students in emails.items():
+            if owner:
+                filtered_pool = filter_pool_to_students(pool, students)
+                story = pool_to_story(filtered_pool)
+                safe_owner = make_filename_safe(owner)
+                filename = f"filtered/filtered_somerset_directory_{safe_owner}.pdf"
+                print(owner, filename)
+                story_to_pdf(
+                    story,
+                    owner=owner,
+                    filename=filename,
+                )
 
 
 def make_filename_safe(filename):
@@ -1758,7 +1754,8 @@ def pool_to_story(pool):
         address1 = student.get("Address1")
         address2 = student.get("Address2")
         if address1 or address2:
-            address = f"{student.get('Address1','')}<br/>{student.get('Address2','')}"
+            # address = f"{student.get('Address1','')}<br/>{student.get('Address2','')}"
+            address = format_address(student)
             kt.append(Paragraph(address, details_address_style))
 
         street_name = get_street(address1)
@@ -1872,16 +1869,18 @@ def pool_to_story(pool):
     Story.append(Spacer(1, 12))
 
     for street_name in sorted(by_street):
-        p = Paragraph(street_name, h2)
-        Story.append(p)
+
+        astreet_url = street_url(street_name)
+        if astreet_url:
+            street_anchor = f"<a name='{astreet_url}'/>{street_name}"
+        else:
+            street_anchor = street_name
+
+        Story.append(Paragraph(street_anchor, h2))
         for student_uid in by_street[street_name]:
             student = psr[student_uid]
             student_name = student.get("Student")
-            alastname, afirstname = student_name.split(", ")
-
-            student_link = (
-                f"\u2022 <link href='#{student_uid}'>{afirstname} {alastname}</link>"
-            )
+            student_link = f"\u2022 <link href='#{student_uid}'>{student_name}</link>"
             p = Paragraph(student_link, student_street_style)
             Story.append(p)
 
@@ -2010,6 +2009,64 @@ def xlsx_to_pool(src):
     return ordered_pool
 
 
+def filter_pool_to_students(pool, students):
+
+    out_pool = []
+    for arec in pool:
+        if arec.get("Student") in students:
+            out_pool.append(arec)
+    return out_pool
+
+
+def xlsx_to_emails(src):
+    """does not respect witholding, does not need to as currently used"""
+    from openpyxl import load_workbook
+
+    wb = load_workbook(filename=src)
+    sheet = wb.active
+
+    col_labels = []
+    for row in sheet.iter_rows(min_row=0, min_col=0, max_row=1, max_col=4000):
+        for cell in row:
+            # print(cell.row, cell.column, cell.value)
+            val = cell.value
+            if val:
+                val = val.strip()
+            col_labels.append(val)
+    while col_labels[-1] is None:
+        col_labels.pop()
+    num_cols = len(col_labels)
+
+    num_withheld = 0
+    num_accepted = 0
+    pool = []
+
+    preapproved = set(
+        [
+            "Cariaso, Hana",
+            "Levitas, Spencer Nathan",
+            "Press, Hari Richard Singh",
+            "Lawler, Amelia Marie",
+            "Lawler, Celine Kimbell",
+        ]
+    )
+    emails = {}
+    for row in sheet.iter_rows(
+        min_row=2,
+        min_col=0,
+        # max_row=6,
+        max_col=num_cols,
+    ):
+        adict = dict(zip(col_labels, [x.value for x in row]))
+        email = adict.get("Email")
+        if email:
+            email = email.lower()
+            student = adict.get("Student")
+            emails.setdefault(email, copy(preapproved)).add(student)
+
+    return emails
+
+
 def format_phone(phone):
     if phone:
         if m := re.search(r"^(\d{3})(\d{3})(\d{4})$", phone):
@@ -2017,6 +2074,31 @@ def format_phone(phone):
             return out
 
     return phone
+
+
+def street_url(street_name):
+    if street_name:
+        return "street_" + hashlib.sha1(street_name.encode("utf-8")).hexdigest()
+    else:
+        return None
+
+
+def format_address(student):
+
+    address1 = student.get("Address1")
+    address2 = student.get("Address2")
+
+    street_name = get_street(address1)
+    url = street_url(street_name)
+
+    link = f"<link href='#{url}'>{street_name}</link>"
+    pretty_address1 = re.sub(street_name, link, address1)
+
+    if address1 and address2:
+        address = f"{pretty_address1}<br/>{address2}"
+    else:
+        address = f"{student.get('Address1','')}<br/>{student.get('Address2','')}"
+    return address
 
 
 if __name__ == "__main__":
