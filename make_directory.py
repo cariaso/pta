@@ -121,7 +121,7 @@ def AllPageSetup(canvas, doc):
             canvas.rotate(90)
             fs = canvas._fontsize
             canvas.translate(1, -fs / 1.2)  # canvas._leading?
-            canvas.drawString(3 * inch, -0.05 * inch, doc.owner)
+            canvas.drawString((3 + (doc.page / 100)) * inch, -0.05 * inch, doc.owner)
 
         # header
         # canvas.drawString(0.5 * inch, 8 * inch, doc.fund)
@@ -147,11 +147,19 @@ def make_all_pdfs(ctx, src):
     story = pool_to_story(pool)
     story_to_pdf(story)
 
-    if False:
+    do_filter = False
+    if True:
         emails = xlsx_to_emails(src)
+
         for owner, students in emails.items():
+            if "cariaso" not in owner:
+                continue
             if owner:
-                filtered_pool = filter_pool_to_students(pool, students)
+                if do_filter:
+                    filtered_pool = filter_pool_to_students(pool, students)
+                else:
+                    filtered_pool = pool
+
                 story = pool_to_story(filtered_pool)
                 safe_owner = make_filename_safe(owner)
                 filename = f"filtered/filtered_somerset_directory_{safe_owner}.pdf"
@@ -416,7 +424,6 @@ def pool_to_story(pool):
     Story.append(Spacer(1, 12))
     Story.append(Spacer(1, 12))
     Story.append(Paragraph("Published by the Somerset PTA", centered_style))
-    Story.append(Spacer(1, 12))
 
     Story.append(PageBreak())
 
@@ -434,7 +441,6 @@ def pool_to_story(pool):
 
     Story.append(Paragraph("PTA", centered_subtitle_style))
     Story.append(Paragraph("info@somersetpta.org", centered_style))
-    Story.append(Spacer(1, 12))
 
     Story.append(PageBreak())
 
@@ -878,6 +884,17 @@ def pool_to_story(pool):
         )
     )
 
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("Directory", h2),
+                Paragraph(
+                    """This directory is available in both printed and electronic forms. The electronic form is a PDF with hyperlinks between sections, with several helpful features. When looking at a student's details, clicking on the street name, will take you to all other students on that street, or clicking on the teacher's name will take you to all other students in that class. Contact info@somersetpta.org for more information or to request an up to date PDF. """,
+                    normal,
+                ),
+            ]
+        )
+    )
     Story.append(
         KeepTogether(
             [
@@ -1494,9 +1511,6 @@ def pool_to_story(pool):
         )
     )
 
-    # Story.append(Spacer(1, 12))
-    # Story.append(HRFlowable(thickness=4))
-    # Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
     linkedHeading(Story, "Q & A", toch1)
@@ -1696,9 +1710,6 @@ def pool_to_story(pool):
         )
     )
 
-    # Story.append(Spacer(1, 12))
-    # Story.append(HRFlowable(thickness=4))
-    # Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
     psr = pool_to_student_relations(pool)
@@ -1817,9 +1828,6 @@ def pool_to_story(pool):
             kt.append(t)
         Story.append(KeepTogether(kt))
 
-    # Story.append(Spacer(1, 12))
-    # Story.append(HRFlowable(thickness=4))
-    # Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
     ptext = "By Grade & Teacher"
@@ -1838,14 +1846,10 @@ def pool_to_story(pool):
                 p = Paragraph(student_link, student_teacher_style)
                 Story.append(p)
 
-    # Story.append(Spacer(1, 12))
-    # Story.append(HRFlowable(thickness=4))
-    # Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
     ptext = "By First Name"
     linkedHeading(Story, ptext, toch1)
-    # Story.append(Spacer(1, 12))
 
     name_flow = []
     for firstname in sorted(by_firstname):
@@ -1861,7 +1865,6 @@ def pool_to_story(pool):
             name_flow.append(p)
     Story.append(BalancedColumns(name_flow))
 
-    Story.append(Spacer(1, 12))
     Story.append(PageBreak())
 
     ptext = "By Street"
@@ -1883,11 +1886,6 @@ def pool_to_story(pool):
             student_link = f"\u2022 <link href='#{student_uid}'>{student_name}</link>"
             p = Paragraph(student_link, student_street_style)
             Story.append(p)
-
-    # Story.append(Spacer(1, 12))
-    # Story.append(HRFlowable(thickness=4))
-    # Story.append(Spacer(1, 12))
-    # Story.append(PageBreak())
 
     return Story
 
