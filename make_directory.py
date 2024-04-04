@@ -79,30 +79,37 @@ def AllPageSetup(canvas, doc):
     canvas.setTitle("Somerset ES 2023-2024 Directory")
 
     if doc.page == 1:
+        image_path = "somerset_es_directory_cover.jpg"
+        image_path = "somerset_es_directory_cover2.jpg"
+        page_width, page_height = canvas._pagesize
         canvas.drawImage(
-            "somerset_es_directory_cover.jpg", -0.25 * inch, 0.5 * inch
-        )  # , *pagesize)
+            image_path,
+            0,
+            0,
+            width=5.5 * inch,
+            preserveAspectRatio=True,
+        )
 
         c = canvas
 
         # Cover Page Text with Drop Shadow
         shadow_offset = 0.025 * inch
-        c.setFillColorRGB(0, 0, 0)  # choose your font colour
-        c.setFont("Helvetica", 60)  # choose your font type and font size
+        c.setFillColorRGB(0, 0, 0)
+        c.setFont("Helvetica", 60)
         c.drawString(
             shadow_offset + 0.3 * inch, -shadow_offset + 7.25 * inch, "Somerset ES"
-        )  # write your text
+        )
         c.drawString(
             shadow_offset + 1 * inch, -shadow_offset + 6.25 * inch, "Directory"
-        )  # write your text
-        c.drawString(
-            shadow_offset + 0.8 * inch, -shadow_offset + 5.25 * inch, "2023-2024"
-        )  # write your text
+        )
 
-        c.setFillColorRGB(102 / 256, 153 / 256, 102 / 256)  # choose your font colour
-        c.drawString(0.3 * inch, 7.25 * inch, "Somerset ES")  # write your text
-        c.drawString(1 * inch, 6.25 * inch, "Directory")  # write your text
-        c.drawString(0.8 * inch, 5.25 * inch, "2023-2024")  # write your text
+        pos3_y = 0.75 * inch
+        c.drawString(shadow_offset + 0.8 * inch, -shadow_offset + pos3_y, "2023-2024")
+
+        c.setFillColorRGB(102 / 256, 153 / 256, 102 / 256)
+        c.drawString(0.3 * inch, 7.25 * inch, "Somerset ES")
+        c.drawString(1 * inch, 6.25 * inch, "Directory")
+        c.drawString(0.8 * inch, pos3_y, "2023-2024")
 
         ## Draw a line
         # c.setStrokeColorRGB(0,1,0.3) #choose your line color
@@ -167,9 +174,7 @@ def make_all_pdfs(ctx, src):
         "tanya.alan.correa@gmail.com",
     ]
 
-    if False:
-        emails = xlsx_to_emails(src)
-
+    if True:
         for owner in pta_board:
             story = pool_to_story(pool)
             safe_owner = make_filename_safe(owner)
@@ -194,9 +199,11 @@ def make_all_pdfs(ctx, src):
                     filename=filename,
                 )
 
+    if True:
+        emails = xlsx_to_emails(src)
         for owner, students in emails.items():
-            if "cariaso" not in owner:
-                continue
+            # if "cariaso" not in owner:
+            #    continue
             if owner:
                 if do_filter:
                     filtered_pool = filter_pool_to_students(pool, students)
@@ -341,8 +348,8 @@ def pool_to_student_relations(pool):
         relation_info = {
             "Relation": relation,
             "Name": relation_name,
-            "Email": relation_email,
-            "Cell Phone": format_phone(relation_cell),
+            "Email": format_email(relation_email),
+            "Cell Phone": format_phone_link(format_phone(relation_cell)),
         }
 
         if address1 != withheld_marker:
@@ -466,7 +473,7 @@ def pool_to_story(pool):
     Story.append(Paragraph(link1, centered_style))
     Story.append(Paragraph("5811 Warwick Place, Chevy Chase MD 20815", centered_style))
 
-    Story.append(Paragraph("240-740-1100", centered_style))
+    Story.append(Paragraph(format_phone_link("240-740-1100"), centered_style))
 
     Story.append(Spacer(1, 12))
 
@@ -543,7 +550,7 @@ def pool_to_story(pool):
             ],
         )
 
-        Story.append(t)
+        Story.append(KeepTogether(t))
 
     Story.append(PageBreak())
 
@@ -1625,7 +1632,12 @@ def pool_to_story(pool):
         kt.append(Paragraph(class_anchor, details_class_teacher_style))
 
         if phone := student.get("Phone"):
-            kt.append(Paragraph(f"Phone: {format_phone(phone)}", details_phone_style))
+            kt.append(
+                Paragraph(
+                    f"Phone: {format_phone_link(format_phone(phone))}",
+                    details_phone_style,
+                )
+            )
         address1 = student.get("Address1")
         address2 = student.get("Address2")
         if address1 or address2:
@@ -1972,6 +1984,10 @@ def format_address(student):
 
 def format_email(email):
     return f'<a href="mailto:{email}">{email}</a>'
+
+
+def format_phone_link(phone):
+    return f'<a href="tel:{phone}">{phone}</a>'
 
 
 def get_teacher_email(teacher):
