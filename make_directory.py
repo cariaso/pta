@@ -81,11 +81,12 @@ def AllPageSetup(canvas, doc):
     if doc.page == 1:
         image_path = "somerset_es_directory_cover.jpg"
         image_path = "somerset_es_directory_cover2.jpg"
+        image_path = "somerset-staff-photo-23-24-cropped.jpg"
         page_width, page_height = canvas._pagesize
         canvas.drawImage(
             image_path,
             0,
-            0,
+            -3 * inch,
             width=5.5 * inch,
             preserveAspectRatio=True,
         )
@@ -2174,6 +2175,11 @@ staff_order = [
         "nickname": "Maggie",
         "title": "Teacher, Grade 3",
         "email": "MaryAgnes_S_Sisti@mcpsmd.org",
+    },
+    {
+        "formal": "Mrs. Diane M Smith",
+        "title": "Teacher Reading Initiative & ESOL",
+        "email": "Diane_M_Smith@mcpsmd.org",
     },
     {
         "formal": "Mr. Eric D Stevens",
