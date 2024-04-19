@@ -241,11 +241,27 @@ def make_filename_safe(filename):
     return out
 
 
+def get_teacher(record):
+    teacher = record.get("Homeroom Teacher")
+    if teacher is None:
+        teacher = "No Teacher Set"
+        print(" Warning no 'Homeroom Teacher' set for", record)
+    return teacher
+
+
+def get_grade(record):
+    grade = record.get("Grade")
+    if grade is None:
+        grade = "No Grade Set"
+        print(" Warning no Grade set for", record)
+    return grade
+
+
 def pool_to_teacher_grade(pool):
     out = {}
     for entry in pool:
-        grade = entry.get("Grade")
-        teacher = entry.get("Homeroom Teacher")
+        grade = get_grade(entry)
+        teacher = get_teacher(entry)
         if grade not in out:
             out[grade] = {}
         if teacher not in out[grade]:
@@ -258,6 +274,8 @@ def pool_to_teacher_grade(pool):
     }
     for grade in sorted(out):
         sorted_out[grade] = {}
+        if None in out[grade]:
+            breakpoint()
         for teacher in sorted(out[grade]):
             sorted_out[grade][teacher] = out[grade][teacher]
     return sorted_out
@@ -315,9 +333,9 @@ def student_uid(entry):
 
 def class_uid(grade=None, teacher=None, entry=None):
     if grade is None:
-        grade = entry.get("Grade")
+        grade = get_grade(entry)
     if teacher is None:
-        teacher = entry.get("Homeroom Teacher")
+        teacher = get_teacher(entry)
     uid = hashlib.sha1((f"{grade}_{teacher}").encode("utf-8")).hexdigest()
     return uid
 
@@ -328,8 +346,8 @@ def pool_to_student_relations(pool):
     for entry in pool:
         student_name = entry.get("Student")
         # dob = entry.get("Birth Date")
-        grade = entry.get("Grade")
-        teacher = entry.get("Homeroom Teacher")
+        grade = get_grade(entry)
+        teacher = get_teacher(entry)
 
         phone = entry.get("Phone")
         address1 = entry.get("Address1")
@@ -1608,8 +1626,8 @@ def pool_to_story(pool):
             by_street.setdefault(street_name, []).append(student_uid)
             # I would prefer perfect sorting of addresses, but too many records have 1 child withheld, while the other is given an address
 
-        grade = student.get("Grade")
-        teacher = student.get("Homeroom Teacher")
+        grade = get_grade(student)
+        teacher = get_teacher(student)
         homeroom_key = f"{grade} {teacher}"
         by_homeroom.setdefault(homeroom_key, []).append(student_uid)
 
@@ -1626,9 +1644,9 @@ def pool_to_story(pool):
         student_anchor = f"<a name='{student_uid}'/>{student_name}"
         kt.append(Paragraph(student_anchor, details_student_name_style))
 
-        grade = student.get("Grade")
-        teacher = student.get("Homeroom Teacher")
-        aclass_uid = class_uid(grade=grade, teacher=teacher)
+        grade = get_grade(student)
+        teacher = get_teacher(student)
+        aclass_uid = class_uid(grade=grade, teacher=teacher, entry=student)
         class_anchor = (
             f"<link href='#{aclass_uid}'>Grade: {grade} Teacher: {teacher}</link>"
         )
@@ -1725,7 +1743,7 @@ def pool_to_story(pool):
             if teacher_email:
                 agroup.append(Paragraph(teacher_email, teacher_email_style))
             else:
-                print("no email known for ", teacher)
+                print(f"no email known for {grade=} {teacher=}")
 
             for student_uid in tgs[grade][teacher]:
                 student = psr[student_uid]
@@ -1734,7 +1752,6 @@ def pool_to_story(pool):
                 agroup.append(p)
 
             Story.append(KeepTogether(agroup))
-
 
     Story.append(PageBreak())
 
@@ -1888,6 +1905,12 @@ def xlsx_to_pool(src):
         withheld = False
 
         adict = dict(zip(col_labels, [x.value for x in row]))
+        delkeys = []
+        for k in adict.keys():
+            if adict[k] is None:
+                delkeys.append(k)
+        for k in delkeys:
+            del adict[k]
         Directory_Withholding = adict.get(Directory_Withholding_key)
 
         if Directory_Withholding != "N":
@@ -1916,7 +1939,7 @@ def xlsx_to_pool(src):
                     f"{Directory_Withholding_key} = '{Directory_Withholding}' ... not understood, so dropping this record"
                 )
 
-        Grade = adict.get("Grade")
+        Grade = get_grade(adict)
         if Grade == "SE PreK":
             # special case exclusion
             continue
@@ -1927,7 +1950,7 @@ def xlsx_to_pool(src):
         else:
             num_withheld += 1
 
-        if email := adict["Email"]:
+        if email := adict.get("Email"):
             if withheld:
                 emails_with_excludes[email] = True
             else:
