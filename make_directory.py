@@ -1718,11 +1718,12 @@ def pool_to_story(pool):
         for teacher in tgs[grade]:
             aclass_uid = class_uid(grade=grade, teacher=teacher)
             class_text = f"<a name='{aclass_uid}'/>{grade} {teacher}"
-            Story.append(Paragraph(class_text, teacher_style))
+            agroup = []
+            agroup.append(Paragraph(class_text, teacher_style))
 
             teacher_email = get_teacher_email(teacher)
             if teacher_email:
-                Story.append(Paragraph(teacher_email, teacher_email_style))
+                agroup.append(Paragraph(teacher_email, teacher_email_style))
             else:
                 print("no email known for ", teacher)
 
@@ -1730,7 +1731,10 @@ def pool_to_story(pool):
                 student = psr[student_uid]
                 student_link = f"\u2022 <link href='#{student_uid}'>{student.get('Student')}</link>"
                 p = Paragraph(student_link, student_teacher_style)
-                Story.append(p)
+                agroup.append(p)
+
+            Story.append(KeepTogether(agroup))
+
 
     Story.append(PageBreak())
 
