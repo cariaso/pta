@@ -147,8 +147,11 @@ def cli():
 
 @cli.command("make-all-pdfs")
 @click.option("--src", help="MCPS export .xlsx", required=True)
+@click.option("--board/-no-board", default=False, help="prepare versions for PTA board members")
+@click.option("--staff/-no-staff", default=False, help="prepare versions for staff members")
+@click.option("--parents/-no-parents", default=False, help="prepare versions for parents")
 @click.pass_context
-def make_all_pdfs(ctx, src):
+def make_all_pdfs(ctx, src, board=False, staff=False, parents=False):
     """setup whatever is needed"""
 
     pool = xlsx_to_pool(src)
@@ -176,7 +179,7 @@ def make_all_pdfs(ctx, src):
         "tanya.alan.correa@gmail.com",
     ]
 
-    if False:
+    if board:
         for owner in pta_board:
             story = pool_to_story(pool)
             safe_owner = make_filename_safe(owner)
@@ -188,7 +191,7 @@ def make_all_pdfs(ctx, src):
                 filename=filename,
             )
 
-    if False:
+    if staff:
         for staff_member in staff_order:
             owner = staff_member.get("email")
             if owner:
@@ -202,7 +205,7 @@ def make_all_pdfs(ctx, src):
                     filename=filename,
                 )
 
-    if False:
+    if parents:
         emails = xlsx_to_emails(src)
         for owner, students in emails.items():
             # if "cariaso" not in owner:
