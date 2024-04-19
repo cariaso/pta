@@ -158,6 +158,7 @@ def make_all_pdfs(ctx, src):
     do_filter = False
 
     pta_board = [
+        "rachel.boufford@gmail.com",
         "victoria.levitas@gmail.com",
         "gillianedick@gmail.com",
         "chris.press@gmail.com",
@@ -175,7 +176,7 @@ def make_all_pdfs(ctx, src):
         "tanya.alan.correa@gmail.com",
     ]
 
-    if True:
+    if False:
         for owner in pta_board:
             story = pool_to_story(pool)
             safe_owner = make_filename_safe(owner)
@@ -187,6 +188,7 @@ def make_all_pdfs(ctx, src):
                 filename=filename,
             )
 
+    if False:
         for staff_member in staff_order:
             owner = staff_member.get("email")
             if owner:
@@ -200,7 +202,7 @@ def make_all_pdfs(ctx, src):
                     filename=filename,
                 )
 
-    if True:
+    if False:
         emails = xlsx_to_emails(src)
         for owner, students in emails.items():
             # if "cariaso" not in owner:
@@ -1771,6 +1773,35 @@ def pool_to_story(pool):
             p = Paragraph(student_link, student_street_style)
             Story.append(p)
 
+    Story.append(PageBreak())
+
+    ptext = "About This Directory"
+    linkedHeading(Story, ptext, toch1)
+    Story.append(Spacer(1, 12))
+
+    url1 = "https://www.montgomeryschoolsmd.org/departments/forms/detail.aspx?formID=475&formNumber=281-13"
+    link1 = f"<link href='{url1}'>{url1}</link>"
+
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph(
+                    """
+                The information in this directory is derived from information collected by MCPS. Exclusion or corrections can be made via Form number: 281-13 and is available online at
+                """
+                ),
+                Spacer(1, 12),
+                Paragraph(link1, centered_style),
+                Spacer(1, 12),
+                Paragraph(
+                    """
+                This information is also available in Spanish, French, Vietnamese, Chinese, Korean, Amharic, and Portuguese.
+                """
+                ),
+            ]
+        )
+    )
+
     return Story
 
 
@@ -1835,39 +1866,45 @@ def xlsx_to_pool(src):
         print(f"{Directory_Withholding_key} was not found. not safe to load this")
         return
 
+    # nuke the preK
+
     num_withheld = 0
     num_accepted = 0
     pool = []
+
+    emails_with_includes = {}
+    emails_with_excludes = {}
+
     for row in sheet.iter_rows(
         min_row=2,
         min_col=0,
         # max_row=6,
         max_col=num_cols,
     ):
-        adict = dict(zip(col_labels, [x.value for x in row]))
+        withheld = False
 
+        adict = dict(zip(col_labels, [x.value for x in row]))
         Directory_Withholding = adict.get(Directory_Withholding_key)
-        if Directory_Withholding == "N":
-            num_accepted += 1
-            pass
-        else:
-            num_withheld += 1
-            for k in [
-                "Sch Num",
-                "School",
-                #'Student ', 'Homeroom Teacher', 'Grade',
-                "Birth Date",
-                #'Directory Withholding-YN',
-                "Phone",
-                "Address1",
-                "Address2",
-                "Relation",
-                "Name",
-                "Cell Phone",
-                "Email",
-            ]:
-                adict[k] = withheld_marker
-            # continue
+
+        if Directory_Withholding != "N":
+            withheld = True
+            # for k in [
+            #     "Sch Num",
+            #     "School",
+            #     "Birth Date",
+            #     #'Directory Withholding-YN',
+            #     "Phone",
+            #     "Address1",
+            #     "Address2",
+            #     "Relation",
+            #     "Name",
+            #     "Cell Phone",
+            #     "Email",
+            #     'Student',
+            #         #'Homeroom Teacher', 'Grade',
+            # ]:
+            #     #adict[k] = withheld_marker
+            #     continue
             if Directory_Withholding == "Y":
                 pass
             else:
@@ -1875,10 +1912,28 @@ def xlsx_to_pool(src):
                     f"{Directory_Withholding_key} = '{Directory_Withholding}' ... not understood, so dropping this record"
                 )
 
-        # print(adict)
-        pool.append(adict)
-        # print(row)
+        Grade = adict.get("Grade")
+        if Grade == "SE PreK":
+            # special case exclusion
+            continue
+
+        if not withheld:
+            pool.append(adict)
+            num_accepted += 1
+        else:
+            num_withheld += 1
+
+        if email := adict["Email"]:
+            if withheld:
+                emails_with_excludes[email] = True
+            else:
+                emails_with_includes[email] = True
+
     print(f"{num_withheld=} {num_accepted=}")
+
+    for email in sorted(emails_with_excludes):
+        if emails_with_includes.get(email):
+            print(f" ... FYI email {email} had includes and excludes")
 
     # reminder the 'lower' is necessary for names like "de Bruin" with an initial lowercase
     ordered_pool = [
