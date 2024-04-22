@@ -879,7 +879,8 @@ def pool_to_story(pool):
             [
                 Paragraph("Field Day", h2),
                 Paragraph(
-                    """In late spring, grades K-5 have a full day or half day (depending on grade level) of games and sports organized by the physical education teacher with the help of other staff members and parent volunteers. This yearly event is usually held at Norwood Park for grades 1-5. A Field Day for Kindergarteners is held on the school grounds.""",
+                    """
+                    In late spring, grades K-5 have a full day of games and sports organized by the physical education teacher with the help of other staff members and parent volunteers. This yearly event is usually held at Somerset Elementary's Field for grades K-5.""",
                     normal,
                 ),
             ]
@@ -1031,7 +1032,7 @@ def pool_to_story(pool):
     Story.append(
         KeepTogether(
             [
-                Paragraph("NAACP Parents' Council Representative", h2),
+                Paragraph("DEI/NAACP Parents' Council Representative", h2),
                 Paragraph(
                     """The Parents' Council of the National Association for the Advancement of Colored People seeks to empower parents and guardians of African-American and other minority students enrolled in MCPS who share the goal of equal education for all students. The Parents' Council is composed of representatives from each school. The Council meets monthly throughout the calendar year to share information that parents can use to enhance their student's chances of success. The phone number for the Council's office is 301-657-2062. Somerset's NAACP Rep also serves as a member of the PTA's Board of Directors.""",
                     normal,
@@ -1057,13 +1058,13 @@ def pool_to_story(pool):
             [
                 Paragraph("Parent Teacher Association (PTA)", h2),
                 Paragraph(
-                    """The PTA is composed of parent volunteers. All families are welcome at any PTA event or meeting, but only individuals who have joined the PTA and paid annual dues may vote on PTA proposals, budgets, and elect officers. The PTA welcomes all volunteers and any interested board candidates or committee chairs. Elections for officers and board members are generally held in late May or early June. The PTA's mission is to support kids and teachers in their classrooms. With rapidly growing enrollments and shrinking budgets, we fill an important gap, providing teacher stipends for much-needed school materials, books for classrooms and libraries, tools like microscopes, calculators, and even Promethian boards, as well as hosting before and afterschool activities and enrichment options, and providing help for kids in need, from field trip scholarships to snacks for kids who arrive hungry.""",
+                    """Parent Teacher Association (PTA) The PTA is composed of parent volunteers. All families are welcome at any PTA event or meeting, but only individuals who have joined the PTA and paid annual dues may vote on PTA proposals, budgets, and elect officers. The PTA welcomes all volunteers and any interested board candidates or committee chairs. Elections for officers and board members are generally held in late May or early June. The PTA's mission is to support kids and teachers in their classrooms. We fill an important gap- providing teacher stipends for much-needed school materials, books for classrooms and libraries, tools like microscopes, calculators, as well as hosting before and afterschool activities and enrichment options, and providing help for kids in need, from field trip scholarships to snacks for kids who arrive hungry. The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds an Adventure Theater enrichment program and performance. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit https://somersetelementary.memberhub.com/.""",
                     normal,
                 ),
-                Paragraph(
-                    """The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Rock 'N Roll Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds a playwright in residence for the fifth grade. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit www.somersetpta.org.""",
-                    normal,
-                ),
+#                Paragraph(
+#                    """The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Rock 'N Roll Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds a playwright in residence for the fifth grade. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit www.somersetpta.org.""",
+#                    normal,
+#                ),
             ]
         )
     )
@@ -1137,9 +1138,9 @@ def pool_to_story(pool):
     Story.append(
         KeepTogether(
             [
-                Paragraph("School Picnic", h2),
+                Paragraph("Movie Night", h2),
                 Paragraph(
-                    """The school picnic is held in September. Families may bring a picnic dinner or enjoy pizza or other offerings from several community vendors. Teachers, students, siblings and families all enjoy the relaxed time together to celebrate the kick-off of the school year.""",
+                    """Movie night is held in September at the Somerset Elementary Field. Families may enjoy pizza dinner before watching a movie with other families. Teachers, students, siblings and families all enjoy the relaxed time together to celebrate the kick-off of the school year.""",
                     normal,
                 ),
             ]
@@ -1161,13 +1162,8 @@ def pool_to_story(pool):
     Story.append(
         KeepTogether(
             [
-                Paragraph("Share Our Diversity Night", h2),
-                Paragraph(
-                    """This evening is a chance to share the wealth of cultural diversity that our students and their families bring to Somerset.""",
-                    normal,
-                ),
-                Paragraph(
-                    """There are numerous exhibits displaying the homelands of or places of interest to Somerset students, international foods to sample, and a musical performance of songs from around the world that is directed by Somerset's music teacher.""",
+                Paragraph("International Night", h2),
+                Paragraph("""This evening is a chance to share the wealth of cultural diversity that our students and their families bring to Somerset. There are numerous exhibits displaying the homelands of or places of interest to Somerset students, international foods to sample, and musical and cultural performances from around the world, this event is organized by the Somerset PTA.""",
                     normal,
                 ),
             ]
@@ -1310,17 +1306,17 @@ def pool_to_story(pool):
     # "Today is Newsday (The TIN) - PTA e-news letter"
     # The PTA publishes a weekly news bulletin called Today is Newsday (TIN). Distributed by email via the listserv on sundays, the TIN contains important a ouncements and user reminders of upcoming events. News and information for publication may be submitted by email to: tin@somersetpta.org. Sign up to receive the TIN electronically sendingUbscribe@yahoogroups.com. your email address to somerset-net-
 
-    Story.append(
-        KeepTogether(
-            [
-                Paragraph("Used Book Sale and Bake Sale", h2),
-                Paragraph(
-                    """Somerset students colar rods from their homes and community to be she Spring. Prin prices during this annual tvo-day event in the summer izes are given to the classes Collecting the largest nither of books. The Bake Sale, which is held in conjunction with the Used Book Sale, features a wide variety of homemade foods to sustain the book buyers. browsers and sellers.""",
-                    normal,
-                ),
-            ]
-        )
-    )
+    # Story.append(
+    #     KeepTogether(
+    #         [
+    #             Paragraph("Used Book Sale and Bake Sale", h2),
+    #             Paragraph(
+    #                 """Somerset students colar rods from their homes and community to be she Spring. Prin prices during this annual tvo-day event in the summer izes are given to the classes Collecting the largest nither of books. The Bake Sale, which is held in conjunction with the Used Book Sale, features a wide variety of homemade foods to sustain the book buyers. browsers and sellers.""",
+    #                 normal,
+    #             ),
+    #         ]
+    #     )
+    # )
 
     Story.append(
         KeepTogether(
@@ -1339,17 +1335,17 @@ def pool_to_story(pool):
             [
                 Paragraph("Volunteering", h2),
                 Paragraph(
-                    """To volunteer at the school or in your classroom please, contact your teacher or specials teachers. There are many PTA events throughout the year that can use your help from the Fall Picnic, the Back to School Classic Race to our book fairs and other events. The PTA also has opportunities for parents to help at recess and/or lunch.""",
+                    """To volunteer at the school or in your classroom please, contact your teacher or specials teachers. There are many PTA events throughout the year that can use your help from the Back to School Classic Race to our book fairs and other community events. The PTA also has opportunities for parents to help at recess and/or lunch. Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/ Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at:http://www.montgo meryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuseVolunteer-FAQs.pdf""",
                     normal,
                 ),
-                Paragraph(
-                    """Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/""",
-                    normal,
-                ),
-                Paragraph(
-                    """Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at:http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuse-Volunteer-FAQs.pdf""",
-                    normal,
-                ),
+#                Paragraph(
+#                    """Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/""",
+#                    normal,
+#                ),
+#                Paragraph(
+#                    """Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at:http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuse-Volunteer-FAQs.pdf""",
+#                    normal,
+#                ),
             ]
         )
     )
@@ -1383,13 +1379,13 @@ def pool_to_story(pool):
             [
                 Paragraph("Websites for Somerset and the PTA", h2),
                 Paragraph(
-                    """The PTA website is www.somersetpta.com. The Somerset Elementary MCPS website iswww.montgomeryschoolsmd.org/schools/somersetes """,
+                    """The PTA website is  https://somersetelementary.memberhub.com/. The Somerset Elementary MCPS website is www.montgomeryschoolsmd.org/schools/somersetes Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
                     normal,
                 ),
-                Paragraph(
-                    """Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
-                    normal,
-                ),
+#                Paragraph(
+#                    """Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
+#                    normal,
+#                ),
             ]
         )
     )
@@ -1498,15 +1494,15 @@ def pool_to_story(pool):
     Story.append(Paragraph("""Q: What if my child is being bullied?""", h2))
     Story.append(
         Paragraph(
-            """A: Please contact Mrs. Morris, the principal, or Ms. McGrady, the school counselor, to discuss any bullying situation. Most can be resolved with simple intervention. If it is happening at recess, the para-educators who monitor recess can be asked to assist.""",
+            """A: Please contact Principal Wiebe, the principal, or Ms. Musser, the school counselor, to discuss any bullying situation. Most can be resolved with simple intervention. If it is happening at recess, the paraeducators who monitor recess can be asked to assist. To learn more about reporting bullying, harassment or intimidation and see a copy of the reporting form please visit the MCPS web site: http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf""",
             normal,
         )
     )
-    Story.append(
-        Paragraph(
-            """To learn more about reporting bullying, harassment or intimidation and see a copy of the reporting form please visit the MCPS web site: http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf""",
-            normal,
-        )
+#    Story.append(
+#        Paragraph(
+#            """To learn more about reporting bullying, harassment or intimidation and see a copy of the reporting form please visit the MCPS web site: http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf""",
+#            normal,
+#        )
     )
 
     Story.append(Paragraph("""Q: What is the policy for recess?""", h2))
@@ -1564,7 +1560,7 @@ def pool_to_story(pool):
     Story.append(Paragraph("""Q: How do class parties work?""", h2))
     Story.append(
         Paragraph(
-            """A: Room parents are in charge of organizing the parties for Halloween, Valentine's Day, and end of the year. Parties usually involve games, crafts, and snacks. In addition, birthdays are celebrated in class, although many grades hold only one birthday celebration each month for all the children with birthdays that month. Birthday celebrations are generally short - around ten minutes.""",
+            """A: Room parents are in charge of organizing the parties for Halloween, Valentine's Day, and end of the year. Parties usually involve games, crafts, and snacks.""",
             normal,
         )
     )
@@ -1574,7 +1570,7 @@ def pool_to_story(pool):
     )
     Story.append(
         Paragraph(
-            """A: Somerset is happy to have the help und support of parents. Some classes have volunteer opportunities, particularly the writer's workshop in first grade. Other teachers need help with specific projects or even organizing papers and supplies. The school offers volunteer training sessions for classroom volunteers. Check with your teacher about needs in your classroom.""",
+            """A: Somerset is happy to have the help und support of parents. Some classes have volunteer opportunities. Other teachers need help with specific projects or even organizing papers and supplies. Check with your teacher about needs in your classroom.""",
             normal,
         )
     )
@@ -1594,13 +1590,13 @@ def pool_to_story(pool):
     )
     Story.append(
         Paragraph(
-            """A: The PTA provides direct support for teachers and students in the classroom, in the form of annual teacher stipends, scholarships and other financial support for students in need, and basic supplies, as well as providing grants for specific activities, such as assemblies or teacher professional development. It provides a cultural arts program for students and is responsible for maintaining a robust afterschool enrichment activities program. It also organizes and hosts all major community events at the school throughout the year, from the Fall Picnic to the 8k Race to Diversity Night. It serves as an advocate for families, students, and teachers within the school and within the entire BCC cluster. It provides multiple forums for communications with families and the school and hosts regular meetings. The PTA Board of Directors includes parents elected by the PTA, the principal, and a teacher representative.""",
+            """A: The PTA provides direct support for teachers and students in the classroom, in the form of annual teacher stipends, scholarships and other financial support for students in need, and basic supplies, as well as providing grants for specific activities, such as assemblies or teacher professional development. It provides a cultural arts program for students and is responsible for maintaining a robust afterschool enrichment activities program. It also organizes and hosts all major community events at the school throughout the year, from the 8k Race to International Night. It serves as an advocate for families, students, and teachers within the school and within the entire BCC cluster. It provides multiple forums for communications with families and the school and hosts regular meetings. The PTA Board of Directors includes parents elected by the PTA, the principal, and a teacher representative.""",
             normal,
         )
     )
     Story.append(
         Paragraph(
-            """The Somerset Foundation focuses on large-scale capital and technological projects to improve academic and physical features at the school. The Board consists of nominated parents and community leaders, along with the principal, PTA President, and a teacher representative. The Board raises funds from parents and the community for a variety of projects. Early projects included the underwriting of the arts initiative; the creation and enhancement of the original computer lab; the development of the service learning curriculum; and the purchase of classroom books, as well as enhancements to the school when it was renovated. Most recently, the Foundation was focused on the installation of the new turf field with the Field Committee, and it sponsors an afterschool academic support program for students identified by their teachers as in need of additional support.""",
+            """The Somerset Foundation focuses on large-scale capital and technological projects to improve academic and physical features at the school. The Board consists of nominated parents and community leaders, along with the principal, PTA President, and a teacher representative. The Board raises funds from parents and the community for a variety of projects. Early projects included the underwriting of the arts initiative; the creation and enhancement of the original computer lab; the development of the service learning curriculum; and the purchase of classroom books, as well as enhancements to the school when it was renovated. Most recently, the Foundation was focused on the installation of the new turf field with the Field Committee.""",
             normal,
         )
     )
