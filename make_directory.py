@@ -450,7 +450,7 @@ def url2qr(url):
     label = "myqr1_" + hashlib.sha1(url.encode("utf-8")).hexdigest()
     out_fn = f"img-{label}-minimal.png"
     if not pathlib.Path(out_fn).is_file():
-    # check filesystem and reuse if possible
+        # check filesystem and reuse if possible
 
         qr = qrcode.QRCode(
             version=1,
@@ -468,12 +468,12 @@ def url2qr(url):
 
         factory = qrcode.image.pure.PyPNGImage
         img = qr.make_image(
-            #fill_color="green",
-            #back_color="purple",
+            # fill_color="green",
+            # back_color="purple",
             image_factory=factory,
         )
         img.save(out_fn)
-    out = Image(open(out_fn, 'rb'), 1*inch, 1*inch)
+    out = Image(open(out_fn, "rb"), 1 * inch, 1 * inch)
     return out
 
 
@@ -556,14 +556,12 @@ def pool_to_story(pool):
     Story.append(Paragraph("2023-2024", centered_subtitle_style))
     Story.append(Spacer(1, 12))
 
-
     Story.append(Paragraph(format_phone_link("240-740-1100"), centered_style))
     Story.append(Paragraph("5811 Warwick Place, Chevy Chase MD 20815", centered_style))
     url1 = "https://www.montgomeryschoolsmd.org/schools/somersetes"
     link1 = f"<link href='{url1}'>{url1}</link>"
     Story.append(Paragraph(link1, centered_style))
-    Story.append( url2qr(link1))
-
+    Story.append(url2qr(link1))
 
     Story.append(Spacer(1, 12))
 
@@ -727,7 +725,7 @@ def pool_to_story(pool):
                     """Before and after school programs offers a place for students to learn, play and enjoy the supportive Bar-T community. For information regarding before and after school child care ChildCare please call: Bar-T Kids Club at 240-364-4196 or vist https://www.bar-t.com/program/kids-club/""",
                     normal,
                 ),
-                url2qr("https://www.bar-t.com/program/kids-club/")
+                url2qr("https://www.bar-t.com/program/kids-club/"),
             ]
         )
     )
@@ -1413,7 +1411,9 @@ def pool_to_story(pool):
                     """Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at: http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuseVolunteer-FAQs.pdf""",
                     normal,
                 ),
-                url2qr("http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuseVolunteer-FAQs.pdf"),
+                url2qr(
+                    "http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuseVolunteer-FAQs.pdf"
+                ),
                 #                Paragraph(
                 #                    """Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/""",
                 #                    normal,
@@ -1506,14 +1506,18 @@ def pool_to_story(pool):
     )
 
     Story.append(
-        KeepTogether([
-            Paragraph("""Q: What if I need childcare before or after school?""", h2),
-            Paragraph(
-            """A: Bar-T provides before and/or aftercare for a fee. Bar-T Kids Club at 240-364-4196 https://www.bar-t.com/program/kids-club/""",
-            normal,
-        ),
-        url2qr("https://www.bar-t.com/program/kids-club/")
-            ])
+        KeepTogether(
+            [
+                Paragraph(
+                    """Q: What if I need childcare before or after school?""", h2
+                ),
+                Paragraph(
+                    """A: Bar-T provides before and/or aftercare for a fee. Bar-T Kids Club at 240-364-4196 https://www.bar-t.com/program/kids-club/""",
+                    normal,
+                ),
+                url2qr("https://www.bar-t.com/program/kids-club/"),
+            ]
+        )
     )
 
     Story.append(Paragraph("""Q: What should I do when my child is late?""", h2))
@@ -1574,14 +1578,19 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(KeepTogether([
-        Paragraph("""Q: What if my child is being bullied?""", h2),
-        Paragraph(
-            """A: Please contact Principal Wiebe, the principal, or Ms. Musser, the school counselor, to discuss any bullying situation. Most can be resolved with simple intervention. If it is happening at recess, the paraeducators who monitor recess can be asked to assist. To learn more about reporting bullying, harassment or intimidation and see a copy of the reporting form please visit the MCPS web site: http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf""",
-            normal,
-        ),
-        url2qr("http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf"),
-        ])
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("""Q: What if my child is being bullied?""", h2),
+                Paragraph(
+                    """A: Please contact Principal Wiebe, the principal, or Ms. Musser, the school counselor, to discuss any bullying situation. Most can be resolved with simple intervention. If it is happening at recess, the paraeducators who monitor recess can be asked to assist. To learn more about reporting bullying, harassment or intimidation and see a copy of the reporting form please visit the MCPS web site: http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf""",
+                    normal,
+                ),
+                url2qr(
+                    "http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf"
+                ),
+            ]
+        )
     )
     #    Story.append(
     #        Paragraph(
@@ -1606,14 +1615,17 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(KeepTogether([
-        Paragraph("""Q: Does Somerset offer after school activities?""", h2),
-        Paragraph(
-            """A: Yes. We have a wide variety of before and after school programs offered through Enrichment Academies. Clubs are offered for three "semesters" each year, fall, winter, and spring. There is a registration period. Please visit https://somerset.enrichment-academies.com/ to learn more. Scholarships are offered based on specific need.""",
-            normal,
-        ),
-        url2qr("https://somerset.enrichment-academies.com/"),
-        ])
+    Story.append(
+        KeepTogether(
+            [
+                Paragraph("""Q: Does Somerset offer after school activities?""", h2),
+                Paragraph(
+                    """A: Yes. We have a wide variety of before and after school programs offered through Enrichment Academies. Clubs are offered for three "semesters" each year, fall, winter, and spring. There is a registration period. Please visit https://somerset.enrichment-academies.com/ to learn more. Scholarships are offered based on specific need.""",
+                    normal,
+                ),
+                url2qr("https://somerset.enrichment-academies.com/"),
+            ]
+        )
     )
 
     Story.append(Paragraph("""Q: How does discipline work at Somerset?""", h2))
