@@ -6,6 +6,10 @@ import sys
 import hashlib
 import tempfile
 import traceback
+import pathlib
+
+import qrcode
+import qrcode.image.svg
 
 import reportlab.platypus
 from reportlab.lib import colors
@@ -13,7 +17,7 @@ from reportlab.lib.enums import TA_RIGHT
 from reportlab.lib.pagesizes import letter, A6
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
-from reportlab.platypus import PageBreak, Paragraph, Spacer, Table
+from reportlab.platypus import PageBreak, Paragraph, Spacer, Table, Image
 from reportlab.platypus.doctemplate import BaseDocTemplate, PageTemplate
 from reportlab.platypus.flowables import HRFlowable, KeepTogether, BalancedColumns
 from reportlab.platypus.frames import Frame
@@ -167,7 +171,7 @@ def make_all_pdfs(ctx, src, board=False, staff=False, parents=False, pages=None)
 
     pool = xlsx_to_pool(src)
     story = pool_to_story(pool)
-    single_pdf = "somerset_director.pdf"
+    single_pdf = "somerset_directory.pdf"
 
     if pages:
         story_to_pdf(story, filename=single_pdf)
@@ -441,6 +445,38 @@ def linkedHeading(story, text, style):
     story.append(h)
 
 
+def url2qr(url):
+
+    label = "myqr1_" + hashlib.sha1(url.encode("utf-8")).hexdigest()
+    out_fn = f"img-{label}-minimal.png"
+    if not pathlib.Path(out_fn).is_file():
+    # check filesystem and reuse if possible
+
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            # error_correction=qrcode.constants.ERROR_CORRECT_M,
+            # error_correction=qrcode.constants.ERROR_CORRECT_Q,
+            # error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=40,
+            border=1,
+        )
+
+        body = url
+        qr.add_data(body)
+        qr.make(fit=True)
+
+        factory = qrcode.image.pure.PyPNGImage
+        img = qr.make_image(
+            #fill_color="green",
+            #back_color="purple",
+            image_factory=factory,
+        )
+        img.save(out_fn)
+    out = Image(open(out_fn, 'rb'), 1*inch, 1*inch)
+    return out
+
+
 def pool_to_story(pool):
 
     styles = getSampleStyleSheet()
@@ -520,13 +556,14 @@ def pool_to_story(pool):
     Story.append(Paragraph("2023-2024", centered_subtitle_style))
     Story.append(Spacer(1, 12))
 
-    url1 = "https://www.montgomeryschoolsmd.org/schools/somersetes"
-    link1 = f"<link href='{url1}'>{url1}</link>"
-
-    Story.append(Paragraph(link1, centered_style))
-    Story.append(Paragraph("5811 Warwick Place, Chevy Chase MD 20815", centered_style))
 
     Story.append(Paragraph(format_phone_link("240-740-1100"), centered_style))
+    Story.append(Paragraph("5811 Warwick Place, Chevy Chase MD 20815", centered_style))
+    url1 = "https://www.montgomeryschoolsmd.org/schools/somersetes"
+    link1 = f"<link href='{url1}'>{url1}</link>"
+    Story.append(Paragraph(link1, centered_style))
+    Story.append( url2qr(link1))
+
 
     Story.append(Spacer(1, 12))
 
@@ -650,7 +687,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Arrival at School", h2),
                 Paragraph(
-                    """Students arriving by bus generally arrive at school between 8:40-8:55 am. Students not riding buses should arrive between 8:40-8:50 am. The school day begins when the first bell rings at 8:54 am with instruction beginning at 9:00 am. If your student needs supervision prior to 8:40 am, please contact Bar-T Kids Club at 240-364-4196 for information about enrollment in its Before School program. https://www.bar-t.com/program/kids-club/ """,
+                    """Students arriving by bus generally arrive at school between 8:40-8:55 am. Students not riding buses should arrive between 8:40-8:50 am. The school day begins when the first bell rings at 8:54 am with instruction beginning at 9:00 am. If your student needs supervision prior to 8:40 am, please contact Bar-T Kids Club.""",
                     normal,
                 ),
             ]
@@ -690,6 +727,7 @@ def pool_to_story(pool):
                     """Before and after school programs offers a place for students to learn, play and enjoy the supportive Bar-T community. For information regarding before and after school child care ChildCare please call: Bar-T Kids Club at 240-364-4196 or vist https://www.bar-t.com/program/kids-club/""",
                     normal,
                 ),
+                url2qr("https://www.bar-t.com/program/kids-club/")
             ]
         )
     )
@@ -789,7 +827,7 @@ def pool_to_story(pool):
                     normal,
                 ),
                 Paragraph(
-                    """You may also sign up for SMS text and email messages with AlertMCPS. Twitter updates can be accessed at twitter.com/mcps. The school will also post information on somerset-net listserv. For delayed opening or emergency closing information for Bar-T at Somerset, call Bar-T Kids Club at 240-364-4196 or visit https://www.bar-t.com/program/kids-club/ .""",
+                    """You may also sign up for SMS text and email messages with AlertMCPS. Twitter updates can be accessed at twitter.com/mcps. The school will also post information on somerset-net listserv. For delayed opening or emergency closing information for Bar-T at Somerset, call Bar-T Kids Club at 240-364-4196.""",
                     normal,
                 ),
             ]
@@ -827,6 +865,7 @@ def pool_to_story(pool):
                     """Copies of Somerset's discipline policy are available in the school office or at https://www.montgomeryschoolsmd.org/schools/somersetes/about/""",
                     normal,
                 ),
+                url2qr("https://www.montgomeryschoolsmd.org/schools/somersetes/about/"),
             ]
         )
     )
@@ -1090,6 +1129,7 @@ def pool_to_story(pool):
                     """Parent Teacher Association (PTA) The PTA is composed of parent volunteers. All families are welcome at any PTA event or meeting, but only individuals who have joined the PTA and paid annual dues may vote on PTA proposals, budgets, and elect officers. The PTA welcomes all volunteers and any interested board candidates or committee chairs. Elections for officers and board members are generally held in late May or early June. The PTA's mission is to support kids and teachers in their classrooms. We fill an important gap- providing teacher stipends for much-needed school materials, books for classrooms and libraries, tools like microscopes, calculators, as well as hosting before and afterschool activities and enrichment options, and providing help for kids in need, from field trip scholarships to snacks for kids who arrive hungry. The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds an Adventure Theater enrichment program and performance. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit https://somersetelementary.memberhub.com/.""",
                     normal,
                 ),
+                url2qr("https://somersetelementary.memberhub.com/"),
                 #                Paragraph(
                 #                    """The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Rock 'N Roll Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds a playwright in residence for the fifth grade. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit www.somersetpta.org.""",
                 #                    normal,
@@ -1365,9 +1405,15 @@ def pool_to_story(pool):
             [
                 Paragraph("Volunteering", h2),
                 Paragraph(
-                    """To volunteer at the school or in your classroom please, contact your teacher or specials teachers. There are many PTA events throughout the year that can use your help from the Back to School Classic Race to our book fairs and other community events. The PTA also has opportunities for parents to help at recess and/or lunch. Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/ Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at:http://www.montgo meryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuseVolunteer-FAQs.pdf""",
+                    """To volunteer at the school or in your classroom please, contact your teacher or specials teachers. There are many PTA events throughout the year that can use your help from the Back to School Classic Race to our book fairs and other community events. The PTA also has opportunities for parents to help at recess and/or lunch. Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS website http://www.montgomeryschoolsmd.org/childabuseandneglect/""",
                     normal,
                 ),
+                url2qr("http://www.montgomeryschoolsmd.org/childabuseandneglect/"),
+                Paragraph(
+                    """Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at: http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuseVolunteer-FAQs.pdf""",
+                    normal,
+                ),
+                url2qr("http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuseVolunteer-FAQs.pdf"),
                 #                Paragraph(
                 #                    """Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/""",
                 #                    normal,
@@ -1409,9 +1455,15 @@ def pool_to_story(pool):
             [
                 Paragraph("Websites for Somerset and the PTA", h2),
                 Paragraph(
-                    """The PTA website is  https://somersetelementary.memberhub.com/. The Somerset Elementary MCPS website is www.montgomeryschoolsmd.org/schools/somersetes Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
+                    """The PTA website is https://somersetelementary.memberhub.com/""",
                     normal,
                 ),
+                url2qr("https://somersetelementary.memberhub.com/"),
+                Paragraph(
+                    """The Somerset Elementary MCPS website is https://www.montgomeryschoolsmd.org/schools/somersetes Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
+                    normal,
+                ),
+                url2qr("https://www.montgomeryschoolsmd.org/schools/somersetes"),
                 #                Paragraph(
                 #                    """Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
                 #                    normal,
@@ -1454,13 +1506,14 @@ def pool_to_story(pool):
     )
 
     Story.append(
-        Paragraph("""Q: What if I need childcare before or after school?""", h2)
-    )
-    Story.append(
-        Paragraph(
+        KeepTogether([
+            Paragraph("""Q: What if I need childcare before or after school?""", h2),
+            Paragraph(
             """A: Bar-T provides before and/or aftercare for a fee. Bar-T Kids Club at 240-364-4196 https://www.bar-t.com/program/kids-club/""",
             normal,
-        )
+        ),
+        url2qr("https://www.bar-t.com/program/kids-club/")
+            ])
     )
 
     Story.append(Paragraph("""Q: What should I do when my child is late?""", h2))
@@ -1521,12 +1574,14 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(Paragraph("""Q: What if my child is being bullied?""", h2))
-    Story.append(
+    Story.append(KeepTogether([
+        Paragraph("""Q: What if my child is being bullied?""", h2),
         Paragraph(
             """A: Please contact Principal Wiebe, the principal, or Ms. Musser, the school counselor, to discuss any bullying situation. Most can be resolved with simple intervention. If it is happening at recess, the paraeducators who monitor recess can be asked to assist. To learn more about reporting bullying, harassment or intimidation and see a copy of the reporting form please visit the MCPS web site: http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf""",
             normal,
-        )
+        ),
+        url2qr("http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf"),
+        ])
     )
     #    Story.append(
     #        Paragraph(
@@ -1551,12 +1606,14 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(Paragraph("""Q: Does Somerset offer after school activities?""", h2))
-    Story.append(
+    Story.append(KeepTogether([
+        Paragraph("""Q: Does Somerset offer after school activities?""", h2),
         Paragraph(
             """A: Yes. We have a wide variety of before and after school programs offered through Enrichment Academies. Clubs are offered for three "semesters" each year, fall, winter, and spring. There is a registration period. Please visit https://somerset.enrichment-academies.com/ to learn more. Scholarships are offered based on specific need.""",
             normal,
-        )
+        ),
+        url2qr("https://somerset.enrichment-academies.com/"),
+        ])
     )
 
     Story.append(Paragraph("""Q: How does discipline work at Somerset?""", h2))
@@ -1842,6 +1899,8 @@ def pool_to_story(pool):
                 ),
                 Spacer(1, 12),
                 Paragraph(link1, centered_style),
+                Spacer(1, 12),
+                url2qr(link1),
                 Spacer(1, 12),
                 Paragraph(
                     """

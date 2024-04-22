@@ -30,7 +30,9 @@ def cli():
         qr.add_data(body)
         qr.make(fit=True)
 
-        factory = qrcode.image.svg.SvgImage
+        #factory = qrcode.image.svg.SvgImage
+        factory = qrcode.image.pil.PilImage
+        #factory = qrcode.image.pure.PyPNGImage
         # factory = qrcode.image.svg.SvgFragmentImage
         # factory = qrcode.image.svg.SvgPathImage
 
@@ -39,8 +41,8 @@ def cli():
             #back_color="purple",
             image_factory=factory,
         )
-        #img.save(f"img-{label}-minimal.png")
-        img.save(f"img-{label}-minimal.svg")
+        img.save(f"img-{label}-minimal.png")
+        #img.save(f"img-{label}-minimal.svg")
 
 if __name__ == '__main__':
     cli()
