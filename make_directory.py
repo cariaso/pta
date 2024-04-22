@@ -147,16 +147,45 @@ def cli():
 
 @cli.command("make-all-pdfs")
 @click.option("--src", help="MCPS export .xlsx", required=True)
-@click.option("--board/-no-board", default=False, help="prepare versions for PTA board members")
-@click.option("--staff/-no-staff", default=False, help="prepare versions for staff members")
-@click.option("--parents/-no-parents", default=False, help="prepare versions for parents")
+@click.option(
+    "--pages/-no-pages",
+    default=False,
+    help="prepare N 1 page pdfs, in addition to the single N page pdf",
+)
+@click.option(
+    "--board/-no-board", default=False, help="prepare versions for PTA board members"
+)
+@click.option(
+    "--staff/-no-staff", default=False, help="prepare versions for staff members"
+)
+@click.option(
+    "--parents/-no-parents", default=False, help="prepare versions for parents"
+)
 @click.pass_context
-def make_all_pdfs(ctx, src, board=False, staff=False, parents=False):
+def make_all_pdfs(ctx, src, board=False, staff=False, parents=False, pages=None):
     """setup whatever is needed"""
 
     pool = xlsx_to_pool(src)
     story = pool_to_story(pool)
-    story_to_pdf(story)
+    single_pdf = "somerset_director.pdf"
+
+    if pages:
+        story_to_pdf(story, filename=single_pdf)
+
+        from PyPDF2 import PdfWriter, PdfReader
+
+        inputpdf = PdfReader(open(single_pdf, "rb"))
+
+        for i in range(len(inputpdf.pages)):
+            output = PdfWriter()
+            output.add_page(inputpdf.pages[i])
+            with open(
+                f"pages/somerset-es-directory-page{i:05d}.pdf", "wb"
+            ) as outputStream:
+                output.write(outputStream)
+    else:
+
+        story_to_pdf(story)
 
     do_filter = False
 
@@ -1061,10 +1090,10 @@ def pool_to_story(pool):
                     """Parent Teacher Association (PTA) The PTA is composed of parent volunteers. All families are welcome at any PTA event or meeting, but only individuals who have joined the PTA and paid annual dues may vote on PTA proposals, budgets, and elect officers. The PTA welcomes all volunteers and any interested board candidates or committee chairs. Elections for officers and board members are generally held in late May or early June. The PTA's mission is to support kids and teachers in their classrooms. We fill an important gap- providing teacher stipends for much-needed school materials, books for classrooms and libraries, tools like microscopes, calculators, as well as hosting before and afterschool activities and enrichment options, and providing help for kids in need, from field trip scholarships to snacks for kids who arrive hungry. The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds an Adventure Theater enrichment program and performance. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit https://somersetelementary.memberhub.com/.""",
                     normal,
                 ),
-#                Paragraph(
-#                    """The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Rock 'N Roll Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds a playwright in residence for the fifth grade. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit www.somersetpta.org.""",
-#                    normal,
-#                ),
+                #                Paragraph(
+                #                    """The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Rock 'N Roll Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds a playwright in residence for the fifth grade. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit www.somersetpta.org.""",
+                #                    normal,
+                #                ),
             ]
         )
     )
@@ -1163,7 +1192,8 @@ def pool_to_story(pool):
         KeepTogether(
             [
                 Paragraph("International Night", h2),
-                Paragraph("""This evening is a chance to share the wealth of cultural diversity that our students and their families bring to Somerset. There are numerous exhibits displaying the homelands of or places of interest to Somerset students, international foods to sample, and musical and cultural performances from around the world, this event is organized by the Somerset PTA.""",
+                Paragraph(
+                    """This evening is a chance to share the wealth of cultural diversity that our students and their families bring to Somerset. There are numerous exhibits displaying the homelands of or places of interest to Somerset students, international foods to sample, and musical and cultural performances from around the world, this event is organized by the Somerset PTA.""",
                     normal,
                 ),
             ]
@@ -1338,14 +1368,14 @@ def pool_to_story(pool):
                     """To volunteer at the school or in your classroom please, contact your teacher or specials teachers. There are many PTA events throughout the year that can use your help from the Back to School Classic Race to our book fairs and other community events. The PTA also has opportunities for parents to help at recess and/or lunch. Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/ Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at:http://www.montgo meryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuseVolunteer-FAQs.pdf""",
                     normal,
                 ),
-#                Paragraph(
-#                    """Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/""",
-#                    normal,
-#                ),
-#                Paragraph(
-#                    """Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at:http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuse-Volunteer-FAQs.pdf""",
-#                    normal,
-#                ),
+                #                Paragraph(
+                #                    """Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/""",
+                #                    normal,
+                #                ),
+                #                Paragraph(
+                #                    """Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at:http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuse-Volunteer-FAQs.pdf""",
+                #                    normal,
+                #                ),
             ]
         )
     )
@@ -1382,10 +1412,10 @@ def pool_to_story(pool):
                     """The PTA website is  https://somersetelementary.memberhub.com/. The Somerset Elementary MCPS website is www.montgomeryschoolsmd.org/schools/somersetes Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
                     normal,
                 ),
-#                Paragraph(
-#                    """Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
-#                    normal,
-#                ),
+                #                Paragraph(
+                #                    """Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
+                #                    normal,
+                #                ),
             ]
         )
     )
@@ -1498,12 +1528,12 @@ def pool_to_story(pool):
             normal,
         )
     )
-#    Story.append(
-#        Paragraph(
-#            """To learn more about reporting bullying, harassment or intimidation and see a copy of the reporting form please visit the MCPS web site: http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf""",
-#            normal,
-#        )
-    )
+    #    Story.append(
+    #        Paragraph(
+    #            """To learn more about reporting bullying, harassment or intimidation and see a copy of the reporting form please visit the MCPS web site: http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf""",
+    #            normal,
+    #        )
+    #    )
 
     Story.append(Paragraph("""Q: What is the policy for recess?""", h2))
     Story.append(
