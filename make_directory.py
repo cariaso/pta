@@ -654,7 +654,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Absences", h2),
                 Paragraph(
-                    """"If a student is going to be absent for any reason, parents are asked to telephone the school office prior to 9 am at 301-657-4985. After missing five consecutive days of school, it's requested that you submit a doctor's note.""",
+                    """"If a student is going to be absent for any reason, parents are asked to telephone the school office prior to 9 am at 240-740-1100. After missing five consecutive days of school, it's requested that you submit a doctor's note.""",
                     normal,
                 ),
                 Paragraph(
@@ -685,7 +685,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Arrival at School", h2),
                 Paragraph(
-                    """Students arriving by bus generally arrive at school between 8:40-8:55 am. Students not riding buses should arrive between 8:40-8:50 am. The school day begins when the first bell rings at 8:54 am with instruction beginning at 9:00 am. If your student needs supervision prior to 8:40 am, please contact Bar-T Kids Club.""",
+                    """Students arriving by bus generally arrive at school between 8:40-8:55 am. Students not riding buses should arrive between 8:40-8:50 am. The school day begins when the first bell rings at 8:55 AM with instruction beginning at 9:00 am. If your student needs supervision prior to 8:40 am, please contact Bar-T Kids Club.""",
                     normal,
                 ),
             ]
@@ -774,7 +774,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Career Day", h2),
                 Paragraph(
-                    """Individuals, many of them Somerset parents, representing a variety of professions and skills, visit Somerset to talk the about different career paths. This event is usually held in early April.""",
+                    """Individuals, many of them Somerset parents, representing a variety of professions and skills, visit Somerset to talk the about different career paths. This event is usually held in late April / early May.""",
                     normal,
                 ),
             ]
@@ -837,7 +837,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Departure from School", h2),
                 Paragraph(
-                    """Students are dismissed at 3:22 pm, and should leave school promptly at that time. Students enrolled in the Bar-T Before or After School programs, or attending a Somerset academic club or activity, will meet at their designated locations. If a student is to be picked up by someone other than their parent or guardian, the school must have wriften authorization from the parent or guardian.""",
+                    """Students are dismissed at 3:18 pm, and should leave school promptly at that time. Students enrolled in the Bar-T Before or After School programs, or attending a Somerset academic club or activity, will meet at their designated locations. If a student is to be picked up by someone other than their parent or guardian, the school must have wriften authorization from the parent or guardian.""",
                     normal,
                 ),
             ]
@@ -919,7 +919,7 @@ def pool_to_story(pool):
     Story.append(
         KeepTogether(
             [
-                Paragraph("ESOL (English for Speakers of Other Languages)", h2),
+                Paragraph("ELD (English Language Development)", h2),
                 Paragraph(
                     """Somerset holds special classes during the school day for students who cannot understand, speak, read or write English well enough to follow regular classroom instruction. This special help continues until the student knows enough of the language to learn within the regular classroom.""",
                     normal,
@@ -946,7 +946,7 @@ def pool_to_story(pool):
                 Paragraph("Field Day", h2),
                 Paragraph(
                     """
-                    In late spring, grades K-5 have a full day of games and sports organized by the physical education teacher with the help of other staff members and parent volunteers. This yearly event is usually held at Somerset Elementary's Field for grades K-5.""",
+                    In late spring, grades K-5 have a full day of games and sports on the Somerset field. It is organized by the physical education teacher with the help of other staff members and parent volunteers. """,
                     normal,
                 ),
             ]
@@ -958,9 +958,11 @@ def pool_to_story(pool):
             [
                 Paragraph("Financial Help", h2),
                 Paragraph(
-                    """Families with limited incomes may apply to the Board of Education for free or reduced cost breakfasts and lunches. An application form is sent home with all students at the start of each year. You also can apply in confidence to the Principal for help towards the cost of field trips. Limited scholarships also are available for After School Program classes. No student need miss class outings because of a limited family budget.""",
+                    """Families with limited incomes may apply to the Board of Education for free or reduced cost breakfasts and lunches. An application form is sent home with all students at the start of each year. You also can apply in confidence to the Principal for help towards the cost of field trips. Limited scholarships also are available for After School Program classes. No student need miss class outings because of a limited family budget. Families can apply on at https://www.MySchoolApps.com""",
                     normal,
                 ),
+                url2qr("https://www.MySchoolApps.com/"),
+
             ]
         )
     )
@@ -1076,9 +1078,10 @@ def pool_to_story(pool):
             [
                 Paragraph("Meals", h2),
                 Paragraph(
-                    """Students can bring lunch from home or purchase meals at the cafeteria. Payment is made in exact change or through a lunch account plan. To set up a lunch account, students can bring a check for any amount, made payable to the 'Somerset Cafeteria', to the Cafeteria Manager at any time. The Cafeteria Manager will deposit the funds into the student's individual account. Each student is given a PIN (Personal Identification Number), which is keyed in each time the student purchases food from the cafeteria. Notices are sent home when a student's account balance is low. Any funds in a student's account at the end of the school year are carried over to the next school year. No refunds are given. You can also use www.myschoolbucks.com, an online service to make prepayments to your child's cafeteria account via the Internet with a credit or debit card. myschoolbucks.com also allows you to monitor the purchases your child makes and allows you to block specified items from being purchased.""",
+                    """Students can bring lunch from home or purchase meals at the cafeteria. Payment is made in exact change or through a myschoolbucks.com lunch account plan. Each student is given a student ID number, which is keyed in each time the student purchases food from the cafeteria. Notices are sent home when a student's account balance is low. Any funds in a student's account at the end of the school year are carried over to the next school year. No refunds are given. myschoolbucks.com also allows you to monitor the purchases your child makes and allows you to block specified items from being purchased. To set up a lunch account visit https://www.myschoolbucks.com""",
                     normal,
                 ),
+                url2qr("https://www.myschoolbucks.com"),
             ]
         )
     )
@@ -1088,7 +1091,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Media Center", h2),
                 Paragraph(
-                    """Somerset's Media Center supports the instructional needs of the students and staff and provides an environment that promotes an appreciation for literature and reading. The Media Center has more than 8,500 print and non-print resources including books, magazines, CD-ROMs, and videos. It operates on an open and flexible schedule. Students may come individually with a pass, in small groups to do research, or in whole classes for research and instruction in information seeking strategies. Students learn how to use the Research Learning Hub (seven networked PCs) to search the Patron's catalog and use electronic encyclopedias, atlases, almanacs, and a full-text periodical index (SIRS Discoverer).""",
+                    """Somerset's Media Center supports the instructional needs of the students and staff and provides an environment that promotes an appreciation for literature and reading. The Media Center has more than 8,500 print and non-print resources including books, magazines, CD-ROMs, and videos. It operates on an open and flexible schedule. Students may come individually with a pass, in small groups to do research, or in whole classes for research and instruction in information seeking strategies.""",
                     normal,
                 ),
             ]
@@ -1153,7 +1156,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Playground", h2),
                 Paragraph(
-                    """Students may play on school grounds only with adult supervision. There is no supervision on the playground prior to 8:40 am or after 3:05 pm, unless your student is enrolled in Bar-T Kids Club or After School Program.""",
+                    """Students may play on school grounds only with adult supervision. """,
                     normal,
                 ),
             ]
@@ -1287,17 +1290,17 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(
-        KeepTogether(
-            [
-                Paragraph("Student Government Association (SGA)", h2),
-                Paragraph(
-                    """Somerset's student council consists of an elected president, vice-president, secretary, treasurer, and two representatives (one boy, one girl) from each class in grades 2 to 5. Students in those grades vote in the Fall after a lively election campaign that lasts for a week. The SGA council meets during school hours to discuss student concerns and ideas. The SGA also organizes school activities and collection drives to benefit student's charities.""",
-                    normal,
-                ),
-            ]
-        )
-    )
+    # Story.append(
+    #     KeepTogether(
+    #         [
+    #             Paragraph("Student Government Association (SGA)", h2),
+    #             Paragraph(
+    #                 """Somerset's student council consists of an elected president, vice-president, secretary, treasurer, and two representatives (one boy, one girl) from each class in grades 2 to 5. Students in those grades vote in the Fall after a lively election campaign that lasts for a week. The SGA council meets during school hours to discuss student concerns and ideas. The SGA also organizes school activities and collection drives to benefit student's charities.""",
+    #                 normal,
+    #             ),
+    #         ]
+    #     )
+    # )
 
     Story.append(
         KeepTogether(
@@ -1340,7 +1343,7 @@ def pool_to_story(pool):
             [
                 Paragraph("Telephones", h2),
                 Paragraph(
-                    """Each classroom has a telephone, and a telephone for essential calls is available for students in the lobby, on the first floor. Students may use the office telephone in an emergency. Social arrangements should be made at home. Voice mail messages may be left for staff during the school day.""",
+                    """Each classroom has a telephone, and a telephone for essential calls is available for students in the lobby, on the first floor. Students may use the office telephone in an emergency. Social arrangements should be made at home.""",
                     normal,
                 ),
             ]
@@ -1523,7 +1526,7 @@ def pool_to_story(pool):
     Story.append(Paragraph("""Q: What should I do when my child is late?""", h2))
     Story.append(
         Paragraph(
-            """A: The first bell is at 8:54. The second bell is at 9:00 am. By 9:00, students are expected to be in their classrooms. If your child arrives at school at 9:00 or after, please accompany him or her into the main office and sign them in on the sign in sheet. Students need a tardy slip to go to class.""",
+            """A: The first bell is at 8:55. The second bell is at 9:00 am. By 9:00, students are expected to be in their classrooms. If your child arrives at school at 9:00 or after, please accompany him or her into the main office and sign them in on the sign in sheet. Students need a tardy slip to go to class.""",
             normal,
         )
     )
@@ -1631,7 +1634,7 @@ def pool_to_story(pool):
     Story.append(Paragraph("""Q: How does discipline work at Somerset?""", h2))
     Story.append(
         Paragraph(
-            """A: Each teacher has his or her own classroom method for handling disruptive behavior, involving warnings and consequences, as well as opportunities to earn preferred activity points and other perks for good behavior. The lunchroom uses a table points system. The school also has a program to promote "peaceful days" school wide. Students can earn good behavior rewards, such as crazy hair and crazy sock days, for accumulating school-wide good behavior or peaceful days. Copies of Somerset's discipline policy are available in the school office or the Somerset Elementary website.""",
+            """A: Each teacher has his or her own classroom method for handling disruptive behavior, involving warnings and consequences, as well as opportunities to earn preferred activity points and other perks for good behavior. The lunchroom uses a table points system. Students can earn good behavior rewards, such as crazy hair and crazy sock days, for accumulating school-wide good behavior. Our disciplinary actions follow the MCPS student code of conduct. Copies of Somerset's discipline policy are available in the school office or the Somerset Elementary website.""",
             normal,
         )
     )
@@ -1651,7 +1654,7 @@ def pool_to_story(pool):
     )
     Story.append(
         Paragraph(
-            """A: On good weather days, students line up in the back of the school. The first few weeks, teachers are present for the lineup, particularly for younger grades. Then fifth grade safety patrol oversees lineup and para-educators monitor the children on the field. In the afternoon, students not riding the bus are dismissed in three separate groups, After School Care (Bar-T), walkers and car riders, and after school clubs. Each bus has at least one fifth grade safety patrol rider who supervises the bus. Buses are usually met by the principal and assistant principal or other staff members in the morning. Bus riders are dismissed individually by bus in the afternoon. Kindergarten riders are dismissed first and board first. Parents or caregivers are expected to meet the bus in the afternoon, particularly for grades K-2.""",
+            """A: Students line up outside of their classrooms beginning at 8:40; students are not permitted on the field at this time. In the afternoon, students not riding the bus are dismissed in three separate groups, After School Care (Bar-T), walkers and car riders, and after school clubs. Each bus has at least one fifth grade safety patrol rider who supervises the bus. Buses are usually met by the principal and assistant principal or other staff members in the morning. Bus riders are dismissed individually by bus in the afternoon. Kindergarten riders are dismissed first and board first. Parents or caregivers are expected to meet the bus in the afternoon, particularly for grades K-2.""",
             normal,
         )
     )
