@@ -125,7 +125,7 @@ def AllPageSetup(canvas, doc):
         # c.rect(4*inch,4*inch,2*inch,3*inch, fill=1) #draw rectangle
 
     else:
-        canvas.drawCentredString(2.75 * inch, 0.1 * inch, "Page %d" % (doc.page))
+        canvas.drawCentredString(2.75 * inch, 0.2 * inch, "Page %d" % (doc.page))
         if hasattr(doc, "owner"):
             canvas.setSubject(doc.owner)
             # canvas.drawString(0.5 * inch, 0.5 * inch, doc.owner)
