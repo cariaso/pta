@@ -125,7 +125,9 @@ def AllPageSetup(canvas, doc):
         # c.rect(4*inch,4*inch,2*inch,3*inch, fill=1) #draw rectangle
 
     else:
-        canvas.drawCentredString(2.75 * inch, 0.2 * inch, "Page %d" % (doc.page))
+
+        if doc.page > 4:
+            canvas.drawCentredString(2.75 * inch, 0.2 * inch, "Page %d" % (doc.page))
         if hasattr(doc, "owner"):
             canvas.setSubject(doc.owner)
             # canvas.drawString(0.5 * inch, 0.5 * inch, doc.owner)
@@ -548,6 +550,7 @@ def pool_to_story(pool):
 
     Story = []
 
+    Story.append(PageBreak())
     Story.append(PageBreak())
     Story.append(
         Paragraph("Somerset Elementary School Directory", centered_title_style)
