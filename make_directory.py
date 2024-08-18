@@ -80,7 +80,7 @@ def AllPageSetup(canvas, doc):
     canvas.saveState()
 
     canvas.setAuthor("Somerset ES PTA")
-    canvas.setTitle("Somerset ES 2023-2024 Directory")
+    canvas.setTitle("Somerset ES 2024-2025 Directory")
 
     if doc.page == 1:
         image_path = "somerset_es_directory_cover.jpg"
@@ -109,12 +109,12 @@ def AllPageSetup(canvas, doc):
         )
 
         pos3_y = 0.75 * inch
-        c.drawString(shadow_offset + 0.8 * inch, -shadow_offset + pos3_y, "2023-2024")
+        c.drawString(shadow_offset + 0.8 * inch, -shadow_offset + pos3_y, "2024-2025")
 
         c.setFillColorRGB(102 / 256, 153 / 256, 102 / 256)
         c.drawString(0.3 * inch, 7.25 * inch, "Somerset ES")
         c.drawString(1 * inch, 6.25 * inch, "Directory")
-        c.drawString(0.8 * inch, pos3_y, "2023-2024")
+        c.drawString(0.8 * inch, pos3_y, "2024-2025")
 
         ## Draw a line
         # c.setStrokeColorRGB(0,1,0.3) #choose your line color
@@ -270,6 +270,59 @@ def make_all_pdfs(ctx, src, board=False, staff=False, parents=False, pages=None)
                     owner=owner,
                     filename=filename,
                 )
+
+
+@cli.command("refresh")
+@click.option("--src", help="MCPS export .xlsx", required=False)
+@click.option(
+    "--parents/-no-parents", default=False, help="prepare versions for parents"
+)
+@click.pass_context
+def refresh_the_pdf(ctx, src, board=False, staff=False, parents=False, pages=None):
+    """live from google sheet to google drive"""
+
+    src_url = "https://docs.google.com/spreadsheets/d/1YdQkan1JDiUqyGh30ugO-TuVnr1xySHcCi1n9Tlx-oc/edit"
+    import gspread
+
+    # contents of
+    # /home/cariaso/.config/gspread/credentials.json
+    # are real
+
+    creds_path = "/home/cariaso/.config/gspread/credentials.json"
+    gc = gspread.oauth(
+        credentials_filename=creds_path,
+        #        authorized_user_filename='path/to/the/authorized_user.json'
+    )
+
+    #    gc = gspread.service_account()
+    # Open a sheet from a spreadsheet in one go
+    # wks = gc.open("Where is the money Lebowski?").sheet1
+    # Update a range of cells using the top left corner address
+    # wks.update('A1', [[1, 2], [3, 4]])
+    # Or update a single cell
+    # wks.update('B42', "it's down there somewhere, let me take another look.")
+    # Format the header
+    # wks.format('A1:B1', {'textFormat': {'bold': True}})
+
+    sh = gc.open_by_url(src_url)
+    print(sh)
+
+    # If your email is otto@example.com you can share the newly created spreadsheet with yourself:
+    # sh.share('otto@example.com', perm_type='user', role='writer')
+    worksheet = sh.get_worksheet(0)
+    # Or by title:
+    # worksheet = sh.worksheet("January")
+    # Or the most common case: Sheet1:
+    # worksheet = sh.sheet1
+    # To get a list of all worksheets:
+    worksheet_list = sh.worksheets
+    print(worksheet_list)
+
+    pool = xlsx_to_pool(src)
+    story = pool_to_story(pool)
+    single_pdf = "somerset_directory.pdf"
+
+    story_to_pdf(story, filename=single_pdf)
 
 
 def make_filename_safe(filename):
@@ -447,6 +500,11 @@ def linkedHeading(story, text, style):
     story.append(h)
 
 
+def url2qrlink(url):
+    link = f"<link href='{url}'>{url}</link>"
+    return url2qr(link)
+
+
 def url2qr(url):
 
     label = "myqr1_" + hashlib.sha1(url.encode("utf-8")).hexdigest()
@@ -474,8 +532,9 @@ def url2qr(url):
             # back_color="purple",
             image_factory=factory,
         )
-        img.save(out_fn)
-    out = Image(open(out_fn, "rb"), 1 * inch, 1 * inch)
+        outfh = open(out_fn, "wb")
+        img.save(outfh)
+    out = Image(out_fn, 1 * inch, 1 * inch)
     return out
 
 
@@ -490,6 +549,15 @@ def pool_to_story(pool):
     h1 = ParagraphStyle(name="Heading1", fontSize=14, leading=16)
     h2 = ParagraphStyle(
         name="Heading2", fontSize=12, leading=18, fontName="Helvetica-Bold"
+    )
+    h3 = ParagraphStyle(
+        # firstLineIndent=30,
+        spaceBefore=10,
+        # spaceAfter=45,
+        name="Heading2",
+        fontSize=10,
+        leading=22,
+        fontName="Helvetica",
     )
 
     styleSheet = getSampleStyleSheet()
@@ -507,7 +575,7 @@ def pool_to_story(pool):
         name="teacher_email",
         fontSize=14,
         leading=20,
-        leftIndent=15
+        leftIndent=15,
         # fontName="Helvetica-Bold",
     )
 
@@ -556,7 +624,7 @@ def pool_to_story(pool):
         Paragraph("Somerset Elementary School Directory", centered_title_style)
     )
 
-    Story.append(Paragraph("2023-2024", centered_subtitle_style))
+    Story.append(Paragraph("2024-2025", centered_subtitle_style))
     Story.append(Spacer(1, 12))
 
     Story.append(Paragraph(format_phone_link("240-740-1100"), centered_style))
@@ -606,42 +674,477 @@ def pool_to_story(pool):
     toc = TableOfContents()
     # toc.levelStyles = [h1]#, h2]
     Story.append(toc)
-    Story.append(PageBreak())
 
     style_right = ParagraphStyle(
         name="right", parent=styles["Normal"], alignment=TA_RIGHT
     )
 
-    linkedHeading(Story, "Staff Directory", toch1)
+    if new_2024 := True:
+        Story.append(PageBreak())
 
-    for staff_member in staff_order:
-        staff_table = []
-        staff_name = staff_member.get("formal")
-        staff_nickname = staff_member.get("nickname")
-        staff_title = staff_member.get("title")
-        staff_email = staff_member.get("email")
-        name_row = [
-            Paragraph(staff_name),
-        ]
-        if staff_nickname:
-            name_row.append(Paragraph(f"({staff_nickname})", style_right))
-        staff_table.append(name_row)
+        linkedHeading(Story, "Somerset ES School Information", toch1)
 
-        staff_table.append(
-            [
-                Paragraph(staff_title),
-                Paragraph(format_email(staff_email), style_right),
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("New Students", h2),
+                    Paragraph(
+                        """Families who are new to the neighborhood are encourage to register as soon as possible.  Contact the main office at""",
+                        normal,
+                    ),
+                    Paragraph(format_phone_link("240-740-1100"), centered_style),
+                    Paragraph(
+                        """Information about enrollment is at
+                        http://www.montgomeryschoolsmd.org/info/enroll/index.aspx
+                        """,
+                        normal,
+                    ),
+                    url2qr("http://www.montgomeryschoolsmd.org/info/enroll/index.aspx"),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Back to School Ready", h2),
+                    Paragraph(
+                        """The following article is a great resource as you begin to prepare your children to return to school.  It broadens the concept of school readiness. I hope that you will take the time to read it and put into practice some of the recommendations.
+                        https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/""",
+                        normal,
+                    ),
+                    url2qr(
+                        "https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/"
+                    ),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Back to School Ready", h2),
+                    Paragraph(
+                        """The following article is a great resource as you begin to prepare your children to return to school.  It broadens the concept of school readiness. I hope that you will take the time to read it and put into practice some of the recommendations.
+                        https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/""",
+                        normal,
+                    ),
+                    url2qr(
+                        "https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/"
+                    ),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Arrival Information", h2),
+                    Paragraph(
+                        """For the first day of school, beginning after 8:40 am,  students will meet their teachers outside on the back blacktop and then line up to enter the building. On Tuesday, we will shift to the indoor lineup procedures noted below.""",
+                        normal,
+                    ),
+                    Paragraph(
+                        """All students should enter through the front doors and proceed to their designated lineup spot outside their classroom.  Kindergarten students will enter through the south door at the bottom of the bus loop.  Students in grades 1-5 will enter through the main entrance doors at the top of the bus loop. Students purchasing breakfast should go directly to the cafeteria/ APR at 8:40 am.""",
+                        normal,
+                    ),
+                    Paragraph("Bike Riders", h3),
+                    Paragraph(
+                        """Students who ride their bikes to school are to lock their bikes to the bike rack located at the south end of the building near the purple playground.  Please be sure to provide your child with a bike lock that they can easily use.  It is recommended that bikes be locked at all times.""",
+                        normal,
+                    ),
+                    Paragraph("Scooters and Rollerblades", h3),
+                    Paragraph(
+                        """If your child uses a scooter to come to school, it must be folded and carried once on school properly.  If your child uses roller blades to get to school, they must remove them prior to entering the school building. Use of a bike, scooter, or rollerblade helmet is mandatory by Maryland law.""",
+                        normal,
+                    ),
+                    Paragraph("Car Riders", h3),
+                    Paragraph(
+                        """If you are driving your child to school, please drop them off on Warwick at the north driveway entrance to the school (top of the bus loop) so they may use the sidewalk to enter the building through the main entrance. Students should be ready to exit vehicles quickly from the passenger side of your vehicle as our buses need to be able to easily exit the bus loop. """,
+                        normal,
+                    ),
+                    Spacer(1, 12),
+                    Paragraph(
+                        """The parking lot (entrance on Deal Place) is for staff parking only and will not be accessible for non-staff parking or drop off.  Please do not drop off students at the rear entrance.  All students and families are to use the main entrance on Warwick Place.  There will be a crossing guard located at the intersection of Dorset Avenue and Warwick Place.""",
+                        normal,
+                    ),
+                    Spacer(1, 12),
+                    Paragraph(
+                        """All students should arrive between 8:40 and 8:50 am to ensure they are ready to enter their classrooms at 8:55 am.  There is no supervision for students prior to 8:40 am and other than those who attend the Bar-T Before-School program, students are not permitted to be in the building prior to 8:40 am, including morning helpers. Please note that attendance is taken at 9:00 AM.  If your child is not in the CLASSROOM at 9:00 AM, your child will be marked absent.""",
+                        normal,
+                    ),
+                    url2qr(
+                        "https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/"
+                    ),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Dismissal Information", h2),
+                    Paragraph(
+                        """Because dismissal is a busy time in the classrooms and main office, we would like to minimize distractions between 3:00 and 3:25 pm.  If you must pick your child up prior to the regular dismissal time of 3:25 pm, please come to the office before 3:00 pm to sign out your child.""",
+                        normal,
+                    ),
+                    Spacer(1, 12),
+                    Paragraph(
+                        """If your family has an emergency change in dismissal plans, please email your child’s teacher and call the office to ensure your child receives the message as teachers may not be able to check their email during the school day. We are unable to accommodate dismissal changes after 3:00 pm.""",
+                        normal,
+                    ),
+                    Paragraph("Dismissal Schedule:", h2),
+                    Paragraph("3:15", h3),
+                    Paragraph(
+                        """Honor guards, patrols, and office helpers.
+
+    Siblings of Kindergarten walkers and car riders dismissed to the Kindergarten classrooms
+
+    Bar-T students (to the APR):
+    Kindergarten and grade 1 (escorted by Bar-T staff)
+    Grades 2-5 walk on their own """,
+                        normal,
+                    ),
+                    Paragraph("3:18", h3),
+                    Paragraph(
+                        """First grade walkers and car riders (south doors by cafeteria)
+
+    Second and third grade walkers and car riders (north doors by main office)
+
+    Kindergarten walkers and car riders are dismissed out their classroom doors""",
+                        normal,
+                    ),
+                    Paragraph("3:20", h3),
+                    Paragraph(
+                        """Fourth grade walkers and car riders (south doors by cafeteria)
+
+    Fifth grade walkers and car riders (north doors by main office)""",
+                        normal,
+                    ),
+                    Paragraph("3:22", h3),
+                    Paragraph(
+                        """Kindergarten bus riders (picked up by patrols)
+
+    Buses called by color""",
+                        normal,
+                    ),
+                    url2qr(
+                        "https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/"
+                    ),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Bus Information", h2),
+                    Paragraph(
+                        """Letter from the Bethesda Transportation Depot https://docs.google.com/document/d/1BUH-1MOiz-YLGt_XP3idapAIVefX1wAt/view""",
+                        normal,
+                    ),
+                    url2qr(
+                        "https://docs.google.com/document/d/1BUH-1MOiz-YLGt_XP3idapAIVefX1wAt/view"
+                    ),
+                    Paragraph(
+                        """Bus Routes Arrival (AM) https://drive.google.com/file/d/1H6cpsGhsggXCCP7iNXIsvCEam6hSDpXQ/view""",
+                        normal,
+                    ),
+                    url2qr(
+                        "https://drive.google.com/file/d/1H6cpsGhsggXCCP7iNXIsvCEam6hSDpXQ/view"
+                    ),
+                    Paragraph(
+                        """Bus Routes Departure (PM) https://drive.google.com/file/d/1yEq_2mEFfJd7f0CoFQvHSu-YMXWr4vEJ/view""",
+                        normal,
+                    ),
+                    url2qr(
+                        "https://drive.google.com/file/d/1yEq_2mEFfJd7f0CoFQvHSu-YMXWr4vEJ/view"
+                    ),
+                    Paragraph(
+                        """As a reminder, please arrive early to the bus stops during the first week of school as the drivers work to fine tune the schedule.  Students will be provided with a corresponding colored wristband for their bus to assist them in boarding the correct bus.  Please encourage your child to wear the band for the first two weeks of school. Please also make note of the corresponding route number.  In the event you need to contact the Bethesda Transportation Depot, they refer to buses by route number not color. """,
+                        normal,
+                    ),
+                ]
+            )
+        )
+
+        bus_table = []
+        if bus_table:
+            for k, v in [
+                ("How do I get home?", "Bracelet color?"),
+                ("Bar-T Child Care", "Rainbow"),
+                ("Walkers/Car Riders", "Green"),
+                ("Red Bus (Route #1114)", "Red"),
+                ("Blue Bus (Route #1113)", "Blue"),
+                ("Orange Bus (Route #1127)", "Orange"),
+                ("Walkers/Car Riders", "Green"),
+            ]:
+                bus_table.append(
+                    [
+                        Paragraph(k),
+                        Paragraph(v, style_right),
+                    ]
+                )
+        if bus_table:
+            t = Table(
+                bus_table,
+                style=[
+                    ("LINEBELOW", (-2, -1), (-1, -1), 0.25, colors.black),
+                    # ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+                ],
+            )
+
+            Story.append(KeepTogether(t))
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Before/After School Care", h2),
+                    Paragraph(
+                        """Please see the linked information below regarding BAR-T, Somerset’s before and after school child care provider. https://www.bar-t.com/program/kids-club/""",
+                        normal,
+                    ),
+                    url2qr("https://www.bar-t.com/program/kids-club/"),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("New Staff", h2),
+                    Paragraph(
+                        """We are pleased to welcome the following staff members to Somerset!""",
+                        normal,
+                    ),
+                    Paragraph(
+                        """Barbara Davis\nPart-Time Special Education Teacher\nAshburton ES""",
+                        normal,
+                    ),
+                    Paragraph(
+                        """Ladraine Greene\nPart-Time Special Education Teacher\nNorth Carolina""",
+                        normal,
+                    ),
+                    Paragraph(
+                        """Kate Waldmann\nSpecial Education Paraeducator\nDCPS""",
+                        normal,
+                    ),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Important Dates", h2),
+                    Paragraph("""August 23 - Sneak a Peek Day""", normal),
+                    Paragraph(
+                        """    August 25 - PTA PlayDate for New Families - Norwood Park (10:00 am)""",
+                        normal,
+                    ),
+                    Paragraph("""    August 26  - First Day of School""", normal),
+                    Paragraph(
+                        """    September 2 - Labor Day Holiday - Schools and Offices Closed""",
+                        normal,
+                    ),
+                    Paragraph(
+                        """    September 6 - PTA Back to School Dinner and a Movie""",
+                        normal,
+                    ),
+                    Paragraph(
+                        """    September 10 - Back to School Night (6:30-8:00 PM) for all grades""",
+                        normal,
+                    ),
+                    Paragraph("""    September 20 - International Night""", normal),
+                    Paragraph(
+                        """    September 27 - Early Release Day (Students dismissed at 12:55 pm)""",
+                        normal,
+                    ),
+                    Paragraph(
+                        """    October 3 - No School for Students or Teachers""", normal
+                    ),
+                    Paragraph(
+                        """    October 6 - PTA Back to School Classic Race""", normal
+                    ),
+                    Paragraph("""    October 9 - Student Portraits""", normal),
+                    Paragraph("""    October 18 - No School for Students""", normal),
+                    Paragraph("""    November 1 -  Fall Festival""", normal),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("MCPS Calendar", h2),
+                    Paragraph(
+                        """The MCPS Comprehensive School Calendar for the 2024-2025 school year can be found at
+                        https://ww2.montgomeryschoolsmd.org/calendar/""",
+                        normal,
+                    ),
+                    url2qr("https://ww2.montgomeryschoolsmd.org/calendar/"),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Health Information", h2),
+                    Paragraph(
+                        """A copy of the Maryland State Immunization Guidelines for the 2024-25 school year is available """,
+                        normal,
+                    ),
+                    url2qr(
+                        "https://health.maryland.gov/phpa/OIDEOR/IMMUN/Shared%20Documents/2024-2025_School_IZ_%20Requirements_Final.pdf"
+                    ),
+                    Paragraph(
+                        """New students should present proper documentation of required immunizations at the time of enrollment. If a family does not provide documentation for the required immunizations but presents evidence of an appointment to obtain documentation or immunization records within 20 calendar days of the date of enrollment, the student may be enrolled. However, if the documentation is not provided immediately following the scheduled date, the student must be excluded from school and marked absent until proof of immunization is received. If you have questions or concerns about these requirements, please contact our School Health Technician at 240-740-1102, on or after August 20, 2024.""",
+                        normal,
+                    ),
+                    Spacer(1, 12),
+                    Paragraph(
+                        """To ensure a smooth, lice free opening of school, we are requesting that families inspect their children’s heads prior to their return to school and every few weeks thereafter.  Should lice be evident, please notify our School Health Technician.  She will be able to provide you with information regarding treatment of a lice infestation.  In addition, upon your child’s return to school following an episode of lice, our School Health Technician will need to inspect the student’s head to assure the absence of live lice and nits located with ½ inch of the scalp.  If the nits are located ½ inch or more from the scalp, a student may attend school.""",
+                        normal,
+                    ),
+                    Spacer(1, 12),
+                    Paragraph(
+                        """Please be sure that you have provided us with up to date contact information including phone numbers and email addresses so that the health room or school can reach you directly.  Be sure to update information using ParentVue.""",
+                        normal,
+                    ),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Attendance", h2),
+                    Paragraph(
+                        """Please refer to MCPS Regulation JEA-RA Student Attendance https://ww2.montgomeryschoolsmd.org/departments/policy/pdf/jea-ra%20nondiscrimination.pdf """,
+                        normal,
+                    ),
+                    url2qr(
+                        "https://ww2.montgomeryschoolsmd.org/departments/policy/pdf/jea-ra%20nondiscrimination.pdf"
+                    ),
+                    Paragraph(
+                        """for additional information regarding student attendance and please remember the importance of regular attendance in school.  Please try to schedule your vacations or family activities when school is not in session. We realize that sometimes vacation opportunities come up unexpectedly; however, these absences are considered unlawful and the absence(s) will be recorded as unexcused.  Students learn when they are in school.  Please support us by making sure your child comes to school on time each day.  If your child is late, please sign them in at the main office.""",
+                        normal,
+                    ),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Lunch Information", h2),
+                    Paragraph(
+                        """Meal prices: Breakfast—$1.30; Lunch—$2.55 (Elementary), $2.80 (Middle and High) """,
+                        normal,
+                    ),
+                    Paragraph(
+                        """Students in Maryland who qualify for reduced-price meals will not be charged for breakfast or lunch. FREE AND REDUCED-PRICE MEAL APPLICATIONS Apply online NOW so that benefits will be in place when school starts! Families who meet certain federal income standards are eligible for free or reduced-price meal benefits. All children use their MCPS ID number at the register so confidentiality is maintained and no child is overtly identified as receiving free or reduced-price meals. Only one application is needed for all students in a household. A new application must be completed for any family requesting assistance this school year. The online application is now open for families to submit applications online at  http://www.MySchoolApps.com
+    """,
+                        normal,
+                    ),
+                    url2qr("http://www.myschoolapps.com"),
+                    Paragraph(
+                        """For more information and How-To videos, visit the Food Services website http://www.montgomeryschools.org/departments/food-and-nutrition/meal-payments/#FARMS""",
+                        normal,
+                    ),
+                    url2qr(
+                        "http://www.montgomeryschools.org/departments/food-and-nutrition/meal-payments/#FARMS"
+                    ),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("School Supplies", h2),
+                    Paragraph(
+                        """The school supply list is available at  https://drive.google.com/file/d/1_kWkA8yM8vTPURe1rwSCHLMmrznQ6HLe/view""",
+                        normal,
+                    ),
+                    url2qr(
+                        "https://drive.google.com/file/d/1_kWkA8yM8vTPURe1rwSCHLMmrznQ6HLe/view"
+                    ),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Staff Directory", h2),
+                    Paragraph(
+                        """The Somerset staff directory is available at https://www2.montgomeryschoolsmd.org/schools/somersetes/staff/directory/""",
+                        normal,
+                    ),
+                    url2qr(
+                        "https://www2.montgomeryschoolsmd.org/schools/somersetes/staff/directory/"
+                    ),
+                ]
+            )
+        )
+
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("For Kindergarten Only", h2),
+                    Paragraph(
+                        """On the first day of school, kindergarten students should line up outside on the blacktop near their teacher.  Staff will be available to escort kindergarten bus riders to the back of the school. Each teacher will be holding a placard with their name on it, so you can find them easily.  If you are accompanying your child to school, please say goodbye outside and allow your child to enter the building with their teachers and classmates.  We will have staff readily available to escort the children to the correct location.  This makes the transition for children so much easier.  We promise to take the best care of them on the first day and every day!""",
+                        normal,
+                    ),
+                    Spacer(1, 12),
+                    Paragraph(
+                        """It is important to note that the kindergarten year is a very special one during which many of the attitudes toward school and learning begin to take shape.  In addition to learning the kindergarten objectives, we want all children to have a positive perception about school and themselves.  The kindergarten instructional program deals with child development in the areas of language and thinking skills, concepts in math, science, social studies, art, and music, as well as social, emotional, and physical development.""",
+                        normal,
+                    ),
+                    Spacer(1, 12),
+                    Paragraph(
+                        """Students who ride the bus will be picked up at the stop located closest to your home.  A copy of the bus schedule is included above.  Kindergarten students who are bus riders will ride the bus at the beginning and end of the school day.  Please ensure you are early to the bus stop for the first two weeks of school as the buses work to normalize pick up and drop off. Kindergarten students will not be dropped off at the end of the day unless an adult is waiting to pick them up. """,
+                        normal,
+                    ),
+                ]
+            )
+        )
+
+    if do_teacher_directory := True:
+        Story.append(PageBreak())
+
+        linkedHeading(Story, "Staff Directory", toch1)
+
+        for staff_member in staff_order:
+            staff_table = []
+            staff_name = staff_member.get("formal")
+            staff_nickname = staff_member.get("nickname")
+            staff_title = staff_member.get("title")
+            staff_email = staff_member.get("email")
+            name_row = [
+                Paragraph(staff_name),
             ]
-        )
-        t = Table(
-            staff_table,
-            style=[
-                ("LINEBELOW", (-2, -1), (-1, -1), 0.25, colors.black),
-                # ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-            ],
-        )
+            if staff_nickname:
+                name_row.append(Paragraph(f"({staff_nickname})", style_right))
+            staff_table.append(name_row)
 
-        Story.append(KeepTogether(t))
+            staff_table.append(
+                [
+                    Paragraph(staff_title),
+                    Paragraph(format_email(staff_email), style_right),
+                ]
+            )
+            t = Table(
+                staff_table,
+                style=[
+                    ("LINEBELOW", (-2, -1), (-1, -1), 0.25, colors.black),
+                    # ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+                ],
+            )
+
+            Story.append(KeepTogether(t))
 
     Story.append(PageBreak())
 
@@ -677,18 +1180,6 @@ def pool_to_story(pool):
                 ),
                 Paragraph(
                     """Permission to distribute advertising material of any kind, in the school or on the grounds, must follow the guidelines set forth by the Board of Education. Please consult the school office staff before distributing materials.""",
-                    normal,
-                ),
-            ]
-        )
-    )
-
-    Story.append(
-        KeepTogether(
-            [
-                Paragraph("Arrival at School", h2),
-                Paragraph(
-                    """Students arriving by bus generally arrive at school between 8:40-8:55 am. Students not riding buses should arrive between 8:40-8:50 am. The school day begins when the first bell rings at 8:55 AM with instruction beginning at 9:00 am. If your student needs supervision prior to 8:40 am, please contact Bar-T Kids Club.""",
                     normal,
                 ),
             ]
@@ -965,7 +1456,6 @@ def pool_to_story(pool):
                     normal,
                 ),
                 url2qr("https://www.MySchoolApps.com/"),
-
             ]
         )
     )
@@ -2230,13 +2720,13 @@ staff_order = [
         "title": "Teacher, ELD",
         "email": "Elissa_M_Bean@mcpsmd.org",
     },
-    {
-        "formal": "Mr. Andrew Beiglarbeigie",
-        "directory_key": "Beiglarbeigie, Andrew",
-        "nickname": "Mr. B",
-        "title": "Teacher, Grade 4",
-        "email": "Andrew_Beiglarbeigie@mcpsmd.org",
-    },
+    # {
+    #     "formal": "Mr. Andrew Beiglarbeigie",
+    #     "directory_key": "Beiglarbeigie, Andrew",
+    #     "nickname": "Mr. B",
+    #     "title": "Teacher, Grade 4",
+    #     "email": "Andrew_Beiglarbeigie@mcpsmd.org",
+    # },
     {
         "formal": "Ms. Barbara A Berlin",
         "directory_key": "Berlin, Barbara",
@@ -2271,6 +2761,11 @@ staff_order = [
         "email": "Antoinette_D_Davidov@mcpsmd.org",
     },
     {
+        "formal": "Barbara Davis",
+        "title": "Part-Time Special Education Teacher",
+        # "email": "Michael_D_Johnson@mcpsmd.org",
+    },
+    {
         "formal": "Mrs. Danielle B Ellis",
         "title": "Reading Specialist",
         "email": "Danielle_B_Ellis@mcpsmd.org",
@@ -2294,10 +2789,20 @@ staff_order = [
         "email": "Emily_Freilich@mcpsmd.org",
     },
     {
+        "formal": "Ladraine Greene",
+        "title": "Special Education Teacher",
+        # "email": "Michael_D_Johnson@mcpsmd.org",
+    },
+    {
         "formal": "Ms. Karen L Hansel",
         "directory_key": "Hansel, Karen",
         "title": "Teacher, Grade 1",
         "email": "Karen_L_Hansel@mcpsmd.org",
+    },
+    {
+        "formal": "Mr. Michael D Johnson",
+        "title": "Building Services Worker",
+        "email": "Michael_D_Johnson@mcpsmd.org",
     },
     {
         "formal": "Ms. Shana M Joyce",
@@ -2334,11 +2839,11 @@ staff_order = [
         "title": "Teacher, Resource",
         "email": "Daniel_Oddo@mcpsmd.org",
     },
-    {
-        "formal": "Ms. Mayra Perez Olivier",
-        "title": "Teacher, Resource",
-        "email": "Mayra_PerezOlivier@mcpsmd.org",
-    },
+    # {
+    #     "formal": "Ms. Mayra Perez Olivier",
+    #     "title": "Teacher, Resource",
+    #     "email": "Mayra_PerezOlivier@mcpsmd.org",
+    # },
     {
         "formal": "Dr. Tiffany E Proctor",
         "directory_key": "Proctor, Tiffany",
@@ -2369,11 +2874,11 @@ staff_order = [
         "title": "Teacher Reading Initiative & ESOL",
         "email": "Diane_M_Smith@mcpsmd.org",
     },
-    {
-        "formal": "Mr. Eric D Stevens",
-        "title": "Paraeducator",
-        "email": "Eric_D_Stevens@mcpsmd.org",
-    },
+    # {
+    #     "formal": "Mr. Eric D Stevens",
+    #     "title": "Paraeducator",
+    #     "email": "Eric_D_Stevens@mcpsmd.org",
+    # },
     {
         "formal": "Mr. William A Thompson Jr",
         "directory_key": "Thompson Jr, William",
@@ -2393,6 +2898,11 @@ staff_order = [
         "email": "Dana_Ward@mcpsmd.org",
     },
     {
+        "formal": "Kate Waldmann",
+        "title": "Special Education Paraeducator",
+        # "email": "Michael_D_Johnson@mcpsmd.org",
+    },
+    {
         "formal": "Mrs. Elahe Yazdantalab",
         "title": "Paraeducator",
         "email": "Elahe_Yazdantalab@mcpsmd.org",
@@ -2402,16 +2912,11 @@ staff_order = [
         "title": "Building Services Manager",
         "email": "Danielle_C_McIntyre-Still@mcpsmd.org",
     },
-    {
-        "formal": "Mr. Harry G Callum",
-        "title": "Building Service Worker",
-        "email": "Harry_G_Callum@mcpsmd.org",
-    },
-    {
-        "formal": "Mr. Michael D Johnson",
-        "title": "Building Services Worker",
-        "email": "Michael_D_Johnson@mcpsmd.org",
-    },
+    # {
+    #     "formal": "Mr. Harry G Callum",
+    #     "title": "Building Service Worker",
+    #     "email": "Harry_G_Callum@mcpsmd.org",
+    # },
     {
         "formal": "Mrs. Maria M Portillo-Coreas",
         "title": "Building Service Worker Sh 1",
