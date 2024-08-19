@@ -291,34 +291,12 @@ def refresh_the_pdf(ctx, src, board=False, staff=False, parents=False, pages=Non
     creds_path = "/home/cariaso/.config/gspread/credentials.json"
     gc = gspread.oauth(
         credentials_filename=creds_path,
-        #        authorized_user_filename='path/to/the/authorized_user.json'
     )
 
-    #    gc = gspread.service_account()
-    # Open a sheet from a spreadsheet in one go
-    # wks = gc.open("Where is the money Lebowski?").sheet1
-    # Update a range of cells using the top left corner address
-    # wks.update('A1', [[1, 2], [3, 4]])
-    # Or update a single cell
-    # wks.update('B42', "it's down there somewhere, let me take another look.")
-    # Format the header
-    # wks.format('A1:B1', {'textFormat': {'bold': True}})
-
     sh = gc.open_by_url(src_url)
-    print(sh)
-
-    # If your email is otto@example.com you can share the newly created spreadsheet with yourself:
-    # sh.share('otto@example.com', perm_type='user', role='writer')
     worksheet = sh.get_worksheet(0)
-    # Or by title:
-    # worksheet = sh.worksheet("January")
-    # Or the most common case: Sheet1:
-    # worksheet = sh.sheet1
-    # To get a list of all worksheets:
-    worksheet_list = sh.worksheets
-    print(worksheet_list)
 
-    pool = xlsx_to_pool(src)
+    pool = xlsx_to_pool(src, sheet=worksheet)
     story = pool_to_story(pool)
     single_pdf = "somerset_directory.pdf"
 
@@ -689,7 +667,7 @@ def pool_to_story(pool):
                 [
                     Paragraph("New Students", h2),
                     Paragraph(
-                        """Families who are new to the neighborhood are encourage to register as soon as possible.  Contact the main office at""",
+                        """Families who are new to the neighborhood are encouraged to register as soon as possible. Contact the main office at""",
                         normal,
                     ),
                     Paragraph(format_phone_link("240-740-1100"), centered_style),
@@ -2460,22 +2438,19 @@ def story_to_pdf(Story, owner=None, filename="mypdf1.pdf"):
 withheld_marker = "(withheld)"
 
 
-def xlsx_to_pool(src):
-    from openpyxl import load_workbook
+def xlsx_to_pool(src, sheet=None):
+    if sheet is None:
+        from openpyxl import load_workbook
 
-    wb = load_workbook(filename=src)
-    sheet = wb.active
+        wb = load_workbook(filename=src)
+        sheet = wb.active
+    else:
+        pass
 
-    col_labels = []
-    for row in sheet.iter_rows(min_row=0, min_col=0, max_row=1, max_col=4000):
-        for cell in row:
-            # print(cell.row, cell.column, cell.value)
-            val = cell.value
-            if val:
-                val = val.strip()
-            col_labels.append(val)
-    while col_labels[-1] is None:
-        col_labels.pop()
+    col_labels = sheet.row_values(1)
+    col_clean_labels = [x.strip() for x in col_labels]
+    clean_col = {x: y for x, y in zip(col_labels, col_clean_labels)}
+
     num_cols = len(col_labels)
 
     Directory_Withholding_key = "Directory Withholding-YN"
@@ -2492,15 +2467,10 @@ def xlsx_to_pool(src):
     emails_with_includes = {}
     emails_with_excludes = {}
 
-    for row in sheet.iter_rows(
-        min_row=2,
-        min_col=0,
-        # max_row=6,
-        max_col=num_cols,
-    ):
+    for raw_dict in sheet.get_all_records():
+        adict = {clean_col[x]: str(y) for x, y in raw_dict.items()}
         withheld = False
 
-        adict = dict(zip(col_labels, [x.value for x in row]))
         delkeys = []
         for k in adict.keys():
             if adict[k] is None:
