@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "pta"
+version = "0.1.0"
+description = "tools for the somerset es pta"
+authors = ["cariaso <cariaso@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.7"
+qrcode = "^7.4.2"
+reportlab = "^4.2.2"
+gspread = "^6.1.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
