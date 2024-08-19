@@ -2690,13 +2690,6 @@ staff_order = [
         "title": "Teacher, ELD",
         "email": "Elissa_M_Bean@mcpsmd.org",
     },
-    # {
-    #     "formal": "Mr. Andrew Beiglarbeigie",
-    #     "directory_key": "Beiglarbeigie, Andrew",
-    #     "nickname": "Mr. B",
-    #     "title": "Teacher, Grade 4",
-    #     "email": "Andrew_Beiglarbeigie@mcpsmd.org",
-    # },
     {
         "formal": "Ms. Barbara A Berlin",
         "directory_key": "Berlin, Barbara",
@@ -2809,11 +2802,6 @@ staff_order = [
         "title": "Teacher, Resource",
         "email": "Daniel_Oddo@mcpsmd.org",
     },
-    # {
-    #     "formal": "Ms. Mayra Perez Olivier",
-    #     "title": "Teacher, Resource",
-    #     "email": "Mayra_PerezOlivier@mcpsmd.org",
-    # },
     {
         "formal": "Dr. Tiffany E Proctor",
         "directory_key": "Proctor, Tiffany",
@@ -2844,11 +2832,6 @@ staff_order = [
         "title": "Teacher Reading Initiative & ESOL",
         "email": "Diane_M_Smith@mcpsmd.org",
     },
-    # {
-    #     "formal": "Mr. Eric D Stevens",
-    #     "title": "Paraeducator",
-    #     "email": "Eric_D_Stevens@mcpsmd.org",
-    # },
     {
         "formal": "Mr. William A Thompson Jr",
         "directory_key": "Thompson Jr, William",
@@ -2882,11 +2865,6 @@ staff_order = [
         "title": "Building Services Manager",
         "email": "Danielle_C_McIntyre-Still@mcpsmd.org",
     },
-    # {
-    #     "formal": "Mr. Harry G Callum",
-    #     "title": "Building Service Worker",
-    #     "email": "Harry_G_Callum@mcpsmd.org",
-    # },
     {
         "formal": "Mrs. Maria M Portillo-Coreas",
         "title": "Building Service Worker Sh 1",
