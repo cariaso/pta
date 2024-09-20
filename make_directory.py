@@ -630,6 +630,24 @@ def pool_to_story(pool):
     Story.append(Spacer(1, 12))
     Story.append(Paragraph("Published by the Somerset PTA", centered_style))
 
+
+    if True:
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("PTA Calendar", h2),
+                    Paragraph(
+                        """Events of interest to members of the PTA""",
+                        normal,
+                    ),
+                    url2qr(
+                        "https://calendar.google.com/calendar/u/2?cid=Y18xNjY5ZGVlYWNlZmE5ODZiMDAzZDFiNGEwOGE2MzNiOWZiZjM5N2UwNWZjMzZhZTg5MTk0YWVhZTg4OTNmNTI4QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+                    ),
+                ]
+            )
+        )
+
+
     Story.append(PageBreak())
 
     Story.append(Paragraph("Main Office", centered_subtitle_style))
