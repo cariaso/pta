@@ -392,11 +392,15 @@ def get_street(address1):
 
 
 def student_uid(entry):
-    student_name = entry.get("Student")
-    dob = entry.get("Birth Date")
-    # grade = entry.get("Grade")
-    # teacher = entry.get("Homeroom Teacher")
-    uid = hashlib.sha1((student_name + str(dob)).encode("utf-8")).hexdigest()
+    student_ustr = entry.get("Student ID")
+    if not student_ustr:
+        student_name = entry.get("Student")
+        dob = entry.get("Birth Date")
+        # grade = entry.get("Grade")
+        # teacher = entry.get("Homeroom Teacher")
+        student_ustr = student_name + str(dob)
+
+    uid = hashlib.sha1(student_ustr.encode("utf-8")).hexdigest()
     return uid
 
 
@@ -419,12 +423,25 @@ def pool_to_student_relations(pool):
         teacher = get_teacher(entry)
 
         phone = entry.get("Phone")
-        address1 = entry.get("Address1")
-        address2 = entry.get("Address2")
+
+        if entry.get("Home Address1"):
+            address1 = entry.get("Home Address1")
+            address2 = entry.get("Home Address2")
+        elif entry.get("Mailing Address1"):
+            address1 = entry.get("Mailing Address1")
+            address2 = entry.get("Mailing Address2")
+        elif entry.get("Address1"):
+            address1 = entry.get("Address1")
+            address2 = entry.get("Address2")
+
         relation = entry.get("Relation")
-        relation_name = entry.get("Name")
-        relation_cell = entry.get("Cell Phone")
-        relation_email = entry.get("Email")
+        relation_name = entry.get("Parent/Guardian Name") or entry.get("Name")
+        relation_cell = (
+            entry.get("Parent/Guardian Cell Phone")
+            or entry.get("Cell Phone")
+            or entry.get("Phone")
+        )
+        relation_email = entry.get("Parent/Guardian Email") or entry.get("Email")
 
         uid = student_uid(entry)
         if uid not in out:
@@ -521,12 +538,34 @@ def pool_to_story(pool):
     styles = getSampleStyleSheet()
     # styles.add(ParagraphStyle(name="Justify", alignment=TA_JUSTIFY))
 
-    toch1 = ParagraphStyle(name="TOCHeading1", fontSize=14, leading=16)
-    tcoh2 = ParagraphStyle(name="TOCHeading2", fontSize=12, leading=18)
+    toch1 = ParagraphStyle(
+        name="TOCHeading1",
+        fontSize=14,
+        leading=16,
+        spaceBefore=10,
+        spaceAfter=10,
+    )
+    tcoh2 = ParagraphStyle(
+        name="TOCHeading2",
+        fontSize=12,
+        leading=18,
+        spaceBefore=10,
+        spaceAfter=10,
+    )
 
-    h1 = ParagraphStyle(name="Heading1", fontSize=14, leading=16)
+    h1 = ParagraphStyle(
+        name="Heading1",
+        fontSize=14,
+        leading=16,
+        spaceBefore=10,
+        spaceAfter=10,
+    )
     h2 = ParagraphStyle(
-        name="Heading2", fontSize=12, leading=18, fontName="Helvetica-Bold"
+        name="Heading2",
+        fontSize=12,
+        leading=18,  # fontName="Helvetica-Bold",
+        spaceBefore=10,
+        spaceAfter=10,
     )
     h3 = ParagraphStyle(
         # firstLineIndent=30,
@@ -615,13 +654,33 @@ def pool_to_story(pool):
     Story.append(Spacer(1, 12))
 
     Story.append(Spacer(1, 12))
-    Story.append(Paragraph("Mr. Travis J Wiebe, Principal", centered_style))
+    Story.append(Paragraph("Mr. Travis J Wiebe", centered_style))
+    Story.append(Paragraph("Principal", centered_style))
     Story.append(Paragraph(format_email("Travis_J_Wiebe@mcpsmd.org"), centered_style))
+    Story.append(Spacer(1, 12))
+    Story.append(Spacer(1, 12))
     Story.append(Spacer(1, 12))
 
     Story.append(Paragraph("Mrs. Bess W Treat", centered_style))
     Story.append(Paragraph("Assistant School Administrator", centered_style))
     Story.append(Paragraph(format_email("Bess_W_Treat@mcpsmd.org"), centered_style))
+    Story.append(Spacer(1, 12))
+    Story.append(Spacer(1, 12))
+    Story.append(Spacer(1, 12))
+    # Story.append(Paragraph("Main Office", centered_subtitle_style))
+
+    Story.append(Paragraph("Mrs. Nancy L Conway", centered_style))
+    Story.append(Paragraph("School Secretary", centered_style))
+    Story.append(Paragraph(format_email("Nancy_L_Conway@mcpsmd.org"), centered_style))
+    Story.append(Spacer(1, 12))
+    Story.append(Spacer(1, 12))
+    Story.append(Spacer(1, 12))
+
+    Story.append(Paragraph("Ms. Susan E Stringham", centered_style))
+    Story.append(Paragraph("School Admin Secretary", centered_style))
+    Story.append(Paragraph(format_email("Susan_Stringham@mcpsmd.org"), centered_style))
+    Story.append(Spacer(1, 12))
+    Story.append(Spacer(1, 12))
     Story.append(Spacer(1, 12))
 
     Story.append(Spacer(1, 12))
@@ -629,41 +688,6 @@ def pool_to_story(pool):
     Story.append(Spacer(1, 12))
     Story.append(Spacer(1, 12))
     Story.append(Paragraph("Published by the Somerset PTA", centered_style))
-
-
-    if True:
-        Story.append(
-            KeepTogether(
-                [
-                    Paragraph("PTA Calendar", h2),
-                    Paragraph(
-                        """Events of interest to members of the PTA""",
-                        normal,
-                    ),
-                    url2qr(
-                        "https://calendar.google.com/calendar/u/2?cid=Y18xNjY5ZGVlYWNlZmE5ODZiMDAzZDFiNGEwOGE2MzNiOWZiZjM5N2UwNWZjMzZhZTg5MTk0YWVhZTg4OTNmNTI4QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
-                    ),
-                ]
-            )
-        )
-
-
-    Story.append(PageBreak())
-
-    Story.append(Paragraph("Main Office", centered_subtitle_style))
-
-    Story.append(Paragraph("Mrs. Nancy L Conway", centered_style))
-    Story.append(Paragraph("School Secretary", centered_style))
-    Story.append(Paragraph(format_email("Nancy_L_Conway@mcpsmd.org"), centered_style))
-    Story.append(Spacer(1, 12))
-
-    Story.append(Paragraph("Ms. Susan E Stringham", centered_style))
-    Story.append(Paragraph("School Admin Secretary", centered_style))
-    Story.append(Paragraph(format_email("Susan_Stringham@mcpsmd.org"), centered_style))
-    Story.append(Spacer(1, 12))
-
-    Story.append(Paragraph("PTA", centered_subtitle_style))
-    Story.append(Paragraph(format_email("info@somersetpta.org"), centered_style))
 
     Story.append(PageBreak())
 
@@ -674,6 +698,59 @@ def pool_to_story(pool):
     style_right = ParagraphStyle(
         name="right", parent=styles["Normal"], alignment=TA_RIGHT
     )
+
+    if new_PTA := True:
+
+        Story.append(PageBreak())
+
+        linkedHeading(Story, "Parent Teacher Association (PTA)", toch1)
+
+        # Story.append(Paragraph("PTA", centered_subtitle_style))
+
+        # Story.append(Paragraph(format_email("info@somersetpta.org"), centered_style))
+        Story.append(
+            KeepTogether(
+                [
+                    # Paragraph(, h2),
+                    Paragraph(
+                        """Parent Teacher Association (PTA) The PTA is composed of parent volunteers. All families are welcome at any PTA event or meeting, but only individuals who have joined the PTA and paid annual dues may vote on PTA proposals, budgets, and elect officers. The PTA welcomes all volunteers and any interested board candidates or committee chairs. Elections for officers and board members are generally held in late May or early June. The PTA's mission is to support kids and teachers in their classrooms. We fill an important gap- providing teacher stipends for much-needed school materials, books for classrooms and libraries, tools like microscopes, calculators, as well as hosting before and afterschool activities and enrichment options, and providing help for kids in need, from field trip scholarships to snacks for kids who arrive hungry. The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds an Adventure Theater enrichment program and performance. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year.""",  # To learn more, visit https://somersetelementary.memberhub.com/.""",
+                        normal,
+                    ),
+                    Spacer(1, 12),
+                    Paragraph(format_email("info@somersetpta.org"), centered_style),
+                    Spacer(1, 12),
+                    Paragraph("New & International Families WhatsApp Group", h2),
+                    Paragraph(
+                        """There is a WhatsApp group for new & international families which can be joined by emailing
+                        Diana Vinueza
+                        """,
+                        normal,
+                    ),
+                    Paragraph(format_email("dianaximenav@gmail.com"), centered_style),
+                ]
+            )
+        )
+
+        if True:
+            calendar_url = "https://calendar.google.com/calendar/u/2?cid=Y18xNjY5ZGVlYWNlZmE5ODZiMDAzZDFiNGEwOGE2MzNiOWZiZjM5N2UwNWZjMzZhZTg5MTk0YWVhZTg4OTNmNTI4QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+            Story.append(
+                KeepTogether(
+                    [
+                        Paragraph("PTA Calendar", h2),
+                        Paragraph(
+                            """The PTA maintains an upcoming events calendar at the url shown below, (or scan the QR Code to avoid typing)""",
+                            normal,
+                        ),
+                        Spacer(1, 12),
+                        Paragraph(
+                            calendar_url,
+                            normal,
+                        ),
+                        Spacer(1, 12),
+                        url2qr(calendar_url),
+                    ]
+                )
+            )
 
     if new_2024 := True:
         Story.append(PageBreak())
@@ -696,22 +773,6 @@ def pool_to_story(pool):
                         normal,
                     ),
                     url2qr("http://www.montgomeryschoolsmd.org/info/enroll/index.aspx"),
-                ]
-            )
-        )
-
-        Story.append(
-            KeepTogether(
-                [
-                    Paragraph("Back to School Ready", h2),
-                    Paragraph(
-                        """The following article is a great resource as you begin to prepare your children to return to school.  It broadens the concept of school readiness. I hope that you will take the time to read it and put into practice some of the recommendations.
-                        https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/""",
-                        normal,
-                    ),
-                    url2qr(
-                        "https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/"
-                    ),
                 ]
             )
         )
@@ -1076,11 +1137,11 @@ def pool_to_story(pool):
                 [
                     Paragraph("Staff Directory", h2),
                     Paragraph(
-                        """The Somerset staff directory is available at https://www2.montgomeryschoolsmd.org/schools/somersetes/staff/directory/""",
+                        """The Somerset staff directory is available at https://www.montgomeryschoolsmd.org/schools/somersetes/staff/directory/""",
                         normal,
                     ),
                     url2qr(
-                        "https://www2.montgomeryschoolsmd.org/schools/somersetes/staff/directory/"
+                        "https://www.montgomeryschoolsmd.org/schools/somersetes/staff/directory/"
                     ),
                 ]
             )
@@ -1113,12 +1174,20 @@ def pool_to_story(pool):
 
         linkedHeading(Story, "Staff Directory", toch1)
 
+        url1 = "https://www.montgomeryschoolsmd.org/schools/somersetes/staff/directory/"
+        link1 = f"<link href='{url1}'>{url1}</link>"
+        Story.append(Paragraph(link1, centered_style))
+        Story.append(url2qr(link1))
+
         for staff_member in staff_order:
             staff_table = []
             staff_name = staff_member.get("formal")
             staff_nickname = staff_member.get("nickname")
             staff_title = staff_member.get("title")
             staff_email = staff_member.get("email")
+            if not staff_email:
+                print(f"WARN#2 no email known for {staff_member=}")
+
             name_row = [
                 Paragraph(staff_name),
             ]
@@ -2333,7 +2402,7 @@ def pool_to_story(pool):
             if teacher_email:
                 agroup.append(Paragraph(teacher_email, teacher_email_style))
             else:
-                print(f"no email known for {grade=} {teacher=}")
+                print(f"WARN#1 no email known for {grade=} {teacher=}")
 
             for student_uid in tgs[grade][teacher]:
                 student = psr[student_uid]
@@ -2465,7 +2534,9 @@ def xlsx_to_pool(src, sheet=None):
     else:
         pass
 
-    col_labels = sheet.row_values(1)
+    # col_labels = sheet.row_values(1)
+    col_labels = [x.value for x in next(sheet.rows)]
+
     col_clean_labels = [x.strip() for x in col_labels]
     clean_col = {x: y for x, y in zip(col_labels, col_clean_labels)}
 
@@ -2485,7 +2556,12 @@ def xlsx_to_pool(src, sheet=None):
     emails_with_includes = {}
     emails_with_excludes = {}
 
-    for raw_dict in sheet.get_all_records():
+    for araw in sheet.rows:
+
+        raw_dict = {}
+        for label, acell in zip(clean_col, araw):
+            raw_dict[label] = str(acell.value)
+
         adict = {clean_col[x]: str(y) for x, y in raw_dict.items()}
         withheld = False
 
@@ -2518,6 +2594,9 @@ def xlsx_to_pool(src, sheet=None):
             #     continue
             if Directory_Withholding == "Y":
                 pass
+            elif "withholding" in Directory_Withholding.lower():
+                # withheld = True
+                print(f"skipping header based on seeing '{Directory_Withholding}'")
             else:
                 print(
                     f"{Directory_Withholding_key} = '{Directory_Withholding}' ... not understood, so dropping this record"
@@ -2743,8 +2822,8 @@ staff_order = [
     },
     {
         "formal": "Barbara Davis",
-        "title": "Part-Time Special Education Teacher",
-        # "email": "Michael_D_Johnson@mcpsmd.org",
+        "title": "Teacher, Resource",
+        "email": "Barbara_C_Davis@mcpsmd.org",
     },
     {
         "formal": "Mrs. Danielle B Ellis",
@@ -2771,8 +2850,8 @@ staff_order = [
     },
     {
         "formal": "Ladraine Greene",
-        "title": "Special Education Teacher",
-        # "email": "Michael_D_Johnson@mcpsmd.org",
+        "title": "Teacher, Resource",
+        "email": "Ladraine_L_Greene@mcpsmd.org",
     },
     {
         "formal": "Ms. Karen L Hansel",
@@ -2847,7 +2926,8 @@ staff_order = [
     },
     {
         "formal": "Mrs. Diane M Smith",
-        "title": "Teacher Reading Initiative & ESOL",
+        "title": "Teacher, Grade 5",
+        "directory_key": "Smith, Diane",
         "email": "Diane_M_Smith@mcpsmd.org",
     },
     {
@@ -2868,11 +2948,11 @@ staff_order = [
         "title": "Teacher, Grade 2",
         "email": "Dana_Ward@mcpsmd.org",
     },
-    {
-        "formal": "Kate Waldmann",
-        "title": "Special Education Paraeducator",
-        # "email": "Michael_D_Johnson@mcpsmd.org",
-    },
+    # {
+    #    "formal": "Kate Waldmann",
+    #    "title": "Special Education Paraeducator",
+    #    # "email": "Michael_D_Johnson@mcpsmd.org",
+    # },
     {
         "formal": "Mrs. Elahe Yazdantalab",
         "title": "Paraeducator",

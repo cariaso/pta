@@ -1,19 +1,20 @@
-[tool.poetry]
+[project]
 name = "pta"
-version = "0.1.0"
-description = "tools for the somerset es pta"
-authors = ["cariaso <cariaso@gmail.com>"]
+version = "0.2.0"
+description = "tools for the somerset elementary school pta"
+#authors = ["cariaso <cariaso@gmail.com>"]
 readme = "README.md"
 package-mode = false
-
-[tool.poetry.dependencies]
-python = "^3.10"
-click = "^8.1.7"
-qrcode = "^7.4.2"
-reportlab = "^4.2.2"
-gspread = "^6.1.2"
-
+requires-python = ">=3.12"
+dependencies = [
+    "openpyxl",
+    "click>=8.1.7",
+    "qrcode>=7.4.2",
+    "reportlab>=4.2.2",
+    "pypng",
+    "gspread>=6.1.2"
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
