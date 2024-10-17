@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import codecs
 import re
 import click
 import sys
@@ -705,6 +706,11 @@ def pool_to_story(pool):
 
         linkedHeading(Story, "Parent Teacher Association (PTA)", toch1)
 
+        # doing the bare minimum to discourage bots from scraping the whatsapp signup url
+        rot13_whatsapp_group_url = "uggcf://pung.jungfncc.pbz/PFDzg9y9Skz8IkW0eDPdn9"
+        whatsapp_group_url = codecs.encode(rot13_whatsapp_group_url, "rot_13")
+        calendar_url = "https://calendar.google.com/calendar/u/2?cid=Y18xNjY5ZGVlYWNlZmE5ODZiMDAzZDFiNGEwOGE2MzNiOWZiZjM5N2UwNWZjMzZhZTg5MTk0YWVhZTg4OTNmNTI4QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+
         # Story.append(Paragraph("PTA", centered_subtitle_style))
 
         # Story.append(Paragraph(format_email("info@somersetpta.org"), centered_style))
@@ -719,38 +725,44 @@ def pool_to_story(pool):
                     Spacer(1, 12),
                     Paragraph(format_email("info@somersetpta.org"), centered_style),
                     Spacer(1, 12),
-                    Paragraph("New & International Families WhatsApp Group", h2),
-                    Paragraph(
-                        """There is a WhatsApp group for new & international families which can be joined by emailing
-                        Diana Vinueza
-                        """,
-                        normal,
-                    ),
-                    Paragraph(format_email("dianaximenav@gmail.com"), centered_style),
                 ]
             )
         )
 
-        if True:
-            calendar_url = "https://calendar.google.com/calendar/u/2?cid=Y18xNjY5ZGVlYWNlZmE5ODZiMDAzZDFiNGEwOGE2MzNiOWZiZjM5N2UwNWZjMzZhZTg5MTk0YWVhZTg4OTNmNTI4QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
-            Story.append(
-                KeepTogether(
-                    [
-                        Paragraph("PTA Calendar", h2),
-                        Paragraph(
-                            """The PTA maintains an upcoming events calendar at the url shown below, (or scan the QR Code to avoid typing)""",
-                            normal,
-                        ),
-                        Spacer(1, 12),
-                        Paragraph(
-                            calendar_url,
-                            normal,
-                        ),
-                        Spacer(1, 12),
-                        url2qr(calendar_url),
-                    ]
-                )
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("PTA Calendar", h2),
+                    Paragraph(
+                        """The PTA maintains an upcoming events calendar at the url shown below, (or scan the QR Code to avoid typing)""",
+                        normal,
+                    ),
+                    Spacer(1, 12),
+                    Paragraph(
+                        calendar_url,
+                        centered_style,
+                    ),
+                    Spacer(1, 12),
+                    url2qr(calendar_url),
+                ]
             )
+        )
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("New & International Families WhatsApp Group", h2),
+                    Paragraph(
+                        """There is a WhatsApp group for new & international families which can be joined via
+                        """,
+                        normal,
+                    ),
+                    Spacer(1, 12),
+                    Paragraph(whatsapp_group_url, centered_style),
+                    Spacer(1, 12),
+                    url2qr(whatsapp_group_url),
+                ]
+            )
+        )
 
     if new_2024 := True:
         Story.append(PageBreak())
@@ -830,9 +842,6 @@ def pool_to_story(pool):
                         """All students should arrive between 8:40 and 8:50 am to ensure they are ready to enter their classrooms at 8:55 am.  There is no supervision for students prior to 8:40 am and other than those who attend the Bar-T Before-School program, students are not permitted to be in the building prior to 8:40 am, including morning helpers. Please note that attendance is taken at 9:00 AM.  If your child is not in the CLASSROOM at 9:00 AM, your child will be marked absent.""",
                         normal,
                     ),
-                    url2qr(
-                        "https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/"
-                    ),
                 ]
             )
         )
@@ -884,9 +893,6 @@ def pool_to_story(pool):
 
     Buses called by color""",
                         normal,
-                    ),
-                    url2qr(
-                        "https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/"
                     ),
                 ]
             )
@@ -1169,50 +1175,7 @@ def pool_to_story(pool):
             )
         )
 
-    if do_teacher_directory := True:
-        Story.append(PageBreak())
-
-        linkedHeading(Story, "Staff Directory", toch1)
-
-        url1 = "https://www.montgomeryschoolsmd.org/schools/somersetes/staff/directory/"
-        link1 = f"<link href='{url1}'>{url1}</link>"
-        Story.append(Paragraph(link1, centered_style))
-        Story.append(url2qr(link1))
-
-        for staff_member in staff_order:
-            staff_table = []
-            staff_name = staff_member.get("formal")
-            staff_nickname = staff_member.get("nickname")
-            staff_title = staff_member.get("title")
-            staff_email = staff_member.get("email")
-            if not staff_email:
-                print(f"WARN#2 no email known for {staff_member=}")
-
-            name_row = [
-                Paragraph(staff_name),
-            ]
-            if staff_nickname:
-                name_row.append(Paragraph(f"({staff_nickname})", style_right))
-            staff_table.append(name_row)
-
-            staff_table.append(
-                [
-                    Paragraph(staff_title),
-                    Paragraph(format_email(staff_email), style_right),
-                ]
-            )
-            t = Table(
-                staff_table,
-                style=[
-                    ("LINEBELOW", (-2, -1), (-1, -1), 0.25, colors.black),
-                    # ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-                ],
-            )
-
-            Story.append(KeepTogether(t))
-
     Story.append(PageBreak())
-
     ptext = "FAQ"
     linkedHeading(Story, ptext, toch1)
 
@@ -2260,6 +2223,50 @@ def pool_to_story(pool):
             normal,
         )
     )
+
+    Story.append(PageBreak())
+
+    if do_teacher_directory := True:
+        Story.append(PageBreak())
+
+        linkedHeading(Story, "Staff Directory", toch1)
+
+        url1 = "https://www.montgomeryschoolsmd.org/schools/somersetes/staff/directory/"
+        link1 = f"<link href='{url1}'>{url1}</link>"
+        Story.append(Paragraph(link1, centered_style))
+        Story.append(url2qr(link1))
+
+        for staff_member in staff_order:
+            staff_table = []
+            staff_name = staff_member.get("formal")
+            staff_nickname = staff_member.get("nickname")
+            staff_title = staff_member.get("title")
+            staff_email = staff_member.get("email")
+            if not staff_email:
+                print(f"WARN#2 no email known for {staff_member=}")
+
+            name_row = [
+                Paragraph(staff_name),
+            ]
+            if staff_nickname:
+                name_row.append(Paragraph(f"({staff_nickname})", style_right))
+            staff_table.append(name_row)
+
+            staff_table.append(
+                [
+                    Paragraph(staff_title),
+                    Paragraph(format_email(staff_email), style_right),
+                ]
+            )
+            t = Table(
+                staff_table,
+                style=[
+                    ("LINEBELOW", (-2, -1), (-1, -1), 0.25, colors.black),
+                    # ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+                ],
+            )
+
+            Story.append(KeepTogether(t))
 
     Story.append(PageBreak())
 
