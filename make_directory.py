@@ -1291,17 +1291,18 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(
-        KeepTogether(
-            [
-                Paragraph("Career Day", h2),
-                Paragraph(
-                    """Individuals, many of them Somerset parents, representing a variety of professions and skills, visit Somerset to talk the about different career paths. This event is usually held in late April / early May.""",
-                    normal,
-                ),
-            ]
+    if False:
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Career Day", h2),
+                    Paragraph(
+                        """Individuals, many of them Somerset parents, representing a variety of professions and skills, visit Somerset to talk the about different career paths. This event is usually held in late April / early May.""",
+                        normal,
+                    ),
+                ]
+            )
         )
-    )
 
     Story.append(
         KeepTogether(
