@@ -1620,17 +1620,18 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(
-        KeepTogether(
-            [
-                Paragraph("DEI/NAACP Parents' Council Representative", h2),
-                Paragraph(
-                    """The Parents' Council of the National Association for the Advancement of Colored People seeks to empower parents and guardians of African-American and other minority students enrolled in MCPS who share the goal of equal education for all students. The Parents' Council is composed of representatives from each school. The Council meets monthly throughout the calendar year to share information that parents can use to enhance their student's chances of success. The phone number for the Council's office is 301-657-2062. Somerset's NAACP Rep also serves as a member of the PTA's Board of Directors.""",
-                    normal,
-                ),
-            ]
+    if False:
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("DEI/NAACP Parents' Council Representative", h2),
+                    Paragraph(
+                        """The Parents' Council of the National Association for the Advancement of Colored People seeks to empower parents and guardians of African-American and other minority students enrolled in MCPS who share the goal of equal education for all students. The Parents' Council is composed of representatives from each school. The Council meets monthly throughout the calendar year to share information that parents can use to enhance their student's chances of success. The phone number for the Council's office is 301-657-2062. Somerset's NAACP Rep also serves as a member of the PTA's Board of Directors.""",
+                        normal,
+                    ),
+                ]
+            )
         )
-    )
 
     Story.append(
         KeepTogether(
@@ -1644,22 +1645,23 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(
-        KeepTogether(
-            [
-                Paragraph("Parent Teacher Association (PTA)", h2),
-                Paragraph(
-                    """Parent Teacher Association (PTA) The PTA is composed of parent volunteers. All families are welcome at any PTA event or meeting, but only individuals who have joined the PTA and paid annual dues may vote on PTA proposals, budgets, and elect officers. The PTA welcomes all volunteers and any interested board candidates or committee chairs. Elections for officers and board members are generally held in late May or early June. The PTA's mission is to support kids and teachers in their classrooms. We fill an important gap- providing teacher stipends for much-needed school materials, books for classrooms and libraries, tools like microscopes, calculators, as well as hosting before and afterschool activities and enrichment options, and providing help for kids in need, from field trip scholarships to snacks for kids who arrive hungry. The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds an Adventure Theater enrichment program and performance. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit https://somersetelementary.memberhub.com/.""",
-                    normal,
-                ),
-                url2qr("https://somersetelementary.memberhub.com/"),
-                #                Paragraph(
-                #                    """The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Rock 'N Roll Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds a playwright in residence for the fifth grade. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit www.somersetpta.org.""",
-                #                    normal,
-                #                ),
-            ]
+    if False:
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Parent Teacher Association (PTA)", h2),
+                    Paragraph(
+                        """Parent Teacher Association (PTA) The PTA is composed of parent volunteers. All families are welcome at any PTA event or meeting, but only individuals who have joined the PTA and paid annual dues may vote on PTA proposals, budgets, and elect officers. The PTA welcomes all volunteers and any interested board candidates or committee chairs. Elections for officers and board members are generally held in late May or early June. The PTA's mission is to support kids and teachers in their classrooms. We fill an important gap- providing teacher stipends for much-needed school materials, books for classrooms and libraries, tools like microscopes, calculators, as well as hosting before and afterschool activities and enrichment options, and providing help for kids in need, from field trip scholarships to snacks for kids who arrive hungry. The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds an Adventure Theater enrichment program and performance. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit https://somersetelementary.memberhub.com/.""",
+                        normal,
+                    ),
+                    url2qr("https://somersetelementary.memberhub.com/"),
+                    #                Paragraph(
+                    #                    """The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Rock 'N Roll Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds a playwright in residence for the fifth grade. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit www.somersetpta.org.""",
+                    #                    normal,
+                    #                ),
+                ]
+            )
         )
-    )
 
     Story.append(
         KeepTogether(
@@ -1776,17 +1778,18 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(
-        KeepTogether(
-            [
-                Paragraph("Somerset Organized Service (S.O.S.)", h2),
-                Paragraph(
-                    """The Somerset Organized Service or S.O.S. is a service program for 5th graders. At the end of 4th grade, students are offered an opportunity to fill out an application listing their top priorities for service positions. The choices include announcers, greeters/assembly assistants, honor guard, kindergarten patrols, office assistants, safety patrols, and ambassadors. The students are selected for one of their priority choices. Through the program, 5th graders enhance their leadership and responsibility skills.""",
-                    normal,
-                ),
-            ]
+    if False:
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Somerset Organized Service (S.O.S.)", h2),
+                    Paragraph(
+                        """The Somerset Organized Service or S.O.S. is a service program for 5th graders. At the end of 4th grade, students are offered an opportunity to fill out an application listing their top priorities for service positions. The choices include announcers, greeters/assembly assistants, honor guard, kindergarten patrols, office assistants, safety patrols, and ambassadors. The students are selected for one of their priority choices. Through the program, 5th graders enhance their leadership and responsibility skills.""",
+                        normal,
+                    ),
+                ]
+            )
         )
-    )
 
     Story.append(
         KeepTogether(
@@ -1872,17 +1875,18 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(
-        KeepTogether(
-            [
-                Paragraph("Testing", h2),
-                Paragraph(
-                    """Students in 2nd grade are screened for "giftedness". In addition, Maryland tests its students using the PARCC (Partnership for Assessment for Readiness for College and Careers). Testing protocols and frequency are being changed, please visit Testing Information in the Parents section at the MCPS website for the most recent information.""",
-                    normal,
-                ),
-            ]
+    if False:
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Testing", h2),
+                    Paragraph(
+                        """Students in 2nd grade are screened for "giftedness". In addition, Maryland tests its students using the PARCC (Partnership for Assessment for Readiness for College and Careers). Testing protocols and frequency are being changed, please visit Testing Information in the Parents section at the MCPS website for the most recent information.""",
+                        normal,
+                    ),
+                ]
+            )
         )
-    )
 
     Story.append(
         KeepTogether(
@@ -1975,27 +1979,28 @@ def pool_to_story(pool):
         )
     )
 
-    Story.append(
-        KeepTogether(
-            [
-                Paragraph("Websites for Somerset and the PTA", h2),
-                Paragraph(
-                    """The PTA website is https://somersetelementary.memberhub.com/""",
-                    normal,
-                ),
-                url2qr("https://somersetelementary.memberhub.com/"),
-                Paragraph(
-                    """The Somerset Elementary MCPS website is https://www.montgomeryschoolsmd.org/schools/somersetes Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
-                    normal,
-                ),
-                url2qr("https://www.montgomeryschoolsmd.org/schools/somersetes"),
-                #                Paragraph(
-                #                    """Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
-                #                    normal,
-                #                ),
-            ]
+    if False:
+        Story.append(
+            KeepTogether(
+                [
+                    Paragraph("Websites for Somerset and the PTA", h2),
+                    Paragraph(
+                        """The PTA website is https://somersetelementary.memberhub.com/""",
+                        normal,
+                    ),
+                    url2qr("https://somersetelementary.memberhub.com/"),
+                    Paragraph(
+                        """The Somerset Elementary MCPS website is https://www.montgomeryschoolsmd.org/schools/somersetes Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
+                        normal,
+                    ),
+                    url2qr("https://www.montgomeryschoolsmd.org/schools/somersetes"),
+                    #                Paragraph(
+                    #                    """Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
+                    #                    normal,
+                    #                ),
+                ]
+            )
         )
-    )
 
     Story.append(
         KeepTogether(
