@@ -1183,16 +1183,28 @@ def pool_to_story(pool):
 
     # SOMERSET A to Z
 
+    absence_url = "https://www.montgomeryschoolsmd.org/schools/somersetes/absence-form/"
     Story.append(
         KeepTogether(
             [
                 Paragraph("Absences", h2),
                 Paragraph(
-                    """"If a student is going to be absent for any reason, parents are asked to telephone the school office prior to 9 am at 240-740-1100. After missing five consecutive days of school, it's requested that you submit a doctor's note.""",
+                    """If a student is going to be absent for any reason, parents are asked to inform the school. You can report an absence via""",
+                    normal,
+                ),
+                Paragraph(absence_url, centered_style),
+                url2qr(absence_url),
+                Paragraph(
+                    """You can also telephone the school office prior to 9 am at""",
                     normal,
                 ),
                 Paragraph(
-                    """Maryland State Department of Education rules for attendance: A student is counted present for a full day if a student is in school for four hours or more of the school day. A student is counted as absent for a half day if he or she arrives more than two hours after the start of the school day, leaves more than two hours before the end of the school day or leaves school for more than two hours during the day. A student is considered tardy if he or she arrives after the last bell and within the first two hours of the school day.""",
+                    f"Phone: {format_phone_link(format_phone('240-740-1100'))}",
+                    details_phone_style,
+                ),
+                Spacer(1, 12),
+                Paragraph(
+                    """After missing five consecutive days of school, it's requested that you submit a doctor's note. Maryland State Department of Education rules for attendance: A student is counted present for a full day if a student is in school for four hours or more of the school day. A student is counted as absent for a half day if he or she arrives more than two hours after the start of the school day, leaves more than two hours before the end of the school day or leaves school for more than two hours during the day. A student is considered tardy if he or she arrives after the last bell and within the first two hours of the school day.""",
                     normal,
                 ),
             ]
@@ -2182,14 +2194,6 @@ def pool_to_story(pool):
     Story.append(
         Paragraph(
             """A: Students line up outside of their classrooms beginning at 8:40; students are not permitted on the field at this time. In the afternoon, students not riding the bus are dismissed in three separate groups, After School Care (Bar-T), walkers and car riders, and after school clubs. Each bus has at least one fifth grade safety patrol rider who supervises the bus. Buses are usually met by the principal and assistant principal or other staff members in the morning. Bus riders are dismissed individually by bus in the afternoon. Kindergarten riders are dismissed first and board first. Parents or caregivers are expected to meet the bus in the afternoon, particularly for grades K-2.""",
-            normal,
-        )
-    )
-
-    Story.append(Paragraph("""Q: How do class parties work?""", h2))
-    Story.append(
-        Paragraph(
-            """A: Room parents are in charge of organizing the parties for Halloween, Valentine's Day, and end of the year. Parties usually involve games, crafts, and snacks.""",
             normal,
         )
     )
