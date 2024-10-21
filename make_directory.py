@@ -425,23 +425,12 @@ def pool_to_student_relations(pool):
 
         phone = entry.get("Phone")
 
-        if entry.get("Home Address1"):
-            address1 = entry.get("Home Address1")
-            address2 = entry.get("Home Address2")
-        elif entry.get("Mailing Address1"):
-            address1 = entry.get("Mailing Address1")
-            address2 = entry.get("Mailing Address2")
-        elif entry.get("Address1"):
-            address1 = entry.get("Address1")
-            address2 = entry.get("Address2")
+        address1, address2 = get_address12(entry)
 
         relation = entry.get("Relation")
-        relation_name = entry.get("Parent/Guardian Name") or entry.get("Name")
-        relation_cell = (
-            entry.get("Parent/Guardian Cell Phone")
-            or entry.get("Cell Phone")
-            or entry.get("Phone")
-        )
+        # relation_name = entry.get("Parent/Guardian Name") or entry.get("Name")
+        relation_name = get_relation_name(entry)
+        relation_cell = get_relation_phone(entry)
         relation_email = entry.get("Parent/Guardian Email") or entry.get("Email")
 
         uid = student_uid(entry)
@@ -2991,6 +2980,537 @@ staff_order = [
         "email": "WanLi_HsuChen@mcpsmd.org",
     },
 ]
+
+
+def xlsx_to_dict(src, sheet=None):
+    if sheet is None:
+        from openpyxl import load_workbook
+
+        wb = load_workbook(filename=src)
+        sheet = wb.active
+    else:
+        pass
+
+    # col_labels = sheet.row_values(1)
+    col_labels = [x.value for x in next(sheet.rows)]
+
+    col_clean_labels = [x.strip() for x in col_labels]
+    clean_col = {x: y for x, y in zip(col_labels, col_clean_labels)}
+
+    num_cols = len(col_labels)
+
+    Directory_Withholding_key = "Directory Withholding-YN"
+    if Directory_Withholding_key not in col_labels:
+        print(f"{Directory_Withholding_key} was not found. not safe to load this")
+        return
+
+    # nuke the preK
+
+    num_withheld = 0
+    num_accepted = 0
+    pool = []
+
+    emails_with_includes = {}
+    emails_with_excludes = {}
+
+    for araw in sheet.rows:
+
+        raw_dict = {}
+        for label, acell in zip(clean_col, araw):
+            raw_dict[label] = str(acell.value)
+
+        adict = {clean_col[x]: str(y) for x, y in raw_dict.items()}
+        withheld = False
+
+        delkeys = []
+        for k in adict.keys():
+            if adict[k] is None:
+                delkeys.append(k)
+        for k in delkeys:
+            del adict[k]
+        Directory_Withholding = adict.get(Directory_Withholding_key)
+
+        if Directory_Withholding != "N":
+            withheld = True
+            # for k in [
+            #     "Sch Num",
+            #     "School",
+            #     "Birth Date",
+            #     #'Directory Withholding-YN',
+            #     "Phone",
+            #     "Address1",
+            #     "Address2",
+            #     "Relation",
+            #     "Name",
+            #     "Cell Phone",
+            #     "Email",
+            #     'Student',
+            #         #'Homeroom Teacher', 'Grade',
+            # ]:
+            #     #adict[k] = withheld_marker
+            #     continue
+            if Directory_Withholding == "Y":
+                pass
+            elif "withholding" in Directory_Withholding.lower():
+                # withheld = True
+                print(f"skipping header based on seeing '{Directory_Withholding}'")
+            else:
+                print(
+                    f"{Directory_Withholding_key} = '{Directory_Withholding}' ... not understood, so dropping this record"
+                )
+
+        if not withheld:
+            yield adict
+            num_accepted += 1
+        else:
+            num_withheld += 1
+
+
+@cli.command("make-memberhub-import")
+@click.option("--src", help="MCPS export .xlsx", required=True)
+@click.pass_context
+def make_memberhub_import(ctx, src):
+    """setup whatever is needed"""
+
+    extra_org_roles = {
+        "victoria.levitas@gmail.com": "Admin, Contact, Member, Customer, Officer",
+        "cariaso@gmail.com": "Admin, Officer",
+        "chris.press@gmail.com": "Officer",
+        # "gillianedick@gmail.com": "Admin, Contact, Member, Customer, Officer",
+        # "sarahsandelius@gmail.com": "Admin, Officer",
+        # "ckeeling83@gmail.com": "Officer",
+        # "jacquelyn_quan@yahoo.com": "Officer",
+        # "cherinacyborski@hotmail.com": "Officer",
+        # "meghan.holohan@gmail.com": "Officer",
+        # "babytrekie@yahoo.com": "Officer",
+        # "tajpowell10@gmail.com": "Officer",
+        # "wanujarie@gmail.com": "Officer",
+        # "katejulian@yahoo.com": "Officer",  # Kate Julian
+        # "merritt.m.crowder@mcpsmd.org" :"false",
+        # "gabrielle@enrichment-academies.com" :"false",
+        # "cynthia_a_houston@mcpsmd.org" :"false",
+    }
+
+    errors = False
+    fam = {}
+    next_fam_id = 123
+    seen_fam = {}
+    seen_fam_name = {}
+    seen_fam_name_rev = {}
+
+    grade_teachers = {}
+
+    for adict in xlsx_to_dict(src):
+        # print(adict)
+
+        if True:
+            fam_id = None
+            row = adict
+
+            student_lastname, student_firstname = [
+                x.strip() for x in row["Student"].split(",", 2)
+            ]
+            parent_full = get_relation_name(row)
+            parent_lastname, parent_firstname = [
+                x.strip() for x in parent_full.split(",", 2)
+            ]
+
+            address1, address2 = get_address12(row)
+            relation_cell = get_relation_phone(row)
+            relation_email = get_relation_email(row)
+
+            fam_val = address1
+            if not fam_val.strip():
+                fam_val = relation_cell
+                if not fam_val.strip():
+                    print(f"no family figured out for {line.rstrip()}")
+                    breakpoint()
+
+            if fam_val in seen_fam:
+                fam_id = seen_fam[fam_val]
+            else:
+                fam_id = f"fam{next_fam_id}"
+                next_fam_id += 1
+                seen_fam[fam_val] = fam_id
+
+            # fam_id2fam_name(fam_id, fam_val, name=student_lastname)
+
+            # print(f"##{fam_id}\t{row}##")
+
+            grade = row["Grade"]
+            teacher = row["Homeroom Teacher"]
+            if grade not in grade_teachers:
+                grade_teachers[grade] = {}
+            if teacher not in grade_teachers[grade]:
+                grade_teachers[grade][teacher] = 0
+            grade_teachers[grade][teacher] += 1
+            student_info = {
+                "grade": row["Grade"],
+                "teacher": row["Homeroom Teacher"],
+                "firstname": student_firstname,
+                "lastname": student_lastname,
+                "phone": relation_cell,
+                "address1": address1,
+                "address2": address2,
+            }
+            parent_info = {
+                "firstname": parent_firstname,
+                "lastname": parent_lastname,
+                "phone": relation_cell,
+                "email": relation_email,  # row.get("Email"),
+                "address1": address1,
+                "address2": address2,
+            }
+            parent_errors = False
+            if not parent_info["email"]:
+                errors = True
+                parent_errors = True
+                print(f"*** no parent email *** {parent_info}")
+
+            row_info = {
+                "student": [
+                    student_info,
+                ],
+                "parent": [],
+            }
+            if not parent_errors:
+                row_info["parent"].append(parent_info)
+
+            if fam_id not in fam:
+                fam[fam_id] = row_info
+            else:
+                if parent_info not in fam[fam_id].get("parent", []):
+                    fam[fam_id]["parent"].append(parent_info)
+                if student_info not in fam[fam_id]["student"]:
+                    fam[fam_id]["student"].append(student_info)
+
+    if True:
+        if errors:
+            print("please fix the errors above")
+
+        for grade in sorted(grade_teachers):
+            for teacher in sorted(grade_teachers[grade]):
+                print(f"grade-{grade}-{hub_name(teacher)}")
+
+        if True:
+            contacts = []
+
+            for fam_id in fam:
+
+                afam = fam[fam_id]
+
+                afam_name = None
+
+                fam_grades = set()
+                fam_teachers = set()
+
+                for astudent in afam["student"]:
+                    fam_grades.add(astudent["grade"])
+
+                    if afam_name is None:
+                        afam_name = astudent["lastname"]
+
+                    if not astudent["teacher"]:
+                        errors = True
+                        print(
+                            f"*** Warning no teacher for fam_id={fam_id} student={astudent}"
+                        )
+                    else:
+                        fam_teachers.add(astudent["teacher"])
+
+                any_email = False
+                for aparent in afam["parent"]:
+                    if aparent["email"]:
+                        any_email = True
+                if not any_email:
+                    errors = True
+                    print(
+                        f"*** Warning no family email for  fam_id={fam_id} student={astudent}"
+                    )
+
+                for aparent in afam["parent"]:
+                    acontact = {}
+                    # RoleName = 'parent_guardian'
+                    RoleName = "Contact"
+
+                    if afam_name is None:
+                        afam_name = aparent["lastname"]
+
+                    # RoleName = 'Parent/Guardian'
+                    ##'RoleName:Year' where:
+                    ##* 'RoleName' is the name of the system defined Role ie 'admin', 'parent_guardian', 'contact'
+                    ##* 'Year' is an option parameter to define specific year for the user to start & expire.
+                    ##* To define multiple roles within the organization, you will add a '+' to separate the difference roles ie
+                    ##'Admin:2022+Parent/Guardian'
+                    ##!!!## this example is in capitalization (admin vs Admin ; Parent/Guardian vs parent_guardian)
+
+                    ##### Hubs & Hub Roles
+                    ##There are many roles that a User can be assigned in Memberhub, both roles for a User in an
+                    ##Organization, in a Hub, and in a Family. The general format for a Role is +HubName:RoleName:Year.
+                    ##* '+' is required when assigning more than one hub role to a user
+                    ##* 'HubName' is the name of the Hub
+                    ##* 'RoleName' is the name of the role
+                    ##* 'Year' is optional and may be included to set the date that the role is to expire. If :Year is not provided,
+                    ##there will be no expiration of the role. Expiry can be expressed as :yyyy (a 4 digit year which will be
+                    ##interpreted as yyyy-06-30).
+                    ##An example of adding to roles to a single hub, plus an additional role to a 2nd hub:
+                    ##'Hub1:Admin:2022+Hub1:Parent/Guadian+Hub2:Parent/Guardian'
+                    hubs = set()
+                    for grade in fam_grades:
+                        ahub_name = hub_name(f"grade-{grade}")
+                        ahub_role = RoleName
+                        ahub_year = str(END_YEAR)
+                        ahub = ":".join([ahub_name, ahub_role, ahub_year])
+                        hubs.add(ahub)
+                    for teacher in fam_teachers:
+                        if teacher:
+                            ahub_name = hub_name(f"teacher-{teacher}")
+                            ahub_role = RoleName
+                            ahub_year = str(END_YEAR)
+                            ahub = ":".join([ahub_name, ahub_role, ahub_year])
+                            hubs.add(ahub)
+                    hub_str = "+".join(hubs)
+                    acontact["Hubs"] = hub_str
+                    # acontact['Organization Role'] = hub_str
+
+                    acontact["First Name"] = aparent["firstname"]
+                    acontact["Last Name"] = aparent["lastname"]
+                    acontact["Email"] = aparent["email"]
+                    acontact["Phone Number"] = aparent["phone"]
+
+                    acontact["Address"] = aparent["address1"]
+
+                    if m := re.search(r"([\w\s+]+), (\w\w) (\d+)", aparent["address2"]):
+
+                        city, state, zipcode = m.groups()
+                        city = city.strip()
+                    acontact["City"] = city
+                    acontact["State"] = state
+                    acontact["Zip"] = zipcode
+
+                    acontact["Family Name"] = normalize(afam_name, fam_id)
+                    acontact["Family Role"] = "Parent/Guardian"
+                    # acontact["Family Role"] = "Contact"
+
+                    if aparent.get("email") in extra_org_roles:
+                        acontact["Organization Role"] = "Admin"
+                    else:
+                        acontact["Organization Role"] = "Contact"
+
+                    # if not acontact['Email'])
+                    #    print(f"*** WILL NOT LOAD contact with no Email {acontact}")
+
+                    contacts.append(acontact)
+
+                for astudent in afam["student"]:
+                    hubs = set()
+                    acontact = {}
+
+                    RoleName = "Student"
+
+                    grade = astudent["grade"]
+                    ahub_name = hub_name(f"grade-{grade}")
+                    ahub_role = RoleName
+                    ahub_year = str(END_YEAR)
+                    ahub = ":".join([ahub_name, ahub_role, ahub_year])
+                    hubs.add(ahub)
+
+                    teacher = astudent["teacher"]
+                    if teacher:
+                        ahub_name = hub_name(f"teacher-{teacher}")
+                        ahub_role = RoleName
+                        ahub_year = str(END_YEAR)
+                        ahub = ":".join([ahub_name, ahub_role, ahub_year])
+                        hubs.add(ahub)
+                    else:
+                        print(f"*** Warning no teacher for {astudent}")
+
+                    hub_str = "+".join(hubs)
+                    acontact["Hubs"] = hub_str
+                    # acontact['Organization Role'] = hub_str
+
+                    acontact["First Name"] = astudent["firstname"]
+                    acontact["Last Name"] = astudent["lastname"]
+                    # acontact['Email'] = astudent['email']
+                    # acontact['Phone Number'] = astudent['phone']
+
+                    acontact["Address"] = astudent["address1"]
+
+                    if m := re.search(
+                        r"([\w\s+]+), (\w\w) (\d+)", astudent["address2"]
+                    ):
+
+                        city, state, zipcode = m.groups()
+                        city = city.strip()
+                    acontact["City"] = city
+                    acontact["State"] = state
+                    acontact["Zip"] = zipcode
+                    # acontact["Family Name"] = str(fam_id)
+                    acontact["Family Name"] = normalize(afam_name, fam_id)
+
+                    acontact["Organization Role"] = "Student"
+                    acontact["Family Role"] = "Child"
+
+                    contacts.append(acontact)
+
+        if True:
+            contact_keys = [
+                "First Name",
+                "Last Name",
+                "Email",
+                "Phone Number",
+                "Organization Role",
+                "Address",
+                "City",
+                "State",
+                "Zip",
+                "Family Name",
+                "Family Role",
+                "Hubs",
+                "Contact Property 1",
+                "Contact Property 2",
+                # "Family Name",
+                # "Family Role",
+                # "Address",
+                # "First Name",
+                # "Last Name",
+                # "City",
+                # "State",
+                # "Zip",
+                # "Email",
+                #
+                #'Phone Number','Organization Role','Hubs',
+            ]
+            for contact in contacts:
+                for k in contact:
+                    if k not in contact_keys:
+                        contact_keys.append(k)
+
+            seen_emails = set()
+            for contact in contacts:
+                if contact.get("Organization Role") not in [
+                    "Contact",
+                    "Admin",
+                    "Store Admin",
+                    "Student",
+                ]:
+                    print(f"bad Organization Roles for {contact}")
+
+                if contact.get("Organization Role") not in ["Student"]:
+                    if contact.get("Email") in seen_emails:
+                        print(f"bad duplicate email {contact.get('Email')}")
+                    else:
+                        seen_emails.add(contact.get("Email"))
+
+            with open("ready_to_load.csv", "w") as outfh:
+                outfh.write(",".join(contact_keys))
+                outfh.write("\n")
+                for contact in contacts:
+                    out = []
+                    for key in contact_keys:
+                        val = ""
+                        if key in contact:
+                            val = contact[key]
+                            if val:
+                                if "," in val:
+                                    print("*** Warning comma in planned output {val}")
+                                    breakpoint()
+                                if '"' in val:
+                                    print(
+                                        "*** Warning double-quote in planned output {val}"
+                                    )
+                                    breakpoint()
+                            if val is None:
+                                val = ""
+                        out.append(val)
+                    outfh.write(",".join(out))
+                    outfh.write("\n")
+
+            print("*** YOU MUST manually make these hubs ***")
+            for ahub_name in sorted(list(all_hubs)):
+                print(ahub_name)
+
+            # ALL CONTACTS MUST HAVE AN EMAIL WITH THEIR PROFILE IN ORDER TO BE IMPORTED WITH
+            # THE EXCEPTION OF ANY CONTACT WITH THE ROLE STUDENT OR CHILD.
+
+            ### Organization Role
+
+            ##Users can be assigned multiple roles for the Organization itself. The general structure for these roles are
+
+
+def get_relation_name(entry):
+    relation_name = entry.get("Parent/Guardian Name") or entry.get("Name")
+    return relation_name
+
+
+def get_address12(entry):
+
+    address1 = None
+    address2 = None
+    if entry.get("Home Address1"):
+        address1 = entry.get("Home Address1")
+        address2 = entry.get("Home Address2")
+    elif entry.get("Mailing Address1"):
+        address1 = entry.get("Mailing Address1")
+        address2 = entry.get("Mailing Address2")
+    elif entry.get("Address1"):
+        address1 = entry.get("Address1")
+        address2 = entry.get("Address2")
+    return address1, address2
+
+
+def get_relation_phone(entry):
+    relation_cell = (
+        entry.get("Parent/Guardian Cell Phone")
+        or entry.get("Cell Phone")
+        or entry.get("Phone")
+    )
+    return relation_cell
+
+
+def get_relation_email(entry):
+    val = entry.get("Parent/Guardian Email") or entry.get("Email")
+    return val
+
+
+END_YEAR = 2025
+
+
+all_hubs = set()
+
+
+def hub_name(s):
+    if s == "teacher-":
+        breakpoint()
+        return None
+    if "+" in s:
+        breakpoint()
+    s = s.replace(", ", "-")
+    s = s.replace(",", "-")
+    s = s.replace(" ", "-")
+    all_hubs.add(s)
+    return s
+
+
+seen_long_fams = {}
+seen_short_fams = {}
+seen_complex = {}
+
+
+def normalize(name, fam_id):
+    if name not in seen_complex:
+        seen_complex[name] = {fam_id: 1}
+
+    if fam_id not in seen_complex[name]:
+        idx = max(seen_complex[name].values()) + 1
+        seen_complex[name][fam_id] = idx
+
+    idx = seen_complex[name][fam_id]
+    if idx == 1:
+        long_name = name
+    else:
+        long_name = f"{name}#{idx}"
+    return long_name
 
 
 if __name__ == "__main__":
