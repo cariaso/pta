@@ -12,9 +12,14 @@ dependencies = [
     "qrcode>=7.4.2",
     "reportlab>=4.2.2",
     "pypng",
-    "gspread>=6.1.2"
+    "gspread>=6.1.2",
+    "python-dotenv[cli]>=1.0.1",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+
+[tool.ruff]
+line-length = 1500

@@ -1,31 +1,35 @@
 #!/usr/bin/env python
 
 import codecs
-import re
-import click
-import sys
 import hashlib
+import os
+import pathlib
+import re
+import smtplib
+import sys
 import tempfile
 import traceback
-import pathlib
+from copy import copy
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
+import click
 import qrcode
 import qrcode.image.svg
-
 import reportlab.platypus
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_RIGHT
-from reportlab.lib.pagesizes import letter, A6
+
+# from reportlab.lib.pagesizes import A6, letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
-from reportlab.platypus import PageBreak, Paragraph, Spacer, Table, Image
+from reportlab.platypus import Image, PageBreak, Paragraph, Spacer, Table
 from reportlab.platypus.doctemplate import BaseDocTemplate, PageTemplate
-from reportlab.platypus.flowables import HRFlowable, KeepTogether, BalancedColumns
+from reportlab.platypus.flowables import BalancedColumns, KeepTogether
 from reportlab.platypus.frames import Frame
-
 from reportlab.platypus.tableofcontents import TableOfContents
-
-from copy import copy
 
 
 class MyDocTemplate(BaseDocTemplate):
@@ -159,6 +163,7 @@ def cli():
     default=False,
     help="prepare N 1 page pdfs, in addition to the single N page pdf",
 )
+@click.option("--send/-no-send", default=False, help="send emails")
 @click.option(
     "--board/-no-board", default=False, help="prepare versions for PTA board members"
 )
@@ -169,7 +174,9 @@ def cli():
     "--parents/-no-parents", default=False, help="prepare versions for parents"
 )
 @click.pass_context
-def make_all_pdfs(ctx, src, board=False, staff=False, parents=False, pages=None):
+def make_all_pdfs(
+    ctx, src, board=False, staff=False, parents=False, pages=None, send=False
+):
     """setup whatever is needed"""
 
     pool = xlsx_to_pool(src)
@@ -179,7 +186,7 @@ def make_all_pdfs(ctx, src, board=False, staff=False, parents=False, pages=None)
     if pages:
         story_to_pdf(story, filename=single_pdf)
 
-        from PyPDF2 import PdfWriter, PdfReader
+        from PyPDF2 import PdfReader, PdfWriter
 
         inputpdf = PdfReader(open(single_pdf, "rb"))
 
@@ -205,7 +212,7 @@ def make_all_pdfs(ctx, src, board=False, staff=False, parents=False, pages=None)
         "jaclynchernak23@gmail.com",
         "babytrekie@yahoo.com",
         "cariaso@gmail.com",
-        "dafna.hochman@gmail.com",
+        # "dafna.hochman@gmail.com",
         "sharee.lawler@gmail.com",
         "sarahsandelius@gmail.com",
         "dianaximenav@gmail.com",
@@ -214,6 +221,16 @@ def make_all_pdfs(ctx, src, board=False, staff=False, parents=False, pages=None)
         "Travis_J_Wiebe@mcpsmd.org",
         "tanya.alan.correa@gmail.com",
     ]
+
+    pta_board = [
+        "cariaso@gmail.com",
+    ]
+
+    login_username = "directory@somersetpta.org"
+    from dotenv import load_dotenv
+
+    load_dotenv()
+    password = os.environ["SOMERSETPTA_DIRECTORY_PASSWORD"]
 
     if board:
         for owner in pta_board:
@@ -226,6 +243,20 @@ def make_all_pdfs(ctx, src, board=False, staff=False, parents=False, pages=None)
                 owner=owner,
                 filename=filename,
             )
+
+            # recipients = ["cariaso@gmail.com"]
+            # subject = "first test"
+            # body = "plain text simple mail"
+
+            stream = as_email(
+                username=login_username,
+                recipients=[owner],
+                # subject=subject,
+                # body=body,
+                attachment=filename,
+            )
+            if send:
+                send_emails(username=login_username, password=password, messages=stream)
 
     if staff:
         for staff_member in staff_order:
@@ -244,23 +275,25 @@ def make_all_pdfs(ctx, src, board=False, staff=False, parents=False, pages=None)
     if parents:
         emails = xlsx_to_emails(src)
         for owner, students in emails.items():
-            # if "cariaso" not in owner:
-            #    continue
-            if owner:
-                if do_filter:
-                    filtered_pool = filter_pool_to_students(pool, students)
-                else:
-                    filtered_pool = pool
+            if "levitas" not in owner.lower():
+                continue
+            print(owner)
 
-                story = pool_to_story(filtered_pool)
-                safe_owner = make_filename_safe(owner)
-                filename = f"filtered/filtered_somerset_directory_for_{safe_owner}.pdf"
-                print(owner, filename)
-                story_to_pdf(
-                    story,
-                    owner=owner,
-                    filename=filename,
-                )
+            if owner:
+                # if do_filter:
+                #     filtered_pool = filter_pool_to_students(pool, students)
+                # else:
+                #     filtered_pool = pool
+
+                # story = pool_to_story(filtered_pool)
+                # safe_owner = make_filename_safe(owner)
+                # filename = f"filtered/filtered_somerset_directory_for_{safe_owner}.pdf"
+                # print(owner, filename)
+                # story_to_pdf(
+                #     story,
+                #     owner=owner,
+                #     filename=filename,
+                # )
 
                 story = pool_to_story(pool)
                 safe_owner = make_filename_safe(owner)
@@ -271,6 +304,18 @@ def make_all_pdfs(ctx, src, board=False, staff=False, parents=False, pages=None)
                     owner=owner,
                     filename=filename,
                 )
+
+                stream = as_email(
+                    username=login_username,
+                    recipients=[owner],
+                    # subject=subject,
+                    # body=body,
+                    attachment=filename,
+                )
+                if send:
+                    send_emails(
+                        username=login_username, password=password, messages=stream
+                    )
 
 
 @cli.command("refresh")
@@ -2672,7 +2717,6 @@ def xlsx_to_emails(src):
 
     num_withheld = 0
     num_accepted = 0
-    pool = []
 
     preapproved = set(
         [
@@ -2691,7 +2735,7 @@ def xlsx_to_emails(src):
         max_col=num_cols,
     ):
         adict = dict(zip(col_labels, [x.value for x in row]))
-        email = adict.get("Email")
+        email = get_relation_email(adict)
         if email:
             email = email.lower()
             student = adict.get("Student")
@@ -3008,7 +3052,6 @@ def xlsx_to_dict(src, sheet=None):
 
     num_withheld = 0
     num_accepted = 0
-    pool = []
 
     emails_with_includes = {}
     emails_with_excludes = {}
@@ -3123,7 +3166,7 @@ def make_memberhub_import(ctx, src):
             if not fam_val.strip():
                 fam_val = relation_cell
                 if not fam_val.strip():
-                    print(f"no family figured out for {line.rstrip()}")
+                    print(f"no family figured out for {fam_val.rstrip()}")
                     breakpoint()
 
             if fam_val in seen_fam:
@@ -3511,6 +3554,73 @@ def normalize(name, fam_id):
     else:
         long_name = f"{name}#{idx}"
     return long_name
+
+
+def as_email(username, recipients, attachment):
+
+    sender_email = username
+
+    message = MIMEMultipart()
+    message["Subject"] = "SomersetPTA Directory Fall 2024"
+    message["From"] = f"SomersetPTA Directory <{sender_email}>"
+    message["To"] = ", ".join(recipients)
+    # message.preamble = "preamble"
+
+    text_body = f"""This Somerset ES PTA Directort has been made just for you {recipients[0]}. We hope you'll find it useful.
+    """
+    body = MIMEText(text_body)
+    message.attach(body)
+
+    if attachment:
+        with open(attachment, "rb") as attachment_fh:
+            part = MIMEBase("application", "pdf")
+            part.set_payload(attachment_fh.read())
+        encoders.encode_base64(part)
+        attachment_name = pathlib.Path(attachment).name
+        part.add_header(
+            "Content-Disposition",
+            f'attachment; filename="{attachment_name}"',
+        )
+        message.attach(part)
+
+    # print(f"{len(message.as_string()):,d} bytes")
+
+    yield message
+
+
+def send_emails(username, password, messages):
+
+    sender_email = username
+    sender_password = password
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        a1 = server.login(sender_email, sender_password)
+        print(a1)
+        # a2 = server.sendmail(sender_email, recipient, message.as_string())
+        # 1) You should use msg.as_string() if you call smtplib.SMTP.sendmail(). Alternatively, if you have Python 3.2 or newer, you can use
+        for message in messages:
+            # print(message.as_string())
+            a2 = server.send_message(message)
+            print(a2)
+
+
+@cli.command("send-test-directory-email")
+@click.pass_context
+def send_test_directory_email(ctx):
+    """setup whatever is needed"""
+
+    login_username = "directory@somersetpta.org"
+    from dotenv import load_dotenv
+
+    load_dotenv()
+    password = os.environ["SOMERSETPTA_DIRECTORY_PASSWORD"]
+    recipients = ["cariaso@gmail.com"]
+    stream = as_email(
+        username=login_username,
+        recipients=recipients,
+        # attachment=filename,
+    )
+    send_emails(username=login_username, password=password, messages=stream)
 
 
 if __name__ == "__main__":
