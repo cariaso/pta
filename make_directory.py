@@ -201,25 +201,22 @@ def make_all_pdfs(
 
         story_to_pdf(story)
 
-    do_filter = False
+    # do_filter = False
 
     pta_board = [
-        "rachel.boufford@gmail.com",
         "victoria.levitas@gmail.com",
-        "gillianedick@gmail.com",
-        "chris.press@gmail.com",
-        "katejulian@yahoo.com",
-        "jaclynchernak23@gmail.com",
-        "babytrekie@yahoo.com",
-        "cariaso@gmail.com",
-        # "dafna.hochman@gmail.com",
-        "sharee.lawler@gmail.com",
-        "sarahsandelius@gmail.com",
-        "dianaximenav@gmail.com",
-        "Katherine_G_Musser@mcpsmd.org",
-        "radhavreddy@yahoo.com",
-        "Travis_J_Wiebe@mcpsmd.org",
-        "tanya.alan.correa@gmail.com",
+        "Rachel Marx Boufford <rachel.boufford@gmail.com>",
+        "Kate Julian <katejulian@yahoo.com>",
+        "Deborah Leitner <debbie.leitner@outlook.com>",
+        "Michael Cariaso <cariaso@gmail.com>",
+        "Stacey Band <staceydwolf@gmail.com>",
+        "Sharee Calverley Lawler <sharee.lawler@gmail.com>",
+        "Steve Katrivanos <katrivanos@me.com>",
+        "rebeca lamadrid <rebeca.lamadrid@gmail.com>",
+        "DIANA VINUEZA <dianaximenav@gmail.com",
+        "Chris Press <chris.press@gmail.com",
+        # "Travis_J_Wiebe@mcpsmd.org",
+        # "Bess_W_Treat@mcpsmd.org",
     ]
 
     pta_board = [
@@ -244,15 +241,9 @@ def make_all_pdfs(
                 filename=filename,
             )
 
-            # recipients = ["cariaso@gmail.com"]
-            # subject = "first test"
-            # body = "plain text simple mail"
-
             stream = as_email(
                 username=login_username,
                 recipients=[owner],
-                # subject=subject,
-                # body=body,
                 attachment=filename,
             )
             if send:
@@ -350,8 +341,11 @@ def refresh_the_pdf(ctx, src, board=False, staff=False, parents=False, pages=Non
 
 
 def make_filename_safe(filename):
+    if "@" in filename:
+        filename = filename.replace("@", "_at_")
+
     out = "".join(
-        c for c in filename if c.isalpha() or c.isdigit() or c == " "
+        c for c in filename if c.isalpha() or c.isdigit() or c in " _"
     ).rstrip()
     return out
 
@@ -580,21 +574,21 @@ def pool_to_story(pool):
         spaceBefore=10,
         spaceAfter=10,
     )
-    tcoh2 = ParagraphStyle(
-        name="TOCHeading2",
-        fontSize=12,
-        leading=18,
-        spaceBefore=10,
-        spaceAfter=10,
-    )
+    # tcoh2 = ParagraphStyle(
+    #     name="TOCHeading2",
+    #     fontSize=12,
+    #     leading=18,
+    #     spaceBefore=10,
+    #     spaceAfter=10,
+    # )
 
-    h1 = ParagraphStyle(
-        name="Heading1",
-        fontSize=14,
-        leading=16,
-        spaceBefore=10,
-        spaceAfter=10,
-    )
+    # h1 = ParagraphStyle(
+    #     name="Heading1",
+    #     fontSize=14,
+    #     leading=16,
+    #     spaceBefore=10,
+    #     spaceAfter=10,
+    # )
     h2 = ParagraphStyle(
         name="Heading2",
         fontSize=12,
@@ -614,7 +608,7 @@ def pool_to_story(pool):
 
     styleSheet = getSampleStyleSheet()
 
-    body_style = styleSheet["BodyText"]
+    # body_style = styleSheet["BodyText"]
 
     teacher_style = ParagraphStyle(
         name="teacher",
@@ -656,7 +650,7 @@ def pool_to_story(pool):
     student_teacher_style = ParagraphStyle(
         name="studentTeacher", fontSize=12, leading=14, leftIndent=20
     )
-    style = styles["Normal"]
+    # style = styles["Normal"]
     normal = styles["Normal"]
 
     centered_title_style = styles["Heading1"]
@@ -734,7 +728,7 @@ def pool_to_story(pool):
         name="right", parent=styles["Normal"], alignment=TA_RIGHT
     )
 
-    if new_PTA := True:
+    if True:
 
         Story.append(PageBreak())
 
@@ -798,7 +792,7 @@ def pool_to_story(pool):
             )
         )
 
-    if new_2024 := True:
+    if True:
         Story.append(PageBreak())
 
         linkedHeading(Story, "Somerset ES School Information", toch1)
@@ -2270,7 +2264,7 @@ def pool_to_story(pool):
 
     Story.append(PageBreak())
 
-    if do_teacher_directory := True:
+    if True:
         Story.append(PageBreak())
 
         linkedHeading(Story, "Staff Directory", toch1)
@@ -2407,7 +2401,7 @@ def pool_to_story(pool):
                 data.append(ready)
         if data:
             num_cols = len(data[0])
-            col_width = (5 * inch - offset_width) / (num_cols - 1)
+            # col_width = (5 * inch - offset_width) / (num_cols - 1)
             # col_widths = [.75*inch] + [col_width] * (num_cols-1)
             col_widths = [offset_width] + [None] * (num_cols - 2)
             t = Table(
@@ -2591,7 +2585,7 @@ def xlsx_to_pool(src, sheet=None):
     col_clean_labels = [x.strip() for x in col_labels]
     clean_col = {x: y for x, y in zip(col_labels, col_clean_labels)}
 
-    num_cols = len(col_labels)
+    # num_cols = len(col_labels)
 
     Directory_Withholding_key = "Directory Withholding-YN"
     if Directory_Withholding_key not in col_labels:
@@ -2715,8 +2709,8 @@ def xlsx_to_emails(src):
         col_labels.pop()
     num_cols = len(col_labels)
 
-    num_withheld = 0
-    num_accepted = 0
+    # num_withheld = 0
+    # num_accepted = 0
 
     preapproved = set(
         [
@@ -3041,7 +3035,7 @@ def xlsx_to_dict(src, sheet=None):
     col_clean_labels = [x.strip() for x in col_labels]
     clean_col = {x: y for x, y in zip(col_labels, col_clean_labels)}
 
-    num_cols = len(col_labels)
+    # num_cols = len(col_labels)
 
     Directory_Withholding_key = "Directory Withholding-YN"
     if Directory_Withholding_key not in col_labels:
@@ -3053,8 +3047,8 @@ def xlsx_to_dict(src, sheet=None):
     num_withheld = 0
     num_accepted = 0
 
-    emails_with_includes = {}
-    emails_with_excludes = {}
+    # emails_with_includes = {}
+    # emails_with_excludes = {}
 
     for araw in sheet.rows:
 
@@ -3138,8 +3132,8 @@ def make_memberhub_import(ctx, src):
     fam = {}
     next_fam_id = 123
     seen_fam = {}
-    seen_fam_name = {}
-    seen_fam_name_rev = {}
+    # seen_fam_name = {}
+    # seen_fam_name_rev = {}
 
     grade_teachers = {}
 
@@ -3566,7 +3560,7 @@ def as_email(username, recipients, attachment):
     message["To"] = ", ".join(recipients)
     # message.preamble = "preamble"
 
-    text_body = f"""This Somerset ES PTA Directort has been made just for you {recipients[0]}. We hope you'll find it useful.
+    text_body = f"""This Somerset ES PTA Directory has been made just for you {recipients[0]}. We hope you'll find it useful.
     """
     body = MIMEText(text_body)
     message.attach(body)
