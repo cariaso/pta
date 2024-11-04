@@ -91,12 +91,14 @@ def AllPageSetup(canvas, doc):
         image_path = "somerset_es_directory_cover.jpg"
         image_path = "somerset_es_directory_cover2.jpg"
         image_path = "somerset-staff-photo-23-24-cropped.jpg"
+        image_path = "somerset_es_mary_vinograd.jpg"
         page_width, page_height = canvas._pagesize
         canvas.drawImage(
             image_path,
             0,
-            -3 * inch,
+            1.75 * inch,
             width=5.5 * inch,
+            height=4 * inch,
             preserveAspectRatio=True,
         )
 
@@ -2507,9 +2509,17 @@ def pool_to_story(pool):
     url1 = "https://www.montgomeryschoolsmd.org/departments/forms/detail.aspx?formID=475&formNumber=281-13"
     link1 = f"<link href='{url1}'>{url1}</link>"
 
+    cover_credit_url = "https://www.instagram.com/maryvinogradfineart/"
+
     Story.append(
         KeepTogether(
             [
+                Paragraph("""Cover Artwork by Mary Vinograd"""),
+                Paragraph(cover_credit_url, centered_style),
+                Spacer(1, 12),
+                url2qr(cover_credit_url),
+                Spacer(1, 12),
+                Spacer(1, 12),
                 Paragraph(
                     """
                 The information in this directory is derived from information collected by MCPS. Exclusion or corrections can be made via Form number: 281-13 and is available online at
@@ -2519,12 +2529,6 @@ def pool_to_story(pool):
                 Paragraph(link1, centered_style),
                 Spacer(1, 12),
                 url2qr(link1),
-                Spacer(1, 12),
-                Paragraph(
-                    """
-                This information is also available in Spanish, French, Vietnamese, Chinese, Korean, Amharic, and Portuguese.
-                """
-                ),
             ]
         )
     )
