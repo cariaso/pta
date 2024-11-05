@@ -526,9 +526,12 @@ def linkedHeading(story, text, style):
     story.append(h)
 
 
+def url2link(url):
+    return f"<link href='{url}'>{url}</link>"
+
+
 def url2qrlink(url):
-    link = f"<link href='{url}'>{url}</link>"
-    return url2qr(link)
+    return url2qr(url2link(url))
 
 
 def url2qr(url):
@@ -562,6 +565,17 @@ def url2qr(url):
         img.save(outfh)
     out = Image(out_fn, 1 * inch, 1 * inch)
     return out
+
+
+def url4story(url, style):
+    return [
+        Paragraph(
+            url2link(url),
+            style,
+        ),
+        Spacer(1, 12),
+        url2qr(url),
+    ]
 
 
 def pool_to_story(pool):
@@ -677,10 +691,11 @@ def pool_to_story(pool):
 
     Story.append(Paragraph(format_phone_link("240-740-1100"), centered_style))
     Story.append(Paragraph("5811 Warwick Place, Chevy Chase MD 20815", centered_style))
-    url1 = "https://www.montgomeryschoolsmd.org/schools/somersetes"
-    link1 = f"<link href='{url1}'>{url1}</link>"
-    Story.append(Paragraph(link1, centered_style))
-    Story.append(url2qr(link1))
+    Story.extend(
+        url4story(
+            "https://www.montgomeryschoolsmd.org/schools/somersetes", centered_style
+        )
+    )
 
     Story.append(Spacer(1, 12))
 
@@ -768,12 +783,7 @@ def pool_to_story(pool):
                         normal,
                     ),
                     Spacer(1, 12),
-                    Paragraph(
-                        calendar_url,
-                        centered_style,
-                    ),
-                    Spacer(1, 12),
-                    url2qr(calendar_url),
+                    *url4story(calendar_url, centered_style),
                 ]
             )
         )
@@ -787,9 +797,7 @@ def pool_to_story(pool):
                         normal,
                     ),
                     Spacer(1, 12),
-                    Paragraph(whatsapp_group_url, centered_style),
-                    Spacer(1, 12),
-                    url2qr(whatsapp_group_url),
+                    *url4story(whatsapp_group_url, centered_style),
                 ]
             )
         )
@@ -808,13 +816,11 @@ def pool_to_story(pool):
                         normal,
                     ),
                     Paragraph(format_phone_link("240-740-1100"), centered_style),
-                    Paragraph(
-                        """Information about enrollment is at
-                        http://www.montgomeryschoolsmd.org/info/enroll/index.aspx
-                        """,
-                        normal,
+                    Paragraph("""Information about enrollment is at""", normal),
+                    *url4story(
+                        "http://www.montgomeryschoolsmd.org/info/enroll/index.aspx",
+                        centered_style,
                     ),
-                    url2qr("http://www.montgomeryschoolsmd.org/info/enroll/index.aspx"),
                 ]
             )
         )
@@ -824,12 +830,12 @@ def pool_to_story(pool):
                 [
                     Paragraph("Back to School Ready", h2),
                     Paragraph(
-                        """The following article is a great resource as you begin to prepare your children to return to school.  It broadens the concept of school readiness. I hope that you will take the time to read it and put into practice some of the recommendations.
-                        https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/""",
+                        """The following article is a great resource as you begin to prepare your children to return to school.  It broadens the concept of school readiness. I hope that you will take the time to read it and put into practice some of the recommendations.""",
                         normal,
                     ),
-                    url2qr(
-                        "https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/"
+                    *url4story(
+                        "https://www.gettingsmart.com/2019/07/broadening-conceptions-of-back-to-school-readiness/",
+                        centered_style,
                     ),
                 ]
             )
@@ -933,25 +939,28 @@ def pool_to_story(pool):
                 [
                     Paragraph("Bus Information", h2),
                     Paragraph(
-                        """Letter from the Bethesda Transportation Depot https://docs.google.com/document/d/1BUH-1MOiz-YLGt_XP3idapAIVefX1wAt/view""",
+                        """Letter from the Bethesda Transportation Depot""",
                         normal,
                     ),
-                    url2qr(
-                        "https://docs.google.com/document/d/1BUH-1MOiz-YLGt_XP3idapAIVefX1wAt/view"
+                    *url4story(
+                        "https://docs.google.com/document/d/1BUH-1MOiz-YLGt_XP3idapAIVefX1wAt/view",
+                        centered_style,
                     ),
                     Paragraph(
-                        """Bus Routes Arrival (AM) https://drive.google.com/file/d/1H6cpsGhsggXCCP7iNXIsvCEam6hSDpXQ/view""",
+                        """Bus Routes Arrival (AM)""",
                         normal,
                     ),
-                    url2qr(
-                        "https://drive.google.com/file/d/1H6cpsGhsggXCCP7iNXIsvCEam6hSDpXQ/view"
+                    *url4story(
+                        "https://drive.google.com/file/d/1H6cpsGhsggXCCP7iNXIsvCEam6hSDpXQ/view",
+                        centered_style,
                     ),
                     Paragraph(
-                        """Bus Routes Departure (PM) https://drive.google.com/file/d/1yEq_2mEFfJd7f0CoFQvHSu-YMXWr4vEJ/view""",
+                        """Bus Routes Departure (PM)""",
                         normal,
                     ),
-                    url2qr(
-                        "https://drive.google.com/file/d/1yEq_2mEFfJd7f0CoFQvHSu-YMXWr4vEJ/view"
+                    *url4story(
+                        "https://drive.google.com/file/d/1yEq_2mEFfJd7f0CoFQvHSu-YMXWr4vEJ/view",
+                        centered_style,
                     ),
                     Paragraph(
                         """As a reminder, please arrive early to the bus stops during the first week of school as the drivers work to fine tune the schedule.  Students will be provided with a corresponding colored wristband for their bus to assist them in boarding the correct bus.  Please encourage your child to wear the band for the first two weeks of school. Please also make note of the corresponding route number.  In the event you need to contact the Bethesda Transportation Depot, they refer to buses by route number not color. """,
@@ -994,10 +1003,12 @@ def pool_to_story(pool):
                 [
                     Paragraph("Before/After School Care", h2),
                     Paragraph(
-                        """Please see the linked information below regarding BAR-T, Somerset’s before and after school child care provider. https://www.bar-t.com/program/kids-club/""",
+                        """Please see the linked information below regarding BAR-T, Somerset’s before and after school child care provider.""",
                         normal,
                     ),
-                    url2qr("https://www.bar-t.com/program/kids-club/"),
+                    *url4story(
+                        "https://www.bar-t.com/program/kids-club/", centered_style
+                    ),
                 ]
             )
         )
@@ -1071,11 +1082,12 @@ def pool_to_story(pool):
                 [
                     Paragraph("MCPS Calendar", h2),
                     Paragraph(
-                        """The MCPS Comprehensive School Calendar for the 2024-2025 school year can be found at
-                        https://ww2.montgomeryschoolsmd.org/calendar/""",
+                        """The MCPS Comprehensive School Calendar for the 2024-2025 school year can be found at""",
                         normal,
                     ),
-                    url2qr("https://ww2.montgomeryschoolsmd.org/calendar/"),
+                    *url4story(
+                        "https://ww2.montgomeryschoolsmd.org/calendar/", centered_style
+                    ),
                 ]
             )
         )
@@ -1088,8 +1100,9 @@ def pool_to_story(pool):
                         """A copy of the Maryland State Immunization Guidelines for the 2024-25 school year is available """,
                         normal,
                     ),
-                    url2qr(
-                        "https://health.maryland.gov/phpa/OIDEOR/IMMUN/Shared%20Documents/2024-2025_School_IZ_%20Requirements_Final.pdf"
+                    *url4story(
+                        "https://health.maryland.gov/phpa/OIDEOR/IMMUN/Shared%20Documents/2024-2025_School_IZ_%20Requirements_Final.pdf",
+                        centered_style,
                     ),
                     Paragraph(
                         """New students should present proper documentation of required immunizations at the time of enrollment. If a family does not provide documentation for the required immunizations but presents evidence of an appointment to obtain documentation or immunization records within 20 calendar days of the date of enrollment, the student may be enrolled. However, if the documentation is not provided immediately following the scheduled date, the student must be excluded from school and marked absent until proof of immunization is received. If you have questions or concerns about these requirements, please contact our School Health Technician at 240-740-1102, on or after August 20, 2024.""",
@@ -1117,8 +1130,9 @@ def pool_to_story(pool):
                         """Please refer to MCPS Regulation JEA-RA Student Attendance https://ww2.montgomeryschoolsmd.org/departments/policy/pdf/jea-ra%20nondiscrimination.pdf """,
                         normal,
                     ),
-                    url2qr(
-                        "https://ww2.montgomeryschoolsmd.org/departments/policy/pdf/jea-ra%20nondiscrimination.pdf"
+                    *url4story(
+                        "https://ww2.montgomeryschoolsmd.org/departments/policy/pdf/jea-ra%20nondiscrimination.pdf",
+                        centered_style,
                     ),
                     Paragraph(
                         """for additional information regarding student attendance and please remember the importance of regular attendance in school.  Please try to schedule your vacations or family activities when school is not in session. We realize that sometimes vacation opportunities come up unexpectedly; however, these absences are considered unlawful and the absence(s) will be recorded as unexcused.  Students learn when they are in school.  Please support us by making sure your child comes to school on time each day.  If your child is late, please sign them in at the main office.""",
@@ -1137,17 +1151,18 @@ def pool_to_story(pool):
                         normal,
                     ),
                     Paragraph(
-                        """Students in Maryland who qualify for reduced-price meals will not be charged for breakfast or lunch. FREE AND REDUCED-PRICE MEAL APPLICATIONS Apply online NOW so that benefits will be in place when school starts! Families who meet certain federal income standards are eligible for free or reduced-price meal benefits. All children use their MCPS ID number at the register so confidentiality is maintained and no child is overtly identified as receiving free or reduced-price meals. Only one application is needed for all students in a household. A new application must be completed for any family requesting assistance this school year. The online application is now open for families to submit applications online at  http://www.MySchoolApps.com
+                        """Students in Maryland who qualify for reduced-price meals will not be charged for breakfast or lunch. FREE AND REDUCED-PRICE MEAL APPLICATIONS Apply online NOW so that benefits will be in place when school starts! Families who meet certain federal income standards are eligible for free or reduced-price meal benefits. All children use their MCPS ID number at the register so confidentiality is maintained and no child is overtly identified as receiving free or reduced-price meals. Only one application is needed for all students in a household. A new application must be completed for any family requesting assistance this school year. The online application is now open for families to submit applications online at
     """,
                         normal,
                     ),
-                    url2qr("http://www.myschoolapps.com"),
+                    *url4story("http://www.myschoolapps.com", centered_style),
                     Paragraph(
-                        """For more information and How-To videos, visit the Food Services website http://www.montgomeryschools.org/departments/food-and-nutrition/meal-payments/#FARMS""",
+                        """For more information and How-To videos, visit the Food Services website""",
                         normal,
                     ),
-                    url2qr(
-                        "http://www.montgomeryschools.org/departments/food-and-nutrition/meal-payments/#FARMS"
+                    *url4story(
+                        "http://www.montgomeryschools.org/departments/food-and-nutrition/meal-payments/#FARMS",
+                        centered_style,
                     ),
                 ]
             )
@@ -1158,11 +1173,12 @@ def pool_to_story(pool):
                 [
                     Paragraph("School Supplies", h2),
                     Paragraph(
-                        """The school supply list is available at  https://drive.google.com/file/d/1_kWkA8yM8vTPURe1rwSCHLMmrznQ6HLe/view""",
+                        """The school supply list is available at""",
                         normal,
                     ),
-                    url2qr(
-                        "https://drive.google.com/file/d/1_kWkA8yM8vTPURe1rwSCHLMmrznQ6HLe/view"
+                    *url4story(
+                        "https://drive.google.com/file/d/1_kWkA8yM8vTPURe1rwSCHLMmrznQ6HLe/view",
+                        centered_style,
                     ),
                 ]
             )
@@ -1173,11 +1189,12 @@ def pool_to_story(pool):
                 [
                     Paragraph("Staff Directory", h2),
                     Paragraph(
-                        """The Somerset staff directory is available at https://www.montgomeryschoolsmd.org/schools/somersetes/staff/directory/""",
+                        """The Somerset staff directory is available at""",
                         normal,
                     ),
-                    url2qr(
-                        "https://www.montgomeryschoolsmd.org/schools/somersetes/staff/directory/"
+                    *url4story(
+                        "https://www.montgomeryschoolsmd.org/schools/somersetes/staff/directory/",
+                        centered_style,
                     ),
                 ]
             )
@@ -1222,8 +1239,8 @@ def pool_to_story(pool):
                     """If a student is going to be absent for any reason, parents are asked to inform the school. You can report an absence via""",
                     normal,
                 ),
-                Paragraph(absence_url, centered_style),
-                url2qr(absence_url),
+                # Paragraph(absence_url, centered_style),
+                *url4story(absence_url, centered_style),
                 Paragraph(
                     """You can also telephone the school office prior to 9 am at""",
                     normal,
@@ -1286,10 +1303,10 @@ def pool_to_story(pool):
             [
                 Paragraph("Bar-T Kids Club", h2),
                 Paragraph(
-                    """Before and after school programs offers a place for students to learn, play and enjoy the supportive Bar-T community. For information regarding before and after school child care ChildCare please call: Bar-T Kids Club at 240-364-4196 or vist https://www.bar-t.com/program/kids-club/""",
+                    """Before and after school programs offers a place for students to learn, play and enjoy the supportive Bar-T community. For information regarding before and after school child care ChildCare please call: Bar-T Kids Club at 240-364-4196 or vist""",
                     normal,
                 ),
-                url2qr("https://www.bar-t.com/program/kids-club/"),
+                *url4story("https://www.bar-t.com/program/kids-club/", centered_style),
             ]
         )
     )
@@ -1425,10 +1442,13 @@ def pool_to_story(pool):
             [
                 Paragraph("Discipline", h2),
                 Paragraph(
-                    """Copies of Somerset's discipline policy are available in the school office or at https://www.montgomeryschoolsmd.org/schools/somersetes/about/""",
+                    """Copies of Somerset's discipline policy are available in the school office or at""",
                     normal,
                 ),
-                url2qr("https://www.montgomeryschoolsmd.org/schools/somersetes/about/"),
+                *url4story(
+                    "https://www.montgomeryschoolsmd.org/schools/somersetes/about/",
+                    centered_style,
+                ),
             ]
         )
     )
@@ -1523,10 +1543,10 @@ def pool_to_story(pool):
             [
                 Paragraph("Financial Help", h2),
                 Paragraph(
-                    """Families with limited incomes may apply to the Board of Education for free or reduced cost breakfasts and lunches. An application form is sent home with all students at the start of each year. You also can apply in confidence to the Principal for help towards the cost of field trips. Limited scholarships also are available for After School Program classes. No student need miss class outings because of a limited family budget. Families can apply on at https://www.MySchoolApps.com""",
+                    """Families with limited incomes may apply to the Board of Education for free or reduced cost breakfasts and lunches. An application form is sent home with all students at the start of each year. You also can apply in confidence to the Principal for help towards the cost of field trips. Limited scholarships also are available for After School Program classes. No student need miss class outings because of a limited family budget. Families can apply on at""",
                     normal,
                 ),
-                url2qr("https://www.MySchoolApps.com/"),
+                *url4story("https://www.MySchoolApps.com/", centered_style),
             ]
         )
     )
@@ -1642,10 +1662,10 @@ def pool_to_story(pool):
             [
                 Paragraph("Meals", h2),
                 Paragraph(
-                    """Students can bring lunch from home or purchase meals at the cafeteria. Payment is made in exact change or through a myschoolbucks.com lunch account plan. Each student is given a student ID number, which is keyed in each time the student purchases food from the cafeteria. Notices are sent home when a student's account balance is low. Any funds in a student's account at the end of the school year are carried over to the next school year. No refunds are given. myschoolbucks.com also allows you to monitor the purchases your child makes and allows you to block specified items from being purchased. To set up a lunch account visit https://www.myschoolbucks.com""",
+                    """Students can bring lunch from home or purchase meals at the cafeteria. Payment is made in exact change or through a myschoolbucks.com lunch account plan. Each student is given a student ID number, which is keyed in each time the student purchases food from the cafeteria. Notices are sent home when a student's account balance is low. Any funds in a student's account at the end of the school year are carried over to the next school year. No refunds are given. myschoolbucks.com also allows you to monitor the purchases your child makes and allows you to block specified items from being purchased. To set up a lunch account visit""",
                     normal,
                 ),
-                url2qr("https://www.myschoolbucks.com"),
+                *url4story("https://www.myschoolbucks.com", centered_style),
             ]
         )
     )
@@ -1693,10 +1713,12 @@ def pool_to_story(pool):
                 [
                     Paragraph("Parent Teacher Association (PTA)", h2),
                     Paragraph(
-                        """Parent Teacher Association (PTA) The PTA is composed of parent volunteers. All families are welcome at any PTA event or meeting, but only individuals who have joined the PTA and paid annual dues may vote on PTA proposals, budgets, and elect officers. The PTA welcomes all volunteers and any interested board candidates or committee chairs. Elections for officers and board members are generally held in late May or early June. The PTA's mission is to support kids and teachers in their classrooms. We fill an important gap- providing teacher stipends for much-needed school materials, books for classrooms and libraries, tools like microscopes, calculators, as well as hosting before and afterschool activities and enrichment options, and providing help for kids in need, from field trip scholarships to snacks for kids who arrive hungry. The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds an Adventure Theater enrichment program and performance. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit https://somersetelementary.memberhub.com/.""",
+                        """Parent Teacher Association (PTA) The PTA is composed of parent volunteers. All families are welcome at any PTA event or meeting, but only individuals who have joined the PTA and paid annual dues may vote on PTA proposals, budgets, and elect officers. The PTA welcomes all volunteers and any interested board candidates or committee chairs. Elections for officers and board members are generally held in late May or early June. The PTA's mission is to support kids and teachers in their classrooms. We fill an important gap- providing teacher stipends for much-needed school materials, books for classrooms and libraries, tools like microscopes, calculators, as well as hosting before and afterschool activities and enrichment options, and providing help for kids in need, from field trip scholarships to snacks for kids who arrive hungry. The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds an Adventure Theater enrichment program and performance. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit""",
                         normal,
                     ),
-                    url2qr("https://somersetelementary.memberhub.com/"),
+                    *url4story(
+                        "https://somersetelementary.memberhub.com/", centered_style
+                    ),
                     #                Paragraph(
                     #                    """The PTA also hosts fun community events, from the Back to School Picnic and the Back to School Classic Race, to the Rock 'N Roll Circle of Giving Dance, and Skate Night. It offers cultural arts assemblies and funds a playwright in residence for the fifth grade. Plus, the PTA recognizes and appreciates our teachers and staff throughout the year. To learn more, visit www.somersetpta.org.""",
                     #                    normal,
@@ -1974,25 +1996,17 @@ def pool_to_story(pool):
             [
                 Paragraph("Volunteering", h2),
                 Paragraph(
-                    """To volunteer at the school or in your classroom please, contact your teacher or specials teachers. There are many PTA events throughout the year that can use your help from the Back to School Classic Race to our book fairs and other community events. The PTA also has opportunities for parents to help at recess and/or lunch. Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS website http://www.montgomeryschoolsmd.org/childabuseandneglect/""",
+                    """There are many classroom and PTA events throughout the year that can use your help. Volunteers in the classroom will need to complete the online MCPS Child Abuse and Neglect recognition training, which takes about 15 minutes. Volunteers who will be attending extended day field trips will need to complete a finger printing and background check.""",
                     normal,
                 ),
-                url2qr("http://www.montgomeryschoolsmd.org/childabuseandneglect/"),
-                Paragraph(
-                    """Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at: http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuseVolunteer-FAQs.pdf""",
-                    normal,
+                *url4story(
+                    "http://www.montgomeryschoolsmd.org/childabuseandneglect/",
+                    centered_style,
                 ),
-                url2qr(
-                    "http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuseVolunteer-FAQs.pdf"
+                *url4story(
+                    "http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuseVolunteer-FAQs.pdf",
+                    centered_style,
                 ),
-                #                Paragraph(
-                #                    """Volunteers will need to complete the online MCPS Child Abuse and Neglect recognition training found the MCPS websitehttp://www.montgomeryschoolsmd.org/childabuseandneglect/""",
-                #                    normal,
-                #                ),
-                #                Paragraph(
-                #                    """Volunteers who will be attending extended day field trips wil need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements. You can also read more on these policies on the Montgomery County Public School FAQ at:http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuse-Volunteer-FAQs.pdf""",
-                #                    normal,
-                #                ),
             ]
         )
     )
@@ -2027,15 +2041,17 @@ def pool_to_story(pool):
                 [
                     Paragraph("Websites for Somerset and the PTA", h2),
                     Paragraph(
-                        """The PTA website is https://somersetelementary.memberhub.com/""",
+                        """The PTA website is""",
                         normal,
                     ),
-                    url2qr("https://somersetelementary.memberhub.com/"),
-                    Paragraph(
-                        """The Somerset Elementary MCPS website is https://www.montgomeryschoolsmd.org/schools/somersetes Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
-                        normal,
+                    *url4story(
+                        "https://somersetelementary.memberhub.com/", centered_style
                     ),
-                    url2qr("https://www.montgomeryschoolsmd.org/schools/somersetes"),
+                    Paragraph("""The Somerset Elementary MCPS website is""", normal),
+                    *url4story(
+                        "https://www.montgomeryschoolsmd.org/schools/somersetes",
+                        centered_style,
+                    ),
                     #                Paragraph(
                     #                    """Links include the Media Center, Counseling, Specialists and Classrooms that are updated throughout the year. The Staff Directory link takes you to Somerset's online telephone and email directory. The MCPS Home link at the bottom of the page takes you to the Montgomery County Public School website for comprehensive information.""",
                     #                    normal,
@@ -2084,10 +2100,10 @@ def pool_to_story(pool):
                     """Q: What if I need childcare before or after school?""", h2
                 ),
                 Paragraph(
-                    """A: Bar-T provides before and/or aftercare for a fee. Bar-T Kids Club at 240-364-4196 https://www.bar-t.com/program/kids-club/""",
+                    """A: Bar-T provides before and/or aftercare for a fee. Bar-T Kids Club at 240-364-4196""",
                     normal,
                 ),
-                url2qr("https://www.bar-t.com/program/kids-club/"),
+                *url4story("https://www.bar-t.com/program/kids-club/", centered_style),
             ]
         )
     )
@@ -2155,11 +2171,12 @@ def pool_to_story(pool):
             [
                 Paragraph("""Q: What if my child is being bullied?""", h2),
                 Paragraph(
-                    """A: Please contact Principal Wiebe, the principal, or Ms. Musser, the school counselor, to discuss any bullying situation. Most can be resolved with simple intervention. If it is happening at recess, the paraeducators who monitor recess can be asked to assist. To learn more about reporting bullying, harassment or intimidation and see a copy of the reporting form please visit the MCPS web site: http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf""",
+                    """A: Please contact Principal Wiebe, the principal, or Ms. Musser, the school counselor, to discuss any bullying situation. Most can be resolved with simple intervention. If it is happening at recess, the paraeducators who monitor recess can be asked to assist. To learn more about reporting bullying, harassment or intimidation and see a copy of the reporting form please visit the MCPS web site""",
                     normal,
                 ),
-                url2qr(
-                    "http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf"
+                *url4story(
+                    "http://www.montgomeryschoolsmd.org/departments/forms/pdf/230-35.pdf",
+                    centered_style,
                 ),
             ]
         )
@@ -2192,10 +2209,12 @@ def pool_to_story(pool):
             [
                 Paragraph("""Q: Does Somerset offer after school activities?""", h2),
                 Paragraph(
-                    """A: Yes. We have a wide variety of before and after school programs offered through Enrichment Academies. Clubs are offered for three "semesters" each year, fall, winter, and spring. There is a registration period. Please visit https://somerset.enrichment-academies.com/ to learn more. Scholarships are offered based on specific need.""",
+                    """A: Yes. We have a wide variety of before and after school programs offered through Enrichment Academies. Clubs are offered for three "semesters" each year, fall, winter, and spring. There is a registration period. Scholarships are offered based on specific need.""",
                     normal,
                 ),
-                url2qr("https://somerset.enrichment-academies.com/"),
+                *url4story(
+                    "https://somerset.enrichment-academies.com/", centered_style
+                ),
             ]
         )
     )
@@ -2229,24 +2248,6 @@ def pool_to_story(pool):
     )
 
     Story.append(
-        Paragraph("""Q: What are the opportunities to volunteer in school?""", h2)
-    )
-    Story.append(
-        Paragraph(
-            """A: Somerset is happy to have the help und support of parents. Some classes have volunteer opportunities. Other teachers need help with specific projects or even organizing papers and supplies. Check with your teacher about needs in your classroom.""",
-            normal,
-        )
-    )
-
-    Story.append(
-        Paragraph(
-            """In addition, there are many PTA events throughout the year that can use your help. Volunteers in the classroom will need to complete the online MCPS Child Abuse and Neglect recognition training found http://www.montgomeryschoolsmd.org/childabuseandneglect/ Volunteers who will be attending extended day field trips will need to complete a finger printing and background check. Please ask your teacher or the principal's office about these requirements for your volunteering. You can also read the MCPS FAQ at: http://www.montgomeryschoolsmd.org/uploadedFiles/childabuseandneglect/160902-ChildAbuse-Volunteer-FAQs.pdf """,
-            normal,
-        )
-    )
-    #  These events are posted on the Website and in the TIN. www.somersetpta.com
-
-    Story.append(
         Paragraph(
             """Q: What is the difference between the PTA and the Foundation?""", h2
         )
@@ -2273,8 +2274,8 @@ def pool_to_story(pool):
 
         url1 = "https://www.montgomeryschoolsmd.org/schools/somersetes/staff/directory/"
         link1 = f"<link href='{url1}'>{url1}</link>"
-        Story.append(Paragraph(link1, centered_style))
-        Story.append(url2qr(link1))
+        # Story.append(Paragraph(link1, centered_style))
+        Story.extend(url4story(url1, centered_style))
 
         for staff_member in staff_order:
             staff_table = []
@@ -2506,29 +2507,22 @@ def pool_to_story(pool):
     linkedHeading(Story, ptext, toch1)
     Story.append(Spacer(1, 12))
 
-    url1 = "https://www.montgomeryschoolsmd.org/departments/forms/detail.aspx?formID=475&formNumber=281-13"
-    link1 = f"<link href='{url1}'>{url1}</link>"
-
-    cover_credit_url = "https://www.instagram.com/maryvinogradfineart/"
-
     Story.append(
         KeepTogether(
             [
                 Paragraph("""Cover Artwork by Mary Vinograd"""),
-                Paragraph(cover_credit_url, centered_style),
-                Spacer(1, 12),
-                url2qr(cover_credit_url),
+                *url4story(
+                    "https://www.instagram.com/maryvinogradfineart/", centered_style
+                ),
                 Spacer(1, 12),
                 Spacer(1, 12),
                 Paragraph(
-                    """
-                The information in this directory is derived from information collected by MCPS. Exclusion or corrections can be made via Form number: 281-13 and is available online at
-                """
+                    """The information in this directory is derived from information collected by MCPS. Exclusion or corrections can be made via Form number: 281-13 and is available online at"""
                 ),
-                Spacer(1, 12),
-                Paragraph(link1, centered_style),
-                Spacer(1, 12),
-                url2qr(link1),
+                *url4story(
+                    "https://www.montgomeryschoolsmd.org/departments/forms/detail.aspx?formID=475&formNumber=281-13",
+                    centered_style,
+                ),
             ]
         )
     )
